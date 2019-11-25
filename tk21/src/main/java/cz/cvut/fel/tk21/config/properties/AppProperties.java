@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.config;
+package cz.cvut.fel.tk21.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
