@@ -1,9 +1,7 @@
 package cz.cvut.fel.tk21.config;
 
-import com.jolbox.bonecp.BoneCPDataSource;
 import cz.cvut.fel.tk21.config.properties.DatabaseProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
