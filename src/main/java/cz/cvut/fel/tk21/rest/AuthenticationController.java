@@ -3,6 +3,8 @@ package cz.cvut.fel.tk21.rest;
 import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
 import cz.cvut.fel.tk21.model.security.AuthenticationRequest;
 import cz.cvut.fel.tk21.model.security.AuthenticationResponse;
+import cz.cvut.fel.tk21.rest.dto.Info;
+import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.service.security.UserDetailsService;
 import cz.cvut.fel.tk21.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 
@@ -28,6 +27,9 @@ public class AuthenticationController {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -61,6 +63,14 @@ public class AuthenticationController {
                 "Max-Age=0;HttpOnly=True");
 
         return ResponseEntity.noContent().headers(responseHeaders).build();
+    }
+
+    @RequestMapping(value = "/confirm", method = RequestMethod.GET)
+    public ResponseEntity<?> confirmEmail(@RequestParam("token")String token) {
+        if(userService.isEmailTokenValid(token)){
+            return ResponseEntity.ok(new Info("Email byl úspěšně ověřen"));
+        }
+        return ResponseEntity.badRequest().build();
     }
 
 

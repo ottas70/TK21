@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -37,16 +38,13 @@ public class User extends AbstractEntity {
     @Column(nullable = false)
     private boolean verifiedAccount;
 
+    @JsonIgnore
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
+    private ConfirmationToken confirmationToken;
+
     public User() {
     }
 
-    public User(@NotBlank(message = "Name is mandatory") String name, @NotBlank(message = "Surname is mandatory") String surname, @NotBlank(message = "Email is mandatory") String email, String password, boolean verifiedAccount) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.password = password;
-        this.verifiedAccount = verifiedAccount;
-    }
 
     public String getName() {
         return name;
@@ -86,5 +84,13 @@ public class User extends AbstractEntity {
 
     public void setVerifiedAccount(boolean verifiedAccount) {
         this.verifiedAccount = verifiedAccount;
+    }
+
+    public ConfirmationToken getConfirmationToken() {
+        return confirmationToken;
+    }
+
+    public void setConfirmationToken(ConfirmationToken confirmationToken) {
+        this.confirmationToken = confirmationToken;
     }
 }
