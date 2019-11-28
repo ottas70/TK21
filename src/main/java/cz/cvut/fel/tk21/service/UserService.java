@@ -59,7 +59,7 @@ public class UserService extends BaseService<UserDao, User> {
         mailMessage.setSubject("Potvrzení registrace");
         mailMessage.setFrom("noreply@tk21.cz");
         mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
-                + InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("local.server.port")
+                + "http://195.181.209.16:14023"
                 + "/api/confirm?token="+ token.getConfirmationToken());
 
         mailService.sendEmail(mailMessage);
