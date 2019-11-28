@@ -28,25 +28,14 @@ public class PersistenceConfig {
         this.databaseProperties = databaseProperties;
     }
 
-    @Bean(name = "tk21-ds")
-    public DataSource dataSource() {
-        final BoneCPDataSource ds = new BoneCPDataSource();
-        ds.setDriverClass(this.databaseProperties.getDriverClassName());
-        ds.setJdbcUrl(this.databaseProperties.getUrl());
-        ds.setUsername(this.databaseProperties.getUsername());
-        ds.setPassword(this.databaseProperties.getPassword());
-        return ds;
-    }
-
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("tk21-ds") DataSource ds) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource ds) {
         final LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(ds);
         emf.setJpaVendorAdapter(new EclipseLinkJpaVendorAdapter());
         emf.setPackagesToScan("cz.cvut.fel.tk21.model");
 
         final Properties props = new Properties();
-        props.setProperty("databasePlatform", this.databaseProperties.getPlatform());
         props.setProperty("generateDdl", "true");
         props.setProperty("showSql", "true");
         props.setProperty("eclipselink.weaving", "static");
