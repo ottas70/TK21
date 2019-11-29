@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -27,6 +29,7 @@ public class User extends AbstractEntity {
     @Basic(optional = false)
     @Column(nullable = false, unique = true)
     @NotBlank(message = "Email is mandatory")
+    @Email
     private String email;
 
     @Basic(optional = false)
@@ -42,9 +45,13 @@ public class User extends AbstractEntity {
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private ConfirmationToken confirmationToken;
 
-    public User() {
-    }
-
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Collection<Club_Relation> clubs;
 
     public String getName() {
         return name;
@@ -92,5 +99,13 @@ public class User extends AbstractEntity {
 
     public void setConfirmationToken(ConfirmationToken confirmationToken) {
         this.confirmationToken = confirmationToken;
+    }
+
+    public Collection<Club_Relation> getClubs() {
+        return clubs;
+    }
+
+    public void setClubs(Collection<Club_Relation> clubs) {
+        this.clubs = clubs;
     }
 }

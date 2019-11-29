@@ -38,7 +38,7 @@ public class UserService extends BaseService<UserDao, User> {
     }
 
     @Transactional
-    public int createUser(UserDto userDto) throws UnknownHostException {
+    public int createUser(UserDto userDto) {
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         if (!dao.isEmailUnique(userDto.getEmail())) {
@@ -54,6 +54,8 @@ public class UserService extends BaseService<UserDao, User> {
         ConfirmationToken token = new ConfirmationToken(user);
         user.setConfirmationToken(token);
 
+        super.dao.persist(user);
+
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmail());
         mailMessage.setSubject("Potvrzení registrace");
@@ -63,8 +65,6 @@ public class UserService extends BaseService<UserDao, User> {
                 + "/api/confirm?token="+ token.getConfirmationToken());
 
         mailService.sendEmail(mailMessage);
-
-        super.dao.persist(user);
         return user.getId();
     }
 
