@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
+import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.AuthenticationRequest;
 import cz.cvut.fel.tk21.model.security.AuthenticationResponse;
 import cz.cvut.fel.tk21.rest.dto.Info;
@@ -9,6 +10,7 @@ import cz.cvut.fel.tk21.service.security.UserDetailsService;
 import cz.cvut.fel.tk21.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -49,11 +51,13 @@ public class AuthenticationController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtUtil.generateToken(userDetails);
 
-        HttpHeaders responseHeaders = new HttpHeaders();
+        final User user = userService.findUserByEmail(userDetails.getUsername()).get();
+
+                HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + token + ";" +
                 "Max-Age=3600;HttpOnly=True");
 
-        return ResponseEntity.noContent().headers(responseHeaders).build();
+        return new ResponseEntity<>(user, responseHeaders, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
@@ -62,7 +66,7 @@ public class AuthenticationController {
         responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
                 "Max-Age=0;HttpOnly=True");
 
-        return ResponseEntity.noContent().headers(responseHeaders).build();
+        return ResponseEntity.ok().headers(responseHeaders).build();
     }
 
     @RequestMapping(value = "/confirm", method = RequestMethod.GET)

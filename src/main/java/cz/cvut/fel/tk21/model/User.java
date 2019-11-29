@@ -39,6 +39,7 @@ public class User extends AbstractEntity {
 
     @Basic(optional = false)
     @Column(nullable = false)
+    @JsonIgnore
     private boolean verifiedAccount;
 
     @JsonIgnore

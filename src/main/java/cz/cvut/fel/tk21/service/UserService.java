@@ -14,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Optional;
 
 @Service
@@ -83,6 +81,11 @@ public class UserService extends BaseService<UserDao, User> {
         }
 
         return false;
+    }
+
+    @Transactional
+    public Optional<User> findUserByEmail(String email){
+        return dao.getUserByEmail(email);
     }
 
 }
