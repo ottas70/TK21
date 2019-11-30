@@ -38,6 +38,7 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public int createUser(UserDto userDto) {
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        System.out.println(userDto.getPassword());
 
         if (!dao.isEmailUnique(userDto.getEmail())) {
             throw new ValidationException("Účet s tímto emailem již existuje");

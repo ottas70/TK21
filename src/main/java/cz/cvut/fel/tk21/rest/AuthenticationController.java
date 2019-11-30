@@ -60,13 +60,13 @@ public class AuthenticationController {
         return new ResponseEntity<>(user, responseHeaders, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ResponseEntity<?> logout() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
                 "Max-Age=0;HttpOnly=True");
 
-        return ResponseEntity.ok().headers(responseHeaders).build();
+        return ResponseEntity.noContent().headers(responseHeaders).build();
     }
 
     @RequestMapping(value = "/confirm", method = RequestMethod.GET)

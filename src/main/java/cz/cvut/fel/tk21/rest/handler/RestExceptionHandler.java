@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.rest.handler;
 import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.model.security.ApiResponse;
 import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,8 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ErrorInfo> invalidCredentialsException(HttpServletRequest request, InvalidCredentialsException e) {
-        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ApiResponse> invalidCredentialsException(HttpServletRequest request, InvalidCredentialsException e) {
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NotFoundException.class)
