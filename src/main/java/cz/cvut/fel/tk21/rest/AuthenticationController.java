@@ -55,7 +55,7 @@ public class AuthenticationController {
 
                 HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + token + ";" +
-                "Max-Age=3600;HttpOnly=True");
+                "Max-Age=-1;HttpOnly=True");
 
         return new ResponseEntity<>(user, responseHeaders, HttpStatus.OK);
     }
