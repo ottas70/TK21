@@ -30,7 +30,7 @@ public class UserController {
     private RequestBodyValidator validator;
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto user, BindingResult bindingResult) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto user) {
         validator.validate(user);
         final int userId = this.userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new Info("Účet byl úspěšně vytvořen. Na uvedený email byl odeslán ověřovací link"));

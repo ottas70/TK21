@@ -28,9 +28,6 @@ public class UserService extends BaseService<UserDao, User> {
     @Autowired
     private ConfirmationTokenDao confirmationTokenDao;
 
-    @Autowired
-    private Environment environment;
-
     protected UserService(UserDao dao) {
         super(dao);
     }

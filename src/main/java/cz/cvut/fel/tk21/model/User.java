@@ -7,7 +7,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Table(name = "USER")
@@ -52,7 +51,7 @@ public class User extends AbstractEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Collection<Club_Relation> clubs;
+    private Collection<ClubRelation> clubs;
 
     public String getName() {
         return name;
@@ -102,11 +101,11 @@ public class User extends AbstractEntity {
         this.confirmationToken = confirmationToken;
     }
 
-    public Collection<Club_Relation> getClubs() {
+    public Collection<ClubRelation> getClubs() {
         return clubs;
     }
 
-    public void setClubs(Collection<Club_Relation> clubs) {
+    public void setClubs(Collection<ClubRelation> clubs) {
         this.clubs = clubs;
     }
 }

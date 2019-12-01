@@ -14,9 +14,7 @@ public class Club extends AbstractEntity {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Email is mandatory")
-    @Email
+    @Column
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -34,7 +32,7 @@ public class Club extends AbstractEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Collection<Club_Relation> users;
+    private Collection<ClubRelation> users;
 
     public String getName() {
         return name;
@@ -76,11 +74,11 @@ public class Club extends AbstractEntity {
         this.winterSeasonStart = winterSeasonStart;
     }
 
-    public Collection<Club_Relation> getUsers() {
+    public Collection<ClubRelation> getUsers() {
         return users;
     }
 
-    public void setUsers(Collection<Club_Relation> users) {
+    public void setUsers(Collection<ClubRelation> users) {
         this.users = users;
     }
 }

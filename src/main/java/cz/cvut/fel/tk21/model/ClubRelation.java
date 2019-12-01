@@ -2,10 +2,11 @@ package cz.cvut.fel.tk21.model;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 
 @Entity
-@Table(name = "Club_Relation")
-public class Club_Relation extends AbstractEntity{
+@Table(name = "ClubRelation")
+public class ClubRelation extends AbstractEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
@@ -15,7 +16,7 @@ public class Club_Relation extends AbstractEntity{
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    Collection<UserRole> roles;
+    Collection<UserRole> roles = new HashSet<>();
 
     public Club getClub() {
         return club;
@@ -39,5 +40,13 @@ public class Club_Relation extends AbstractEntity{
 
     public void setRoles(Collection<UserRole> roles) {
         this.roles = roles;
+    }
+
+    public void addRole(UserRole role){
+        roles.add(role);
+    }
+
+    public void removeRole(UserRole role){
+        roles.removeIf(r -> r.name().equals(role.name()));
     }
 }
