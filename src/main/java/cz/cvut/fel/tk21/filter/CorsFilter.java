@@ -22,7 +22,7 @@ public class CorsFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (this.allowsCors()) {
-            response.setHeader("Access-Control-Allow-Origin", "http://www.book-software.com, http://localhost:3000, http://book-software.com, https://www.book-software.com");
+            response.setHeader("Access-Control-Allow-Origin", "http://www.book-software.com");
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.setHeader("Access-Control-Max-Age", "3600");
