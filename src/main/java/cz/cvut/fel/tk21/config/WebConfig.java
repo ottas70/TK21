@@ -9,9 +9,5 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
-    //TODO change in future
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("http://www.book-software.com");
-    }
+
 }

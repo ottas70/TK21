@@ -6,7 +6,8 @@ import javax.validation.constraints.NotBlank;
 
 public class ClubDto {
 
-    @NotBlank(message = "Name is mandatory")
+    private int id;
+
     private String name;
 
     private AddressDto address;
@@ -15,8 +16,17 @@ public class ClubDto {
     }
 
     public ClubDto(Club club) {
+        this.id = club.getId();
         this.name = club.getName();
         this.address = new AddressDto(club.getAddress());
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -37,6 +47,7 @@ public class ClubDto {
 
     public Club getEntity(){
         Club club = new Club();
+        club.setId(this.id);
         club.setName(this.name);
         club.setAddress(this.address.getEntity());
         return club;
