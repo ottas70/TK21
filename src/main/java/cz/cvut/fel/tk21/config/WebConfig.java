@@ -12,6 +12,6 @@ public class WebConfig implements WebMvcConfigurer {
     //TODO change in future
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
+        registry.addMapping("http://www.book-software.com");
     }
 }
