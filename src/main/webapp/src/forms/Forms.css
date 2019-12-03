@@ -1,0 +1,135 @@
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 10px;
+}
+
+.form-row {
+    display: flex;
+    width: 100%;
+}
+
+label .caption {
+    font-weight: bold;
+    color: var(--main-color1);
+}
+
+.form-row .caption {
+    margin-bottom: 5px;
+}
+
+.is-invalid {
+    border: 2px solid rgb(164, 10, 0);
+}
+
+.invalid-feedback {
+    font-size: 0.8em;
+    margin-top: 5px;
+    color: rgb(164, 10, 0);
+    display: none;
+}
+
+.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+.message {
+    padding: 10px;
+    border: 1px solid;
+    border-radius: 5px;
+    text-align: center;
+    margin: 10px;
+}
+.message.success {
+    background: rgba(67, 164, 0, 0.1);
+    border-color: rgb(67, 164, 0);
+    color: rgb(67, 164, 0);
+}
+.message.failed {
+    background: rgba(164, 10, 0, 0.1);
+    border-color: rgb(164, 10, 0);
+    color: rgb(164, 10, 0);
+}
+
+input, button, textarea {
+    font-family: "Avenir", myfont, serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 1em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    font-family: "Avenir", myfont, serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 1em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+input, textarea {
+    border: 2px solid var(--main-color1);
+    padding: 7px;
+    border-radius: 2em;
+    background: rgba(255,255,255,0.6);
+    color: var(--main-color1);
+}
+
+input, textarea,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    border: 2px solid var(--main-color1);
+    padding: 7px;
+    border-radius: 2em;
+    background: rgba(255,255,255,0.6);
+    color: var(--main-color1);
+}
+
+button {
+    color: white;
+    background: var(--main-color1);
+    border: 2px solid var(--main-color1);
+    border-radius: 2em;
+    padding: 7px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+}
+button:hover {
+    background: var(--main-color2);
+    color: var(--main-color1);
+    border-color: var(--main-color2);
+}
+
+button .loading {
+    width: 25px; height: 25px;
+    padding-right: 5px;
+}
+
+button:disabled {
+    color: var(--disabled-color);
+    border-color: var(--disabled-color);
+    background: rgba(255,255,255,0.6);
+    cursor: default;
+}
+

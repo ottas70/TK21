@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "./static/css/main.9539464d.chunk.css",
+    "main.js": "./static/js/main.a566b8a6.chunk.js",
+    "main.js.map": "./static/js/main.a566b8a6.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.f23cecf6.js",
+    "runtime-main.js.map": "./static/js/runtime-main.f23cecf6.js.map",
+    "static/js/2.485cdda9.chunk.js": "./static/js/2.485cdda9.chunk.js",
+    "static/js/2.485cdda9.chunk.js.map": "./static/js/2.485cdda9.chunk.js.map",
+    "index.html": "./index.html",
+    "precache-manifest.bb49a11411f22fc41a1247854053e7c6.js": "./precache-manifest.bb49a11411f22fc41a1247854053e7c6.js",
+    "service-worker.js": "./service-worker.js",
+    "static/css/main.9539464d.chunk.css.map": "./static/css/main.9539464d.chunk.css.map",
+    "static/media/index.css": "./static/media/Avenir-Roman.c6d37b26.ttf",
+    "static/media/MajorMinor.css": "./static/media/court2.2bbf821f.jpg",
+    "static/media/loading.222fbc85.svg": "./static/media/loading.222fbc85.svg",
+    "static/media/logo-without-text.1b18c77f.svg": "./static/media/logo-without-text.1b18c77f.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f23cecf6.js",
+    "static/js/2.485cdda9.chunk.js",
+    "static/css/main.9539464d.chunk.css",
+    "static/js/main.a566b8a6.chunk.js"
+  ]
+}

@@ -1,0 +1,83 @@
+section.page.major-minor {
+    display: flex;
+    min-height: 100vh;
+}
+
+section.major-minor-wrap {
+    width: 60%;
+}
+
+section.major-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    flex-grow: 1;
+    position: relative;
+}
+
+section.major-side.right-line {
+    border-right: 20px solid var(--main-color3);
+}
+
+section.major-side.left-line {
+    border-left: 20px solid var(--main-color3);
+}
+
+section.minor-side {
+    background-image: url("../../files/images/court.jpg");
+    background-size: cover;
+    width: 40%;
+}
+section.minor-side.court2 {
+    background-image: url("../../files/images/court2.jpg");
+}
+
+@media all and (max-width: 1300px) {
+    section.major-minor-wrap {
+        width: 80%;
+    }
+}
+
+@media all and (max-width: 1000px) {
+    section.major-side {
+        display: block;
+    }
+
+    section.major-side .header {
+        position: relative;
+    }
+
+    section.major-minor-wrap .form-row {
+        flex-direction: column;
+    }
+
+    section.major-minor-wrap {
+        width: 100%;
+        padding: 30px 30px 50px 30px;
+    }
+}
+
+@media all and (max-width: 800px) {
+    section.minor-side {
+        display: none;
+    }
+
+    section.major-side.right-line, section.major-side.left-line {
+        border-style: none;
+    }
+
+    section.major-minor-wrap .form-row {
+        flex-direction: row;
+    }
+}
+
+@media all and (max-width: 600px) {
+    section.major-minor-wrap .form-row {
+        flex-direction: column;
+    }
+
+    section.major-side h1 {
+        font-size: 1.7em;
+    }
+}
