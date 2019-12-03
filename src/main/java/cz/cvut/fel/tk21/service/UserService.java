@@ -58,7 +58,7 @@ public class UserService extends BaseService<UserDao, User> {
         mailMessage.setFrom("noreply@tk21.cz");
         mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
                 + "http://195.181.209.16:14023"
-                + "/api/confirm?token="+ token.getConfirmationToken());
+                + "/overeni/"+ token.getConfirmationToken());
 
         mailService.sendEmail(mailMessage);
         return user.getId();
@@ -67,7 +67,8 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public boolean isEmailTokenValid(String token){
         Optional<ConfirmationToken> confirmationToken = confirmationTokenDao.findByConfirmationToken(token);
-        if(confirmationToken.isPresent() && confirmationToken.get().isValid()){
+        if(confirmationToken.isPresent()){
+            if (!confirmationToken.get().isValid()) throw new ValidationException("Platnost tokenu již vypršela");
             Optional<User> user = dao.getUserByEmail(confirmationToken.get().getUser().getEmail());
             if(user.isPresent()){
                 user.get().setVerifiedAccount(true);
