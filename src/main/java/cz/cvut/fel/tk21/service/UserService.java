@@ -58,7 +58,7 @@ public class UserService extends BaseService<UserDao, User> {
         mailMessage.setFrom("noreply@tk21.cz");
         mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
                 + "http://195.181.209.16:14023"
-                + "/overeni/"+ token.getConfirmationToken());
+                + "/#/overeni/"+ token.getConfirmationToken());
 
         mailService.sendEmail(mailMessage);
         return user.getId();
