@@ -7,6 +7,7 @@ import cz.cvut.fel.tk21.service.security.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.BeanIds;
@@ -45,8 +46,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
 
-        http.authorizeRequests().antMatchers("/*", "/static/**",
+        http.authorizeRequests()
+                .antMatchers("/*", "/static/**",
                 "/api/authenticate", "/api/user", "/api/logout", "/api/confirm")
+                .permitAll();
+
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.GET, "api/club/{\\d+}")
                 .permitAll();
 
         http.authorizeRequests().anyRequest().authenticated();

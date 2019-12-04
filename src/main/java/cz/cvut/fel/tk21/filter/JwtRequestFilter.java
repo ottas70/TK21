@@ -1,7 +1,11 @@
 package cz.cvut.fel.tk21.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.cvut.fel.tk21.model.security.ApiResponse;
 import cz.cvut.fel.tk21.service.security.UserDetailsService;
 import cz.cvut.fel.tk21.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -39,7 +44,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
 
         if(jwt != null && !jwt.equals("")){
-            username = jwtUtil.extractUsername(jwt);
+            try{
+                username = jwtUtil.extractUsername(jwt);
+            } catch (JwtException ex){
+                username = null;
+            }
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){

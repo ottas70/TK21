@@ -15,7 +15,8 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    public static final long JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * 5; //5 hours
+    //TODO
+    private static final long JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * 5; //5 hours
 
     @Value("${jwt.secret}")
     private String secret;
@@ -53,11 +54,12 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){
+        if (isTokenExpired(token)) return false;
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername());
     }
 
-    private boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }
 
