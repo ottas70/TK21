@@ -1,6 +1,9 @@
 package cz.cvut.fel.tk21;
 
+import cz.cvut.fel.tk21.model.Address;
+import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -12,6 +15,9 @@ public class DataInitializer implements ApplicationRunner {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ClubService clubService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -30,6 +36,24 @@ public class DataInitializer implements ApplicationRunner {
         user2.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
         user2.setVerifiedAccount(true);
         userService.persist(user2);
+
+        Club club = new Club();
+        club.setName("Tk Neride");
+        Address address = new Address();
+        address.setStreet("V Chotejně 24");
+        address.setCity("Praha");
+        address.setZip("123 00");
+        club.setAddress(address);
+        clubService.persist(club);
+
+        Club club2 = new Club();
+        club2.setName("Tk Písnice");
+        Address address2 = new Address();
+        address2.setStreet("Ve Dvorcích 12");
+        address2.setCity("Praha");
+        address2.setZip("150 00");
+        club2.setAddress(address);
+        clubService.persist(club2);
     }
 
 }
