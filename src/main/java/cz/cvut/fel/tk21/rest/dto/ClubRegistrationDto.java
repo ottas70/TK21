@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 public class ClubRegistrationDto {
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Název je povinný")
     private String name;
 
     private AddressDto address;

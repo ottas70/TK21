@@ -1,18 +1,19 @@
 package cz.cvut.fel.tk21.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.Address;
 
 import javax.validation.constraints.NotBlank;
 
 public class AddressDto {
 
-    @NotBlank(message = "Street is mandatory")
+    @NotBlank(message = "Ulice je povinná")
     private String street;
 
-    @NotBlank(message = "City is mandatory")
+    @NotBlank(message = "Město je povinné")
     private String city;
 
-    @NotBlank(message = "ZIP is mandatory")
+    @NotBlank(message = "PSČ je povinné")
     private String zip;
 
     public AddressDto() {
@@ -48,6 +49,7 @@ public class AddressDto {
         this.zip = zip;
     }
 
+    @JsonIgnore
     public Address getEntity(){
         Address address = new Address();
         address.setStreet(this.street);

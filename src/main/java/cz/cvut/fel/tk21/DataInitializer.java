@@ -38,6 +38,7 @@ public class DataInitializer implements ApplicationRunner {
         userService.persist(user2);
 
         Club club = new Club();
+        club.setId(1);
         club.setName("Tk Neride");
         Address address = new Address();
         address.setStreet("V Chotejně 24");
@@ -47,6 +48,7 @@ public class DataInitializer implements ApplicationRunner {
         clubService.persist(club);
 
         Club club2 = new Club();
+        club.setId(3);
         club2.setName("Tk Písnice");
         Address address2 = new Address();
         address2.setStreet("Ve Dvorcích 12");

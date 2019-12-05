@@ -9,17 +9,17 @@ import java.util.List;
 
 public class UserDto {
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Jméno je povinné")
     private String name;
 
-    @NotBlank(message = "Surname is mandatory")
+    @NotBlank(message = "Příjmení je povinné")
     private String surname;
 
-    @NotBlank(message = "Email is mandatory")
+    @NotBlank(message = "Email je povinný")
     @Email
     private String email;
 
-    @NotBlank(message = "Password is mandatory")
+    @NotBlank(message = "Heslo je povinné")
     private String password;
 
     public String getName() {

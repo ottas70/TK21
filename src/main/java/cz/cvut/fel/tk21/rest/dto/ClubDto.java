@@ -1,8 +1,7 @@
 package cz.cvut.fel.tk21.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.Club;
-
-import javax.validation.constraints.NotBlank;
 
 public class ClubDto {
 
@@ -45,6 +44,7 @@ public class ClubDto {
         this.address = address;
     }
 
+    @JsonIgnore
     public Club getEntity(){
         Club club = new Club();
         club.setId(this.id);
