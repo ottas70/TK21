@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.rest.dto.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.ClubRegistrationDto;
+import cz.cvut.fel.tk21.rest.dto.CreatedDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import cz.cvut.fel.tk21.util.RestUtils;
@@ -34,8 +35,7 @@ public class ClubController {
     public ResponseEntity<?> registerClub(@RequestBody ClubRegistrationDto club) {
         validator.validate(club);
         Integer clubId = clubService.registerClub(club);
-        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{id}", clubId);
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CreatedDto(clubId));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

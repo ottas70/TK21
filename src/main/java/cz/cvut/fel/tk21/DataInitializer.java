@@ -1,8 +1,7 @@
 package cz.cvut.fel.tk21;
 
-import cz.cvut.fel.tk21.model.Address;
-import cz.cvut.fel.tk21.model.Club;
-import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.*;
+import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,9 @@ public class DataInitializer implements ApplicationRunner {
 
     @Autowired
     private ClubService clubService;
+
+    @Autowired
+    private ClubRelationService clubRelationService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -56,6 +58,12 @@ public class DataInitializer implements ApplicationRunner {
         address2.setZip("150 00");
         club2.setAddress(address);
         clubService.persist(club2);
+
+        ClubRelation relation = new ClubRelation();
+        relation.setClub(club);
+        relation.setUser(user1);
+        relation.addRole(UserRole.ADMIN);
+        clubRelationService.persist(relation);
     }
 
 }
