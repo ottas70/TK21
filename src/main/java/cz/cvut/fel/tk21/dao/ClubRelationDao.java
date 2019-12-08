@@ -1,13 +1,23 @@
 package cz.cvut.fel.tk21.dao;
 
 import cz.cvut.fel.tk21.model.ClubRelation;
+import cz.cvut.fel.tk21.model.User;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class ClubRelationDao extends BaseDao<ClubRelation> {
 
     protected ClubRelationDao() {
         super(ClubRelation.class);
+    }
+
+    public List<ClubRelation> findAllRelationsByUser(User user){
+        return em.createQuery("SELECT c from ClubRelation c " +
+                "WHERE c.user = :user", ClubRelation.class)
+                .setParameter("user", user)
+                .getResultList();
     }
 
 }

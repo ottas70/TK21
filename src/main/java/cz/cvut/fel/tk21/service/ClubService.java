@@ -10,6 +10,7 @@ import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.UserRole;
 import cz.cvut.fel.tk21.rest.dto.ClubRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,21 @@ public class ClubService extends BaseService<ClubDao, Club> {
         clubRelationDao.persist(relation);
 
         return club.getId();
+    }
+
+    @Transactional
+    public boolean isCurrentUserAllowedToManageThisClub(Club club){
+        if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) return false;
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userDao.getUserByEmail(email);
+        if(user.isEmpty()) return false;
+        User entity = user.get();
+        for (ClubRelation relation : clubRelationDao.findAllRelationsByUser(entity)){
+            if(relation.getClub().getId() == club.getId() && relation.getRoles().contains(UserRole.ADMIN)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

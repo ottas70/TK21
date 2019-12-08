@@ -42,14 +42,14 @@ public class ClubController {
     public ClubDto getClub(@PathVariable("id") Integer id) {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        return new ClubDto(club.get());
+        return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()));
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ClubDto> getAllClubs(){
         List<ClubDto> result = new ArrayList<>();
         for(Club club : clubService.findAll()){
-            result.add(new ClubDto(club));
+            result.add(new ClubDto(club, clubService.isCurrentUserAllowedToManageThisClub(club)));
         }
         return result;
     }

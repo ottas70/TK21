@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.Club;
 
 public class ClubDto {
@@ -11,13 +12,16 @@ public class ClubDto {
 
     private AddressDto address;
 
+    private boolean isAllowedMng;
+
     public ClubDto() {
     }
 
-    public ClubDto(Club club) {
+    public ClubDto(Club club, boolean isAllowedMng) {
         this.id = club.getId();
         this.name = club.getName();
         this.address = new AddressDto(club.getAddress());
+        this.isAllowedMng = isAllowedMng;
     }
 
     public int getId() {
@@ -42,6 +46,15 @@ public class ClubDto {
 
     public void setAddress(AddressDto address) {
         this.address = address;
+    }
+
+    @JsonProperty(value="isAllowedMng")
+    public boolean isAllowedMng() {
+        return isAllowedMng;
+    }
+
+    public void setAllowedMng(boolean allowedMng) {
+        isAllowedMng = allowedMng;
     }
 
     @JsonIgnore

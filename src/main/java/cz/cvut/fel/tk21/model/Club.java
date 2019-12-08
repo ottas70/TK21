@@ -1,10 +1,13 @@
 package cz.cvut.fel.tk21.model;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 @Entity
 @Table(name = "Club")

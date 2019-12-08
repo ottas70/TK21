@@ -50,13 +50,13 @@ public class DataInitializer implements ApplicationRunner {
         clubService.persist(club);
 
         Club club2 = new Club();
-        club.setId(3);
+        club2.setId(3);
         club2.setName("Tk Písnice");
         Address address2 = new Address();
         address2.setStreet("Ve Dvorcích 12");
         address2.setCity("Praha");
         address2.setZip("150 00");
-        club2.setAddress(address);
+        club2.setAddress(address2);
         clubService.persist(club2);
 
         ClubRelation relation = new ClubRelation();
