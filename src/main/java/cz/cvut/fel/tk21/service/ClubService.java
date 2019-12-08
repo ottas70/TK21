@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.UserRole;
+import cz.cvut.fel.tk21.rest.dto.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.ClubRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -15,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,6 +73,15 @@ public class ClubService extends BaseService<ClubDao, Club> {
             }
         }
         return false;
+    }
+
+    @Transactional
+    public List<ClubDto> searchForClubsByName(String name){
+        List<ClubDto> result = new ArrayList<>();
+        for(Club club : dao.findClubsByName(name)){
+            result.add(new ClubDto(club, this.isCurrentUserAllowedToManageThisClub(club)));
+        }
+        return result;
     }
 
 }

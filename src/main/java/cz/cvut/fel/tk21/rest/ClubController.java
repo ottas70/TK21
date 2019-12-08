@@ -54,4 +54,9 @@ public class ClubController {
         return result;
     }
 
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {"name"})
+    public List<ClubDto> searchForClubs(@RequestParam("name") String name){
+        return clubService.searchForClubsByName(name);
+    }
+
 }
