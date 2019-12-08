@@ -6,6 +6,7 @@ import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -49,7 +50,7 @@ public class ClubDao extends BaseDao<Club>{
         }
     }
 
-    public List<Club> findClubsByName(String name){
+    public List<Club> findClubsByName(String name, int page, int size){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Club> query = cb.createQuery(Club.class);
         Root<Club> root = query.from(Club.class);
@@ -60,7 +61,12 @@ public class ClubDao extends BaseDao<Club>{
                         cb.function("REPLACE", String.class, root.get("name"), cb.literal(" ") , cb.literal(""))
                 ),
                 "%"+name.toLowerCase().replace(" ", "")+"%"));
-        return em.createQuery(query).getResultList();
+
+        TypedQuery<Club> typedQuery = em.createQuery(query);
+        typedQuery.setFirstResult((page-1) * size);
+        typedQuery.setMaxResults(size);
+
+        return typedQuery.getResultList();
     }
 
     public boolean isNameUnique(String name) {
@@ -71,6 +77,13 @@ public class ClubDao extends BaseDao<Club>{
     public boolean isAddressUnique(Address address) {
         Optional<Club> club = findClubByAddress(address);
         return club.isEmpty();
+    }
+
+    public List<Club> findAllPaginated(int page, int size){
+        return em.createQuery("SELECT c FROM Club c", Club.class)
+                .setFirstResult((page-1) * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 
 }

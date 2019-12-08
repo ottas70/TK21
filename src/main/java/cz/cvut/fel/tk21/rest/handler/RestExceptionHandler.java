@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.rest.handler;
 
+import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,5 +51,10 @@ public class RestExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorInfo> validationException(HttpServletRequest request, ValidationException e) {
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorInfo> badRequestException(HttpServletRequest request, ValidationException e) {
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.BAD_REQUEST);
     }
 }

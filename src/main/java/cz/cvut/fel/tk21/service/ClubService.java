@@ -75,10 +75,15 @@ public class ClubService extends BaseService<ClubDao, Club> {
         return false;
     }
 
+    @Transactional(readOnly = true)
+    public List<Club> findAllPaginated(int page, int size) {
+        return dao.findAllPaginated(page, size);
+    }
+
     @Transactional
-    public List<ClubDto> searchForClubsByName(String name){
+    public List<ClubDto> searchForClubsByName(String name, int page, int size){
         List<ClubDto> result = new ArrayList<>();
-        for(Club club : dao.findClubsByName(name)){
+        for(Club club : dao.findClubsByName(name, page, size)){
             result.add(new ClubDto(club, this.isCurrentUserAllowedToManageThisClub(club)));
         }
         return result;

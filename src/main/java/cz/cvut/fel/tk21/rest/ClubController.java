@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.rest;
 
+import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.rest.dto.ClubDto;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 @RequestMapping("api/club")
 public class ClubController {
 
+    private static final String DEFAULT_SIZE_OF_PAGE = "20";
+
     @Autowired
     private ClubService clubService;
 
@@ -46,17 +49,24 @@ public class ClubController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ClubDto> getAllClubs(){
+    public List<ClubDto> getAllClubs(
+            @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
         List<ClubDto> result = new ArrayList<>();
-        for(Club club : clubService.findAll()){
+        if(page < 1) page = 1;
+        for(Club club : clubService.findAllPaginated(page, size)){
             result.add(new ClubDto(club, clubService.isCurrentUserAllowedToManageThisClub(club)));
         }
         return result;
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {"name"})
-    public List<ClubDto> searchForClubs(@RequestParam("name") String name){
-        return clubService.searchForClubsByName(name);
+    public List<ClubDto> searchForClubs(
+            @RequestParam("name") String name,
+            @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
+        if(page < 1) page = 1;
+        return clubService.searchForClubsByName(name, page, size);
     }
 
 }
