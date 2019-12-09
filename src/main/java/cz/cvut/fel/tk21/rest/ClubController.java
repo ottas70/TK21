@@ -5,6 +5,7 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.rest.dto.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.ClubRegistrationDto;
+import cz.cvut.fel.tk21.rest.dto.ClubSearchDto;
 import cz.cvut.fel.tk21.rest.dto.CreatedDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
@@ -49,22 +50,21 @@ public class ClubController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ClubDto> getAllClubs(
+    public ClubSearchDto getAllClubs(
             @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
         List<ClubDto> result = new ArrayList<>();
+        if(size < 1) throw new BadRequestException("Size cannot be less than zero");
         if(page < 1) page = 1;
-        for(Club club : clubService.findAllPaginated(page, size)){
-            result.add(new ClubDto(club, clubService.isCurrentUserAllowedToManageThisClub(club)));
-        }
-        return result;
+        return clubService.findAllPaginated(page,size);
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {"name"})
-    public List<ClubDto> searchForClubs(
+    public ClubSearchDto searchForClubs(
             @RequestParam("name") String name,
             @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
+        if(size < 1) throw new BadRequestException("Size cannot be less than zero");
         if(page < 1) page = 1;
         return clubService.searchForClubsByName(name, page, size);
     }

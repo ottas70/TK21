@@ -69,6 +69,21 @@ public class ClubDao extends BaseDao<Club>{
         return typedQuery.getResultList();
     }
 
+    public long countClubsByName(String name){
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<Club> root = query.from(Club.class);
+
+        query.select(cb.count(root));
+        query.where(cb.like(
+                cb.lower(
+                        cb.function("REPLACE", String.class, root.get("name"), cb.literal(" ") , cb.literal(""))
+                ),
+                "%"+name.toLowerCase().replace(" ", "")+"%"));
+
+        return em.createQuery(query).getSingleResult();
+    }
+
     public boolean isNameUnique(String name) {
         Optional<Club> club = findClubByName(name);
         return club.isEmpty();

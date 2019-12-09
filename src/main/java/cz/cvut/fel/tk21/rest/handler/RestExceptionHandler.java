@@ -54,7 +54,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorInfo> badRequestException(HttpServletRequest request, ValidationException e) {
+    public ResponseEntity<ErrorInfo> badRequestException(HttpServletRequest request, BadRequestException e) {
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.BAD_REQUEST);
     }
 }
