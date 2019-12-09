@@ -49,6 +49,12 @@ public class DataInitializer implements ApplicationRunner {
         club.setAddress(address);
         clubService.persist(club);
 
+        ClubRelation relation = new ClubRelation();
+        relation.setClub(club);
+        relation.setUser(user1);
+        relation.addRole(UserRole.ADMIN);
+        clubRelationService.persist(relation);
+
         Club club2 = new Club();
         club2.setId(3);
         club2.setName("Tk Písnice");
@@ -59,11 +65,11 @@ public class DataInitializer implements ApplicationRunner {
         club2.setAddress(address2);
         clubService.persist(club2);
 
-        ClubRelation relation = new ClubRelation();
-        relation.setClub(club);
-        relation.setUser(user1);
-        relation.addRole(UserRole.ADMIN);
-        clubRelationService.persist(relation);
+        ClubRelation relation2 = new ClubRelation();
+        relation2.setClub(club2);
+        relation2.setUser(user2);
+        relation2.addRole(UserRole.ADMIN);
+        clubRelationService.persist(relation2);
     }
 
 }
