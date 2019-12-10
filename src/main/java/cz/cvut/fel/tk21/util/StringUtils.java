@@ -4,7 +4,8 @@ import java.text.Normalizer;
 
 public class StringUtils {
 
-    public static String stripAccents(String s){
+    public static String stripAccentsWhitespaceAndToLowerCase(String s){
+        s = s.toLowerCase().replace(" ", "");
         s = Normalizer.normalize(s, Normalizer.Form.NFD);
         s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         return s;

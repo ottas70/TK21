@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.model;
 
+import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
@@ -16,6 +17,9 @@ public class Club extends AbstractEntity {
     @Column(nullable = false)
     @NotBlank(message = "Name is mandatory")
     private String name;
+
+    @Column(nullable = false)
+    private String nameSearch;
 
     @Column
     private String email;
@@ -43,6 +47,15 @@ public class Club extends AbstractEntity {
 
     public void setName(String name) {
         this.name = name;
+        this.nameSearch = StringUtils.stripAccentsWhitespaceAndToLowerCase(name);
+    }
+
+    public String getNameSearch() {
+        return nameSearch;
+    }
+
+    public void setNameSearch(String nameSearch) {
+        this.nameSearch = nameSearch;
     }
 
     public String getEmail() {

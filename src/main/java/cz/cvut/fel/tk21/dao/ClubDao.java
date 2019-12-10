@@ -60,11 +60,16 @@ public class ClubDao extends BaseDao<Club>{
         Root<Club> root = query.from(Club.class);
 
         query.select(root);
+        /*
         query.where(cb.like(
                 cb.lower(
                         cb.function("REPLACE", String.class, root.get("name"), cb.literal(" ") , cb.literal(""))
                 ),
                 "%"+name.toLowerCase().replace(" ", "")+"%"));
+         */
+
+        query.where(cb.like(root.get("nameSearch"),
+                "%" + StringUtils.stripAccentsWhitespaceAndToLowerCase(name) + "%"));
 
         TypedQuery<Club> typedQuery = em.createQuery(query);
         typedQuery.setFirstResult((page-1) * size);
@@ -79,11 +84,16 @@ public class ClubDao extends BaseDao<Club>{
         Root<Club> root = query.from(Club.class);
 
         query.select(cb.count(root));
+        /*
         query.where(cb.like(
                 cb.lower(
                         cb.function("REPLACE", String.class, root.get("name"), cb.literal(" ") , cb.literal(""))
                 ),
                 "%"+name.toLowerCase().replace(" ", "")+"%"));
+         */
+
+        query.where(cb.like(root.get("nameSearch"),
+                "%" + StringUtils.stripAccentsWhitespaceAndToLowerCase(name) + "%"));
 
         return em.createQuery(query).getSingleResult();
     }
