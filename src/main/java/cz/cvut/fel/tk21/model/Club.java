@@ -6,9 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 @Table(name = "Club")
@@ -28,6 +26,9 @@ public class Club extends AbstractEntity {
     @Embedded
     private Address address;
 
+    @Column
+    private boolean onlyRegisteredPlayerReservation = true;
+
     @Temporal(TemporalType.DATE)
     private Date summerSeasonStart;
 
@@ -40,6 +41,17 @@ public class Club extends AbstractEntity {
             orphanRemoval = true
     )
     private Collection<ClubRelation> users;
+
+    @OneToMany(
+            mappedBy = "club",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TennisCourt> courts = new ArrayList<>();
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private OpeningHours openingHours;
 
     public String getName() {
         return name;
@@ -74,6 +86,14 @@ public class Club extends AbstractEntity {
         this.address = address;
     }
 
+    public boolean isOnlyRegisteredPlayerReservation() {
+        return onlyRegisteredPlayerReservation;
+    }
+
+    public void setOnlyRegisteredPlayerReservation(boolean onlyRegisteredPlayerReservation) {
+        this.onlyRegisteredPlayerReservation = onlyRegisteredPlayerReservation;
+    }
+
     public Date getSummerSeasonStart() {
         return summerSeasonStart;
     }
@@ -96,5 +116,31 @@ public class Club extends AbstractEntity {
 
     public void setUsers(Collection<ClubRelation> users) {
         this.users = users;
+    }
+
+    public List<TennisCourt> getCourts() {
+        return courts;
+    }
+
+    public void setCourts(List<TennisCourt> courts) {
+        this.courts = courts;
+    }
+
+    public OpeningHours getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(OpeningHours openingHours) {
+        this.openingHours = openingHours;
+    }
+
+    public void addCourt(TennisCourt court) {
+        courts.add(court);
+        court.setClub(this);
+    }
+
+    public void removeCourt(TennisCourt court) {
+        courts.remove(court);
+        court.setClub(null);
     }
 }
