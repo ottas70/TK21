@@ -1,9 +1,6 @@
 package cz.cvut.fel.tk21.rest.handler;
 
-import cz.cvut.fel.tk21.exception.BadRequestException;
-import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
-import cz.cvut.fel.tk21.exception.NotFoundException;
-import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.exception.*;
 import cz.cvut.fel.tk21.model.security.ApiResponse;
 import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
@@ -55,6 +52,11 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorInfo> badRequestException(HttpServletRequest request, BadRequestException e) {
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorInfo> unauthorizedException(HttpServletRequest request, UnauthorizedException e) {
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.BAD_REQUEST);
     }
 }

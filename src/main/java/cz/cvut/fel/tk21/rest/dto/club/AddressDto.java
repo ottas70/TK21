@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.rest.dto;
+package cz.cvut.fel.tk21.rest.dto.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.Address;

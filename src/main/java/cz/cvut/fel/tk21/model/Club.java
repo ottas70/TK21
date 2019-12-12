@@ -23,7 +23,6 @@ public class Club extends AbstractEntity {
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @Embedded
     private Address address;
 
     @Column

@@ -1,7 +1,6 @@
 package cz.cvut.fel.tk21.util;
 
 import cz.cvut.fel.tk21.exception.ValidationException;
-import cz.cvut.fel.tk21.rest.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

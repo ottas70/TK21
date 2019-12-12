@@ -1,13 +1,9 @@
 package cz.cvut.fel.tk21.model;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.*;
 
-@Embeddable
-@Access(AccessType.FIELD)
-public class Address {
+@Entity
+public class Address extends AbstractEntity{
 
     @Column(nullable = false)
     private String street;

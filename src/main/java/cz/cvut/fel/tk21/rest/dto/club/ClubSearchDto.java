@@ -1,4 +1,6 @@
-package cz.cvut.fel.tk21.rest.dto;
+package cz.cvut.fel.tk21.rest.dto.club;
+
+import cz.cvut.fel.tk21.rest.dto.PageDto;
 
 import java.util.List;
 

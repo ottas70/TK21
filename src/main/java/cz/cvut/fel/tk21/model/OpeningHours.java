@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 
@@ -15,8 +16,7 @@ public class OpeningHours extends AbstractEntity {
     private Map<Day, FromToTime> openingHours;
 
     @ElementCollection
-    @MapKeyTemporal(TemporalType.DATE)
-    private Map<Date, FromToTime> specialDays;
+    private Map<LocalDate, FromToTime> specialDays;
 
     public Club getClub() {
         return club;
@@ -34,11 +34,27 @@ public class OpeningHours extends AbstractEntity {
         this.openingHours = openingHours;
     }
 
-    public Map<Date, FromToTime> getSpecialDays() {
+    public Map<LocalDate, FromToTime> getSpecialDays() {
         return specialDays;
     }
 
-    public void setSpecialDays(Map<Date, FromToTime> specialDays) {
+    public void setSpecialDays(Map<LocalDate, FromToTime> specialDays) {
         this.specialDays = specialDays;
+    }
+
+    public void addSpecialDate(LocalDate date, FromToTime time){
+        specialDays.put(date, time);
+    }
+
+    public void removeSpecialDate(LocalDate date){
+        specialDays.remove(date);
+    }
+
+    public boolean containsSpecialDate(LocalDate date){
+        return specialDays.containsKey(date);
+    }
+
+    public void updateSpecialDate(LocalDate date, FromToTime fromToTime){
+        specialDays.put(date, fromToTime);
     }
 }

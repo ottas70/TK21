@@ -5,10 +5,9 @@ import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
-import cz.cvut.fel.tk21.rest.dto.UserDto;
+import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,7 +56,7 @@ public class UserService extends BaseService<UserDao, User> {
         mailMessage.setSubject("Potvrzení registrace");
         mailMessage.setFrom("noreply@tk21.cz");
         mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
-                + "http://195.181.209.16:14023"
+                + "http://195.181.209.16"
                 + "/#/overeni/"+ token.getConfirmationToken());
 
         mailService.sendEmail(mailMessage);

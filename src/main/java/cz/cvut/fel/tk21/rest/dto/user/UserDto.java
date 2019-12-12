@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.rest.dto;
+package cz.cvut.fel.tk21.rest.dto.user;
 
 import cz.cvut.fel.tk21.model.UserRole;
 
