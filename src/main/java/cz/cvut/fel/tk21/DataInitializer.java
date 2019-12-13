@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Component
 public class DataInitializer implements ApplicationRunner {
@@ -25,6 +26,9 @@ public class DataInitializer implements ApplicationRunner {
 
     @Autowired
     private ClubRelationService clubRelationService;
+
+    @Autowired
+    private Random random;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -53,6 +57,9 @@ public class DataInitializer implements ApplicationRunner {
         address.setZip("123 00");
         club.setAddress(address);
         club.setOpeningHours(getInitialOpeningHours());
+        club.addCourt(getRandomTennisCourt(1));
+        club.addCourt(getRandomTennisCourt(2));
+        club.addCourt(getRandomTennisCourt(3));
         clubService.persist(club);
 
         ClubRelation relation = new ClubRelation();
@@ -70,6 +77,9 @@ public class DataInitializer implements ApplicationRunner {
         address2.setZip("150 00");
         club2.setAddress(address2);
         club2.setOpeningHours(getInitialOpeningHours());
+        club2.addCourt(getRandomTennisCourt(4));
+        club2.addCourt(getRandomTennisCourt(5));
+        club2.addCourt(getRandomTennisCourt(6));
         clubService.persist(club2);
 
         ClubRelation relation2 = new ClubRelation();
@@ -99,6 +109,16 @@ public class DataInitializer implements ApplicationRunner {
         openingHours.setSpecialDays(specialHours);
 
         return openingHours;
+    }
+
+    private TennisCourt getRandomTennisCourt(int id){
+        TennisCourt court = new TennisCourt();
+        court.setId(id);
+        court.setName("Court" + random.nextInt(100));
+        court.setSurfaceType(random.nextInt(100) % 2 == 0 ? SurfaceType.CLAY : SurfaceType.GRASS);
+        court.setAvailableInSummer(random.nextInt(100) % 2 == 0);
+        court.setAvailableInWinter(random.nextInt(100) % 2 == 0);
+        return court;
     }
 
 }

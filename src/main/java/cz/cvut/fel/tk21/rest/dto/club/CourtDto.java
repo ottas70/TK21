@@ -1,18 +1,22 @@
 package cz.cvut.fel.tk21.rest.dto.club;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.SurfaceType;
 import cz.cvut.fel.tk21.model.TennisCourt;
+
+import javax.validation.constraints.NotBlank;
 
 public class CourtDto {
 
     private int id;
 
+    @NotBlank
     private String name;
 
     private boolean availableInSummer;
 
-    private boolean AvailableInWinter;
+    private boolean availableInWinter;
 
     private SurfaceType surfaceType;
 
@@ -20,7 +24,7 @@ public class CourtDto {
         this.id = id;
         this.name = name;
         this.availableInSummer = availableInSummer;
-        AvailableInWinter = availableInWinter;
+        this.availableInWinter = availableInWinter;
         this.surfaceType = surfaceType;
     }
 
@@ -28,7 +32,7 @@ public class CourtDto {
         this.id = court.getId();
         this.name = court.getName();
         this.availableInSummer = court.isAvailableInSummer();
-        AvailableInWinter = court.isAvailableInWinter();
+        this.availableInWinter = court.isAvailableInWinter();
         this.surfaceType = court.getSurfaceType();
     }
 
@@ -36,6 +40,7 @@ public class CourtDto {
         return id;
     }
 
+    @JsonIgnore
     public void setId(int id) {
         this.id = id;
     }
@@ -59,11 +64,11 @@ public class CourtDto {
 
     @JsonProperty(value="availableInWinter")
     public boolean isAvailableInWinter() {
-        return AvailableInWinter;
+        return availableInWinter;
     }
 
     public void setAvailableInWinter(boolean availableInWinter) {
-        AvailableInWinter = availableInWinter;
+        availableInWinter = availableInWinter;
     }
 
     public SurfaceType getSurfaceType() {
@@ -72,5 +77,15 @@ public class CourtDto {
 
     public void setSurfaceType(SurfaceType surfaceType) {
         this.surfaceType = surfaceType;
+    }
+
+    @JsonIgnore
+    public TennisCourt getEntity(){
+        TennisCourt court = new TennisCourt();
+        court.setName(this.name);
+        court.setSurfaceType(this.surfaceType);
+        court.setAvailableInSummer(this.availableInSummer);
+        court.setAvailableInWinter(this.availableInWinter);
+        return court;
     }
 }

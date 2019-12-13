@@ -139,6 +139,18 @@ public class ClubService extends BaseService<ClubDao, Club> {
         this.update(club);
     }
 
+    @Transactional
+    public void addCourt(Club club, TennisCourt tennisCourt){
+        club.addCourt(tennisCourt);
+        this.update(club);
+    }
+
+    @Transactional
+    public void removeCourt(Club club, TennisCourt tennisCourt){
+        club.removeCourt(tennisCourt);
+        this.update(club);
+    }
+
     private OpeningHours getInitialOpeningHours(){
         OpeningHours openingHours = new OpeningHours();
 
