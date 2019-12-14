@@ -29,6 +29,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Autowired
     private ClubRelationDao clubRelationDao;
 
+    @Autowired
+    private CourtService courtService;
+
     protected ClubService(ClubDao dao) {
         super(dao);
     }
@@ -141,12 +144,15 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void addCourt(Club club, TennisCourt tennisCourt){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!courtService.isNameUniqueInClub(club, tennisCourt.getName())) throw new ValidationException("Kurt s tímto jménem již existuje");
         club.addCourt(tennisCourt);
         this.update(club);
     }
 
     @Transactional
     public void removeCourt(Club club, TennisCourt tennisCourt){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
         club.removeCourt(tennisCourt);
         this.update(club);
     }

@@ -20,4 +20,13 @@ public class CourtDao extends BaseDao<TennisCourt> {
                 .getResultList();
     }
 
+    public boolean isNameUniqueInClub(Club club, String name){
+        return em.createQuery("SELECT c FROM TennisCourt c " +
+                "WHERE c.club = :club AND c.name = :name", TennisCourt.class)
+                .setParameter("club", club)
+                .setParameter("name", name)
+                .getResultList()
+                .isEmpty();
+    }
+
 }

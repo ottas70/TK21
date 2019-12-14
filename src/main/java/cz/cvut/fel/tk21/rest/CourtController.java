@@ -49,16 +49,35 @@ public class CourtController {
         return result;
     }
 
-    @RequestMapping(value = "/{id}/court", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{id}/courts", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createCourt(@PathVariable("id") Integer id, @RequestBody CourtDto court){
         validator.validate(court);
 
         Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Tenisový klub nebyl nalezen"));
 
-        //TODO unique jméno kurtu v klubu
         clubService.addCourt(club.get(), court.getEntity());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(value = "/court/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateCourt(@PathVariable("id") Integer id, @RequestBody CourtDto courtDto){
+        validator.validate(courtDto);
+
+        Optional<TennisCourt> court = courtService.find(id);
+        court.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+
+        courtService.update(id, courtDto.getEntity(), court.get().getClub());
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/court/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteCourt(@PathVariable("id") Integer id){
+        Optional<TennisCourt> court = courtService.find(id);
+        court.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+
+        clubService.removeCourt(court.get().getClub(), court.get());
+        return ResponseEntity.noContent().build();
     }
 
 }

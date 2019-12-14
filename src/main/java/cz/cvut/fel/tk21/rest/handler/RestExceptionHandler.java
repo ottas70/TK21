@@ -57,6 +57,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorInfo> unauthorizedException(HttpServletRequest request, UnauthorizedException e) {
-        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.UNAUTHORIZED);
     }
 }

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 public class CourtDto {
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;
 
     @NotBlank
@@ -40,7 +41,6 @@ public class CourtDto {
         return id;
     }
 
-    @JsonIgnore
     public void setId(int id) {
         this.id = id;
     }
