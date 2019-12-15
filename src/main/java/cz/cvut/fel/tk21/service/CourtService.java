@@ -36,9 +36,14 @@ public class CourtService extends BaseService<CourtDao, TennisCourt> {
     @Transactional
     public void update(Integer id, TennisCourt entity, Club club) {
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
-        if(!isNameUniqueInClub(club, entity.getName())) throw new ValidationException("Kurt s tímto jménem již existuje");
+
         Optional<TennisCourt> court = find(id);
         court.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+
+        if(!court.get().getName().equals(entity.getName())){
+            if(!isNameUniqueInClub(club, entity.getName())) throw new ValidationException("Kurt s tímto jménem již existuje");
+        }
+
         court.get().setName(entity.getName());
         court.get().setSurfaceType(entity.getSurfaceType());
         court.get().setAvailableInWinter(entity.isAvailableInWinter());
