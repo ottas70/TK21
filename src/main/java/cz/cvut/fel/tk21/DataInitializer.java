@@ -60,6 +60,7 @@ public class DataInitializer implements ApplicationRunner {
         club.addCourt(getRandomTennisCourt(1));
         club.addCourt(getRandomTennisCourt(2));
         club.addCourt(getRandomTennisCourt(3));
+        setInitialSeasons(club);
         clubService.persist(club);
 
         ClubRelation relation = new ClubRelation();
@@ -80,6 +81,7 @@ public class DataInitializer implements ApplicationRunner {
         club2.addCourt(getRandomTennisCourt(4));
         club2.addCourt(getRandomTennisCourt(5));
         club2.addCourt(getRandomTennisCourt(6));
+        setInitialSeasons(club2);
         clubService.persist(club2);
 
         ClubRelation relation2 = new ClubRelation();
@@ -109,6 +111,15 @@ public class DataInitializer implements ApplicationRunner {
         openingHours.setSpecialDays(specialHours);
 
         return openingHours;
+    }
+
+    private void setInitialSeasons(Club club){
+        Map<Integer, Season> seasons = new HashMap<>();
+
+        Season season = new Season(new FromToDate("03-01-2019", "09-30-2019"), new FromToDate("10-01-2019", "02-30-2020"));
+        seasons.put(2019, season);
+
+        club.setSeasons(seasons);
     }
 
     private TennisCourt getRandomTennisCourt(int id){

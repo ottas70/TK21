@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 public class OpeningHours extends AbstractEntity {
@@ -56,5 +57,11 @@ public class OpeningHours extends AbstractEntity {
 
     public void updateSpecialDate(LocalDate date, FromToTime fromToTime){
         specialDays.put(date, fromToTime);
+    }
+
+    public Map<LocalDate, FromToTime> getSpecialDaysInYear(int year){
+        return specialDays.entrySet().stream()
+                .filter(x -> x.getKey().getYear() == year)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

@@ -3,11 +3,14 @@ package cz.cvut.fel.tk21.rest;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
+import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToTime;
+import cz.cvut.fel.tk21.model.Season;
 import cz.cvut.fel.tk21.rest.dto.*;
 import cz.cvut.fel.tk21.rest.dto.club.*;
 import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -69,10 +72,12 @@ public class ClubController {
     }
 
     @RequestMapping(value = "/{id}/settings", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ClubSettingsDto getClubSettings(@PathVariable("id") Integer id){
+    public ClubSettingsDto getClubSettings(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year){
+        if(year == null) year = DateUtils.getCurrentYear();
+
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        return new ClubSettingsDto(club.get());
+        return new ClubSettingsDto(club.get(), year);
     }
 
     @RequestMapping(value="/{id}/opening-hours", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -92,6 +97,51 @@ public class ClubController {
         clubService.updateRegularOpeningHours(openingHours, club.get());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/seasons", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SeasonDto getSeason(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year){
+        if(year == null) year = DateUtils.getCurrentYear();
+
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        Season season = club.get().getSeasonInYear(year);
+        if(season == null) throw new NotFoundException("Sezóna neexistuje");
+
+        return new SeasonDto(season);
+
+    }
+
+    @RequestMapping(value = "/{id}/seasons", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createSeason(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year, @RequestBody SeasonDto seasonDto){
+        if(year == null) year = DateUtils.getCurrentYear();
+
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        if(club.get().getSeasonInYear(year) != null) throw new ValidationException("Sezóna již existuje");
+
+        clubService.updateSeason(club.get(), seasonDto.getEntity(), year);
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @RequestMapping(value = "/{id}/seasons", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateSeason(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year, @RequestBody SeasonDto seasonDto){
+        if(year == null) year = DateUtils.getCurrentYear();
+
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        if(club.get().getSeasonInYear(year) == null){
+            clubService.addSeason(club.get(), seasonDto.getEntity(), year);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+
+        clubService.updateSeason(club.get(), seasonDto.getEntity(), year);
+        return ResponseEntity.noContent().build();
+
     }
 
 

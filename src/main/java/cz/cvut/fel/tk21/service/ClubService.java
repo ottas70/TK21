@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.service;
 import cz.cvut.fel.tk21.dao.ClubDao;
 import cz.cvut.fel.tk21.dao.ClubRelationDao;
 import cz.cvut.fel.tk21.dao.UserDao;
+import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
@@ -11,6 +12,7 @@ import cz.cvut.fel.tk21.rest.dto.club.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRegistrationDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
 import cz.cvut.fel.tk21.rest.dto.club.SpecialOpeningHoursDto;
+import cz.cvut.fel.tk21.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,6 +52,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
         //Initial opening hours
         club.setOpeningHours(getInitialOpeningHours());
+
+        //Initial season
+        club.setSeasons(getInitialSeason(DateUtils.getCurrentYear()));
 
         dao.persist(club);
 
@@ -158,6 +163,24 @@ public class ClubService extends BaseService<ClubDao, Club> {
         this.update(club);
     }
 
+    @Transactional
+    public void addSeason(Club club, Season season, int year){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(season.getSummer().getFrom().getYear() != year || season.getWinter().getFrom().getYear() != year)
+            throw new BadRequestException("Datumy nesedí");
+        club.addSeasonInYear(year, season);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateSeason(Club club, Season season, int year){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(season.getSummer().getFrom().getYear() != year || season.getWinter().getFrom().getYear() != year)
+            throw new BadRequestException("Datumy nesedí");
+        club.addSeasonInYear(year, season);
+        this.update(club);
+    }
+
     private OpeningHours getInitialOpeningHours(){
         OpeningHours openingHours = new OpeningHours();
 
@@ -172,6 +195,15 @@ public class ClubService extends BaseService<ClubDao, Club> {
         openingHours.setOpeningHours(hoursMap);
 
         return openingHours;
+    }
+
+    private Map<Integer, Season> getInitialSeason(int year){
+        Map<Integer, Season> seasons = new HashMap<>();
+
+        Season season = new Season(new FromToDate("03-01-" + year, "09-30-" + year), new FromToDate("10-01-" + year, "02-30-" + (year+1)));
+        seasons.put(year, season);
+
+        return seasons;
     }
 
 }

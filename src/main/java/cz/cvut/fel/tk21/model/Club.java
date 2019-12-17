@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -28,11 +29,8 @@ public class Club extends AbstractEntity {
     @Column
     private boolean onlyRegisteredPlayerReservation = true;
 
-    @Temporal(TemporalType.DATE)
-    private Date summerSeasonStart;
-
-    @Temporal(TemporalType.DATE)
-    private Date winterSeasonStart;
+    @ElementCollection
+    private Map<Integer, Season> seasons;
 
     @OneToMany(
             mappedBy = "club",
@@ -93,20 +91,12 @@ public class Club extends AbstractEntity {
         this.onlyRegisteredPlayerReservation = onlyRegisteredPlayerReservation;
     }
 
-    public Date getSummerSeasonStart() {
-        return summerSeasonStart;
+    public Map<Integer, Season> getSeasons() {
+        return seasons;
     }
 
-    public void setSummerSeasonStart(Date summerSeasonStart) {
-        this.summerSeasonStart = summerSeasonStart;
-    }
-
-    public Date getWinterSeasonStart() {
-        return winterSeasonStart;
-    }
-
-    public void setWinterSeasonStart(Date winterSeasonStart) {
-        this.winterSeasonStart = winterSeasonStart;
+    public void setSeasons(Map<Integer, Season> seasons) {
+        this.seasons = seasons;
     }
 
     public Collection<ClubRelation> getUsers() {
@@ -142,4 +132,13 @@ public class Club extends AbstractEntity {
         courts.remove(court);
         court.setClub(null);
     }
+
+    public Season getSeasonInYear(int year){
+        return seasons.get(year);
+    }
+
+    public void addSeasonInYear(int year, Season season){
+        seasons.put(year, season);
+    }
+
 }

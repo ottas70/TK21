@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.rest.dto.club.SpecialOpeningHoursDto;
 import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -85,12 +86,14 @@ public class SpecialOpeningHoursController {
     }
 
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SpecialOpeningHoursDto> getAllSpecialOpeningHours(@PathVariable("id") Integer id){
+    public List<SpecialOpeningHoursDto> getAllSpecialOpeningHours(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year){
+        if(year == null) year = DateUtils.getCurrentYear();
+
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
         List<SpecialOpeningHoursDto> result = new ArrayList<>();
-        club.get().getOpeningHours().getSpecialDays()
+        club.get().getOpeningHours().getSpecialDaysInYear(year)
                 .forEach((k,v) -> result.add(new SpecialOpeningHoursDto(k, v.getFrom(), v.getTo())));
 
         return result;

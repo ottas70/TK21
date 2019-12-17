@@ -18,24 +18,20 @@ public class ClubSettingsDto {
 
     private List<CourtDto> courts;
 
-    public ClubSettingsDto(Club club){
+    private SeasonDto seasons;
+
+    public ClubSettingsDto(Club club, int year){
         this.openingHours = new HashMap<>();
         club.getOpeningHours().getOpeningHours().forEach((k,v) -> this.openingHours.put(k.getCode(), v));
 
         this.specialDays = new ArrayList<>();
-        club.getOpeningHours().getSpecialDays()
+        club.getOpeningHours().getSpecialDaysInYear(year)
                 .forEach((k,v) -> this.specialDays.add(new SpecialOpeningHoursDto(k, v.getFrom(), v.getTo())));
 
         this.courts = new ArrayList<>();
         club.getCourts().forEach((c) -> this.courts.add(new CourtDto(c)));
 
-    }
-
-    public ClubSettingsDto(OpeningHours openingHours, List<SpecialOpeningHoursDto> specialDays, List<CourtDto> courts) {
-        this.openingHours = new HashMap<>();
-        openingHours.getOpeningHours().forEach((k,v) -> this.openingHours.put(k.getCode(), v));
-        this.specialDays = specialDays;
-        this.courts = courts;
+        this.seasons = new SeasonDto(club.getSeasonInYear(year));
     }
 
     public Map<Integer, FromToTime> getOpeningHours() {
@@ -60,5 +56,13 @@ public class ClubSettingsDto {
 
     public void setCourts(List<CourtDto> courts) {
         this.courts = courts;
+    }
+
+    public SeasonDto getSeasons() {
+        return seasons;
+    }
+
+    public void setSeasons(SeasonDto seasons) {
+        this.seasons = seasons;
     }
 }
