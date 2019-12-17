@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.service;
 import cz.cvut.fel.tk21.dao.ClubDao;
 import cz.cvut.fel.tk21.dao.ClubRelationDao;
 import cz.cvut.fel.tk21.dao.UserDao;
+import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;

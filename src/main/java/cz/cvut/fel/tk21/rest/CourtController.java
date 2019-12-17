@@ -49,7 +49,7 @@ public class CourtController {
         return result;
     }
 
-    @RequestMapping(value = "/{id}/courts", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{id}/courts", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createCourt(@PathVariable("id") Integer id, @RequestBody CourtDto court){
         validator.validate(court);
 
@@ -57,7 +57,11 @@ public class CourtController {
         club.orElseThrow(() -> new NotFoundException("Tenisový klub nebyl nalezen"));
 
         clubService.addCourt(club.get(), court.getEntity());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        Optional<TennisCourt>entity = courtService.findCourtWithName(club.get(), court.getName());
+        entity.orElseThrow(() -> new NotFoundException("Tenisový kurt se nepodařilo uložit"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CourtDto(entity.get()));
     }
 
     @RequestMapping(value = "/court/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)

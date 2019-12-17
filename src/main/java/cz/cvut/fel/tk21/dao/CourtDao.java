@@ -4,7 +4,9 @@ import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.TennisCourt;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CourtDao extends BaseDao<TennisCourt> {
@@ -27,6 +29,18 @@ public class CourtDao extends BaseDao<TennisCourt> {
                 .setParameter("name", name)
                 .getResultList()
                 .isEmpty();
+    }
+
+    public Optional<TennisCourt> findCourtByNameAndClub(Club club, String name){
+        try{
+            return Optional.ofNullable(em.createQuery("SELECT c FROM TennisCourt c " +
+                    "WHERE c.club = :club AND c.name = :name", TennisCourt.class)
+                    .setParameter("club", club)
+                    .setParameter("name", name)
+                    .getSingleResult());
+        } catch (NoResultException e){
+            return Optional.empty();
+        }
     }
 
 }

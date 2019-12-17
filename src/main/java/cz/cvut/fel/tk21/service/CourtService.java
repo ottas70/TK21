@@ -33,6 +33,11 @@ public class CourtService extends BaseService<CourtDao, TennisCourt> {
         return dao.isNameUniqueInClub(club, name);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<TennisCourt> findCourtWithName(Club club, String name){
+        return dao.findCourtByNameAndClub(club, name);
+    }
+
     @Transactional
     public void update(Integer id, TennisCourt entity, Club club) {
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
