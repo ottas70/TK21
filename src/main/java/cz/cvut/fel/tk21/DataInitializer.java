@@ -96,11 +96,11 @@ public class DataInitializer implements ApplicationRunner {
 
         Map<Day, FromToTime> hoursMap = new HashMap<>();
         hoursMap.put(Day.MONDAY, new FromToTime("09:00", "21:00"));
-        hoursMap.put(Day.TUESDAY, new FromToTime("09:00", "21:00"));
-        hoursMap.put(Day.WEDNESDAY, new FromToTime("09:00", "21:00"));
-        hoursMap.put(Day.THURSDAY, new FromToTime("09:00", "21:00"));
-        hoursMap.put(Day.FRIDAY, new FromToTime("09:00", "21:00"));
-        hoursMap.put(Day.SATURDAY, new FromToTime("09:00", "21:00"));
+        hoursMap.put(Day.TUESDAY, new FromToTime("07:30", "23:59"));
+        hoursMap.put(Day.WEDNESDAY, new FromToTime("00:00", "14:30"));
+        hoursMap.put(Day.THURSDAY, new FromToTime("09:30", "18:00"));
+        hoursMap.put(Day.FRIDAY, new FromToTime("09:00", "21:30"));
+        hoursMap.put(Day.SATURDAY, new FromToTime("12:00", "15:00"));
         hoursMap.put(Day.SUNDAY, new FromToTime());
         openingHours.setOpeningHours(hoursMap);
 
