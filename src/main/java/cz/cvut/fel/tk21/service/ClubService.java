@@ -108,7 +108,10 @@ public class ClubService extends BaseService<ClubDao, Club> {
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Tento klub nemáte právo editovat");
 
         Map<Day, FromToTime> regular = new HashMap<>();
-        openingHours.forEach((k,v) -> regular.put(Day.getDayFromCode(k), v));
+        openingHours.forEach((k,v) -> {
+            if(!v.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
+            regular.put(Day.getDayFromCode(k), v);
+        });
 
         club.getOpeningHours().setOpeningHours(regular);
         dao.update(club);
@@ -130,14 +133,22 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateSpecialOpeningHour(Club club, LocalDate date, LocalTime from, LocalTime to){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
-        club.getOpeningHours().updateSpecialDate(date, new FromToTime(from, to));
+
+        FromToTime fromToTime = new FromToTime(from, to);
+        if(!fromToTime.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
+
+        club.getOpeningHours().updateSpecialDate(date, fromToTime);
         this.update(club);
     }
 
     @Transactional
     public void addSpecialOpeningHour(Club club, LocalDate date, LocalTime from, LocalTime to){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
-        club.getOpeningHours().addSpecialDate(date, new FromToTime(from, to));
+
+        FromToTime fromToTime = new FromToTime(from, to);
+        if(!fromToTime.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
+
+        club.getOpeningHours().addSpecialDate(date, fromToTime);
         this.update(club);
     }
 
