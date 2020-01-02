@@ -132,6 +132,17 @@ public class Club extends AbstractEntity {
         courts.remove(court);
         court.setClub(null);
     }
+    
+    public Season getCurrentSeason(){
+        LocalDate current = LocalDate.now();
+        for (Map.Entry<Integer, Season> entry : seasons.entrySet()){
+            if(current.isAfter(entry.getValue().getSummer().getFrom()) &&
+                    current.isBefore(entry.getValue().getWinter().getTo())){
+                return entry.getValue();
+            }
+        }
+        return getSeasonInYear(current.getYear());
+    }
 
     public Season getSeasonInYear(int year){
         return seasons.get(year);

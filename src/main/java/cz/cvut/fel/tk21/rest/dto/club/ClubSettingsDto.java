@@ -31,7 +31,7 @@ public class ClubSettingsDto {
         this.courts = new ArrayList<>();
         club.getCourts().forEach((c) -> this.courts.add(new CourtDto(c)));
 
-        this.seasons = new SeasonDto(club.getSeasonInYear(year));
+        this.seasons = new SeasonDto(club.getCurrentSeason());
     }
 
     public Map<Integer, FromToTime> getOpeningHours() {
