@@ -116,8 +116,10 @@ public class DataInitializer implements ApplicationRunner {
     private void setInitialSeasons(Club club){
         Map<Integer, Season> seasons = new HashMap<>();
 
-        Season season = new Season(new FromToDate("03-01-2019", "09-30-2019"), new FromToDate("10-01-2019", "02-30-2020"));
-        seasons.put(2019, season);
+        Season season2019 = new Season(new FromToDate("03-01-2019", "09-30-2019"), new FromToDate("10-01-2019", "02-30-2020"));
+        Season season2020 = new Season(new FromToDate("03-01-2020", "09-30-2020"), new FromToDate("10-01-2020", "02-30-2021"));
+        seasons.put(2019, season2019);
+        seasons.put(2020, season2020);
 
         club.setSeasons(seasons);
     }

@@ -15,8 +15,10 @@ public class SeasonDto {
     }
 
     public SeasonDto(Season season){
-        this.winter = season.getWinter();
-        this.summer = season.getSummer();
+        if(season != null){
+            this.winter = season.getWinter();
+            this.summer = season.getSummer();
+        }
     }
 
     public SeasonDto(FromToDate winter, FromToDate summer) {
