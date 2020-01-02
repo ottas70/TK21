@@ -20,7 +20,7 @@ public class ClubSettingsDto {
 
     private SeasonDto seasons;
 
-    public ClubSettingsDto(Club club, int year){
+    public ClubSettingsDto(Club club, int year, boolean isYearSet){
         this.openingHours = new HashMap<>();
         club.getOpeningHours().getOpeningHours().forEach((k,v) -> this.openingHours.put(k.getCode(), v));
 
@@ -31,7 +31,12 @@ public class ClubSettingsDto {
         this.courts = new ArrayList<>();
         club.getCourts().forEach((c) -> this.courts.add(new CourtDto(c)));
 
-        this.seasons = new SeasonDto(club.getCurrentSeason());
+        if(isYearSet){
+            this.seasons = new SeasonDto(club.getSeasonInYear(year));
+        } else{
+            this.seasons = new SeasonDto(club.getCurrentSeason());
+        }
+
     }
 
     public Map<Integer, FromToTime> getOpeningHours() {

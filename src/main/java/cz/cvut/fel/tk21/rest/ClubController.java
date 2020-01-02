@@ -73,11 +73,15 @@ public class ClubController {
 
     @RequestMapping(value = "/{id}/settings", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ClubSettingsDto getClubSettings(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year){
-        if(year == null) year = DateUtils.getCurrentYear();
+        boolean isYearSet = true;
+        if(year == null){
+            isYearSet = false;
+            year = DateUtils.getCurrentYear();
+        }
 
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        return new ClubSettingsDto(club.get(), year);
+        return new ClubSettingsDto(club.get(), year, isYearSet);
     }
 
     @RequestMapping(value="/{id}/opening-hours", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
