@@ -105,12 +105,22 @@ public class ClubController {
 
     @RequestMapping(value = "/{id}/seasons", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public SeasonDto getSeason(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year){
-        if(year == null) year = DateUtils.getCurrentYear();
+        boolean isYearSet = true;
+        if(year == null){
+            year = DateUtils.getCurrentYear();
+            isYearSet = false;
+        }
 
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        Season season = club.get().getSeasonInYear(year);
+        Season season = null;
+        if(isYearSet){
+            season = club.get().getSeasonInYear(year);
+        }else{
+            season = club.get().getCurrentSeason();
+        }
+
         if(season == null) throw new NotFoundException("Sezóna neexistuje");
 
         return new SeasonDto(season);
