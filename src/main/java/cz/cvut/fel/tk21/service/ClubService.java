@@ -145,6 +145,11 @@ public class ClubService extends BaseService<ClubDao, Club> {
     public void addSpecialOpeningHour(Club club, LocalDate date, LocalTime from, LocalTime to){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
 
+        int currentYear = DateUtils.getCurrentYear();
+        if(currentYear != date.getYear() && currentYear != date.getYear() + 1){
+            throw new ValidationException("U tohoto roku nelze přidávat speciální otevírací dobu");
+        }
+
         FromToTime fromToTime = new FromToTime(from, to);
         if(!fromToTime.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
 
