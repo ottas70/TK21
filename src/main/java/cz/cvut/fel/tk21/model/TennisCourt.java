@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.model;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 public class TennisCourt extends AbstractEntity{
@@ -20,6 +21,9 @@ public class TennisCourt extends AbstractEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
+
+    @OneToMany(mappedBy = "tennisCourt")
+    private Collection<Reservation> reservations;
 
     public String getName() {
         return name;
@@ -59,5 +63,13 @@ public class TennisCourt extends AbstractEntity{
 
     public void setClub(Club club) {
         this.club = club;
+    }
+
+    public Collection<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Collection<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }

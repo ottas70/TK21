@@ -46,12 +46,12 @@ public class User extends AbstractEntity {
     private ConfirmationToken confirmationToken;
 
     @JsonIgnore
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ClubRelation> clubs;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Collection<Reservation> reservations;
 
     public String getName() {
         return name;
@@ -107,5 +107,13 @@ public class User extends AbstractEntity {
 
     public void setClubs(Collection<ClubRelation> clubs) {
         this.clubs = clubs;
+    }
+
+    public Collection<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Collection<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }
