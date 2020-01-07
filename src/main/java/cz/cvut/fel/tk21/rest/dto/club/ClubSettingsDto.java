@@ -2,13 +2,12 @@ package cz.cvut.fel.tk21.rest.dto.club;
 
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToTime;
-import cz.cvut.fel.tk21.model.OpeningHours;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ClubSettingsDto {
 
@@ -34,7 +33,7 @@ public class ClubSettingsDto {
         if(isYearSet){
             this.seasons = new SeasonDto(club.getSeasonInYear(year));
         } else{
-            this.seasons = new SeasonDto(club.getCurrentSeason());
+            this.seasons = new SeasonDto(club.getSeasonByDate(LocalDate.now()));
         }
 
     }

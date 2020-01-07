@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -124,15 +125,14 @@ public class Club extends AbstractEntity {
         court.setClub(null);
     }
     
-    public Season getCurrentSeason(){
-        LocalDate current = LocalDate.now();
+    public Season getSeasonByDate(LocalDate date){
         for (Map.Entry<Integer, Season> entry : seasons.entrySet()){
-            if(current.isAfter(entry.getValue().getSummer().getFrom()) &&
-                    current.isBefore(entry.getValue().getWinter().getTo())){
+            if(date.isAfter(entry.getValue().getSummer().getFrom()) &&
+                    date.isBefore(entry.getValue().getWinter().getTo())){
                 return entry.getValue();
             }
         }
-        return getSeasonInYear(current.getYear());
+        return getSeasonInYear(date.getYear());
     }
 
     public Season getSeasonInYear(int year){
@@ -141,6 +141,30 @@ public class Club extends AbstractEntity {
 
     public void addSeasonInYear(int year, Season season){
         seasons.put(year, season);
+    }
+
+    public FromToTime getOpeningHoursByDate(LocalDate date){
+        if(openingHours.containsSpecialDate(date)){
+            return openingHours.getSpecialDays().get(date);
+        }
+
+        DayOfWeek day = date.getDayOfWeek();
+        Day myDay = Day.getDayFromCode(day.getValue());
+        return openingHours.getOpeningHours().get(myDay);
+    }
+
+    public List<TennisCourt> getAllAvailableCourts(LocalDate date){
+        List<TennisCourt> tennisCourts = new ArrayList<>();
+
+        Season season = getSeasonByDate(date);
+        if(season == null) return tennisCourts;
+        String seasonName = season.getSeasonName(date);
+        if(seasonName == null) return tennisCourts;
+        for (TennisCourt court : courts){
+            if(seasonName.equals("winter") && court.isAvailableInWinter()) tennisCourts.add(court);
+            if(seasonName.equals("summer") && court.isAvailableInSummer()) tennisCourts.add(court);
+        }
+        return tennisCourts;
     }
 
 }

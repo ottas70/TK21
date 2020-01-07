@@ -21,6 +21,8 @@ public class Reservation extends AbstractEntity {
     @ManyToOne
     private User user;
 
+    @ManyToOne Club club;
+
     // for non-registered users
     @Column
     private String email;
@@ -66,10 +68,14 @@ public class Reservation extends AbstractEntity {
     }
 
     public Club getClub(){
-        return tennisCourt.getClub();
+        return club;
     }
 
     public boolean isForRegisteredUser(){
         return user != null;
+    }
+
+    public void setClub(Club club) {
+        this.club = club;
     }
 }

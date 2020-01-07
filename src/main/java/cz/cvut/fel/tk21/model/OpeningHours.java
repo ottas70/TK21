@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.model;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,5 +64,28 @@ public class OpeningHours extends AbstractEntity {
         return specialDays.entrySet().stream()
                 .filter(x -> x.getKey().getYear() == year)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public boolean isOpenedAtDate(LocalDate date){
+        if(containsSpecialDate(date)){
+            return specialDays.get(date).getFrom() != null;
+        }
+
+        Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
+        FromToTime hours = openingHours.get(day);
+
+        return hours.getFrom() != null;
+    }
+
+    public boolean isAfterOpeningAtThisTimeAndDate(LocalDate date, LocalTime time){
+        FromToTime hours = null;
+        if(!isOpenedAtDate(date)) return true;
+        if(containsSpecialDate(date)){
+            hours = specialDays.get(date);
+        }else{
+            Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
+            hours = openingHours.get(day);
+        }
+        return time.isAfter(hours.getTo());
     }
 }

@@ -47,4 +47,8 @@ public class FromToDate implements Serializable {
         this.to = to;
     }
 
+    public boolean containsDate(LocalDate date){
+        return (date.isAfter(from) && date.isBefore(to)) || date.isEqual(from) || date.isEqual(to);
+    }
+
 }
