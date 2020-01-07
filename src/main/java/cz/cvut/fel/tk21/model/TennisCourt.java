@@ -22,7 +22,7 @@ public class TennisCourt extends AbstractEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
-    @OneToMany(mappedBy = "tennisCourt")
+    @OneToMany(mappedBy = "tennisCourt", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private Collection<Reservation> reservations;
 
     public String getName() {

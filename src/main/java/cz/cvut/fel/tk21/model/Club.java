@@ -32,20 +32,11 @@ public class Club extends AbstractEntity {
     @ElementCollection
     private Map<Integer, Season> seasons;
 
-    @OneToMany(
-            mappedBy = "club",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ClubRelation> users;
 
-    @OneToMany(
-            mappedBy = "club",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TennisCourt> courts = new ArrayList<>();
-
 
     @OneToOne(cascade = CascadeType.ALL)
     private OpeningHours openingHours;

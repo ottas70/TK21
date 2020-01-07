@@ -50,7 +50,7 @@ public class User extends AbstractEntity {
     private Collection<ClubRelation> clubs;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private Collection<Reservation> reservations;
 
     public String getName() {

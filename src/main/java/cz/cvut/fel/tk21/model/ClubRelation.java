@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.model;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "ClubRelation")
@@ -18,7 +19,7 @@ public class ClubRelation extends AbstractEntity{
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    Collection<UserRole> roles = new HashSet<>();
+    private Set<UserRole> roles = new HashSet<>();
 
     public Club getClub() {
         return club;
@@ -40,7 +41,7 @@ public class ClubRelation extends AbstractEntity{
         return roles;
     }
 
-    public void setRoles(Collection<UserRole> roles) {
+    public void setRoles(Set<UserRole> roles) {
         this.roles = roles;
     }
 
