@@ -45,7 +45,7 @@ public class WebSocketController {
             myDate = date.getDate();
         }
 
-        return reservationService.initialReservationMessage(club.get(), LocalDate.now());
+        return reservationService.initialReservationMessage(club.get(), myDate);
     }
 
     @MessageMapping("/ws/reservation/{clubId}/{date}/create")
