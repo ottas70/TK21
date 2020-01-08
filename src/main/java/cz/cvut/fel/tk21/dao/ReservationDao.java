@@ -23,4 +23,12 @@ public class ReservationDao extends BaseDao<Reservation> {
                 .getResultList();
     }
 
+    public List<Reservation> findAllReservationsByCourtAndDate(TennisCourt tennisCourt, LocalDate date){
+        return em.createQuery("SELECT r FROM Reservation r " +
+                "WHERE r.date = :date AND r.tennisCourt = :court", Reservation.class)
+                .setParameter("date", date)
+                .setParameter("court", tennisCourt)
+                .getResultList();
+    }
+
 }

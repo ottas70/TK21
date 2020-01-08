@@ -43,4 +43,16 @@ public class CourtDao extends BaseDao<TennisCourt> {
         }
     }
 
+    public Optional<TennisCourt> findCourtByClubAndId(Club club, Integer id){
+        try{
+            return Optional.ofNullable(em.createQuery("SELECT c FROM TennisCourt c " +
+                    "WHERE c.club = :club AND c.id = :id", TennisCourt.class)
+                    .setParameter("club", club)
+                    .setParameter("id", id)
+                    .getSingleResult());
+        } catch (NoResultException e){
+            return Optional.empty();
+        }
+    }
+
 }

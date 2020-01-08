@@ -78,4 +78,22 @@ public class Reservation extends AbstractEntity {
     public void setClub(Club club) {
         this.club = club;
     }
+
+    public boolean collides(Reservation r){
+        return collides(r.fromToTime);
+    }
+
+    public boolean collides(FromToTime time){
+        if(time.getFrom().equals(fromToTime.getFrom())) return true;
+        if(time.getTo().equals(fromToTime.getTo())) return true;
+
+        if(time.getFrom().isAfter(fromToTime.getFrom()) && time.getFrom().isBefore(fromToTime.getTo())) return true;
+
+        if(time.getTo().isAfter(fromToTime.getFrom()) && time.getTo().isBefore(fromToTime.getTo())) return true;
+
+        if(time.getFrom().isBefore(fromToTime.getFrom()) && time.getTo().isAfter(fromToTime.getTo())) return true;
+
+        return false;
+
+    }
 }

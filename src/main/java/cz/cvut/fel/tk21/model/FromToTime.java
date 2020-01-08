@@ -56,4 +56,15 @@ public class FromToTime implements Serializable {
         if(to.getMinute() != 0 && to.getMinute() != 30) return false; //Closing time is incorrect
         return true;
     }
+
+    @JsonIgnore
+    public boolean isValidReservationTime(){
+        if(from == null && to == null) return true; //No time set
+        if(from == null || to == null) return false; //Only one time is set)
+        if(from.isAfter(to) || from.equals(to)) return false; //Does not make sense
+        if(from.getMinute() != 0 && from.getMinute() != 30) return false; //From time is incorrect
+        if(to.getHour() == 23 && to.getMinute() == 59) return true; //Last available time
+        if(to.getMinute() != 0 && to.getMinute() != 30) return false; //To time is incorrect
+        return true;
+    }
 }

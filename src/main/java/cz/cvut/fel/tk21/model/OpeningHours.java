@@ -77,6 +77,31 @@ public class OpeningHours extends AbstractEntity {
         return hours.getFrom() != null;
     }
 
+    public boolean isOpenedAtDateAndTime(LocalDate date, FromToTime time){
+        FromToTime hours = null;
+        if(!isOpenedAtDate(date)) return false;
+        if(containsSpecialDate(date)){
+            hours = specialDays.get(date);
+        }else{
+            Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
+            hours = openingHours.get(day);
+        }
+
+        //Start is before opening
+        if(time.getFrom().isBefore(hours.getFrom())) return false;
+
+        //Start after closing
+        if(time.getFrom().isAfter(hours.getTo())) return false;
+
+        //End is before opening
+        if(time.getTo().isBefore(hours.getFrom())) return false;
+
+        //End after closing
+        if(time.getTo().isAfter(hours.getTo())) return false;
+
+        return true;
+    }
+
     public boolean isAfterOpeningAtThisTimeAndDate(LocalDate date, LocalTime time){
         FromToTime hours = null;
         if(!isOpenedAtDate(date)) return true;
