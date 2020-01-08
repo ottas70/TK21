@@ -1,11 +1,13 @@
-package cz.cvut.fel.tk21.rest.dto.reservation;
+package cz.cvut.fel.tk21.ws.dto;
 
 import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.Reservation;
 
 import java.time.LocalDate;
 
-public class ReservationDto {
+public class UpdateReservationMessage {
+
+    private UpdateType type;
 
     private int id;
 
@@ -17,15 +19,21 @@ public class ReservationDto {
 
     private int clubId;
 
-    public ReservationDto() {
-    }
-
-    public ReservationDto(Reservation reservation) {
+    public UpdateReservationMessage(UpdateType type, Reservation reservation) {
+        this.type = type;
         this.id = reservation.getId();
         this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
         this.clubId = reservation.getClub().getId();
+    }
+
+    public UpdateType getType() {
+        return type;
+    }
+
+    public void setType(UpdateType type) {
+        this.type = type;
     }
 
     public int getId() {

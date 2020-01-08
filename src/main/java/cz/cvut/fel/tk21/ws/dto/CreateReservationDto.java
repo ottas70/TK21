@@ -11,24 +11,17 @@ public class CreateReservationDto {
 
     private String email;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
-    private LocalDate date;
-
     private FromToTime time;
 
     private int courtId;
-
-    private int clubId;
 
     public CreateReservationDto() {
     }
 
     public CreateReservationDto(Reservation reservation) {
         this.email = reservation.getEmail();
-        this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
-        this.clubId = reservation.getClub().getId();
     }
 
     public String getEmail() {
@@ -37,15 +30,6 @@ public class CreateReservationDto {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public FromToTime getTime() {
@@ -64,19 +48,10 @@ public class CreateReservationDto {
         this.courtId = courtId;
     }
 
-    public int getClubId() {
-        return clubId;
-    }
-
-    public void setClubId(int clubId) {
-        this.clubId = clubId;
-    }
-
     @JsonIgnore
     public Reservation getEntity(){
         Reservation reservation = new Reservation();
 
-        reservation.setDate(date);
         reservation.setEmail(email);
         reservation.setFromToTime(time);
 

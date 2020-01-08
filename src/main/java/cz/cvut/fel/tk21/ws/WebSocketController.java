@@ -3,12 +3,11 @@ package cz.cvut.fel.tk21.ws;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.Reservation;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
-import cz.cvut.fel.tk21.ws.dto.CreateReservationDto;
-import cz.cvut.fel.tk21.ws.dto.DateDto;
-import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
+import cz.cvut.fel.tk21.ws.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.messaging.handler.annotation.*;
@@ -50,20 +49,16 @@ public class WebSocketController {
 
     @MessageMapping("/ws/reservation/{clubId}/{date}/create")
     @SendTo("/topic/reservation/{clubId}/{date}")
-    public List<ReservationDto> createReservation(@DestinationVariable Integer clubId, @DestinationVariable @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @Payload CreateReservationDto reservationDto){
-        if(!date.equals(reservationDto.getDate())) throw new ValidationException("Datumy se neshodují");
-
+    public UpdateReservationMessage createReservation(@DestinationVariable Integer clubId, @DestinationVariable @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @Payload CreateReservationDto reservationDto){
         Optional<Club> club = clubService.find(clubId);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        reservationService.createReservationFromDTO(reservationDto);
+        reservationService.createReservationFromDTO(reservationDto, club.get(), date);
 
-        List<ReservationDto> reservations =
-                reservationService.findAllReservationsByClubAndDate(club.get(), date)
-                .stream()
-                .map(ReservationDto::new)
-                .collect(Collectors.toList());
-        return reservations;
+        Optional<Reservation> reservation = reservationService.findReservationByCourtIdDateAndTime(reservationDto.getCourtId(), date, reservationDto.getTime());
+        reservation.orElseThrow(() -> new ValidationException("Nastala chyba při uložení rezervace"));
+
+        return new UpdateReservationMessage(UpdateType.CREATE, reservation.get());
     }
 
     @MessageExceptionHandler

@@ -69,13 +69,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     }
 
     @Transactional
-    public void createReservationFromDTO(CreateReservationDto dto){
+    public void createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
         Reservation reservation = dto.getEntity();
-
-        Optional<Club> clubOptional = clubService.find(dto.getClubId());
-        clubOptional.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        Club club = clubOptional.get();
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(club, dto.getCourtId());
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
@@ -84,7 +80,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         reservation.setClub(club);
         reservation.setTennisCourt(court);
 
-        if(!courtService.isCourtAvailable(club, court, dto.getDate(), dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici");
+        if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici");
 
         dao.persist(reservation);
     }
@@ -97,6 +93,11 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional(readOnly = true)
     public List<Reservation> findAllReservationsByCourtAndDate(TennisCourt tennisCourt, LocalDate date){
         return dao.findAllReservationsByCourtAndDate(tennisCourt, date);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Reservation> findReservationByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
+        return findReservationByCourtIdDateAndTime(courtId, date, time);
     }
 
 }
