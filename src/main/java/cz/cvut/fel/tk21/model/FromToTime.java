@@ -32,6 +32,7 @@ public class FromToTime implements Serializable {
     }
 
     @JsonSetter(nulls = Nulls.SET)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     public void setFrom(LocalTime from) {
         this.from = from;
     }
@@ -42,6 +43,7 @@ public class FromToTime implements Serializable {
     }
 
     @JsonSetter(nulls = Nulls.SET)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     public void setTo(LocalTime to) {
         this.to = to;
     }

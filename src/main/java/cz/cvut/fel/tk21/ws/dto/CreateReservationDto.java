@@ -1,11 +1,8 @@
 package cz.cvut.fel.tk21.ws.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.Reservation;
-
-import java.time.LocalDate;
 
 public class CreateReservationDto {
 

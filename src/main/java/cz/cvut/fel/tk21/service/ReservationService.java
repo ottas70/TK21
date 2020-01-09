@@ -60,10 +60,10 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         LocalTime time = LocalTime.now();
         OpeningHours openingHours = club.getOpeningHours();
         if(openingHours.isOpenedAtDate(date) && !openingHours.isAfterOpeningAtThisTimeAndDate(date, time)) return date;
-        date.plusDays(1);
+        date = date.plusDays(1);
         for (int i = 0; i < 365; i++) {
             if(openingHours.isOpenedAtDate(date)) return date;
-            date.plusDays(1);
+            date = date.plusDays(1);
         }
         throw new ValidationException("Club is closed within next year");
     }
@@ -77,6 +77,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
         TennisCourt court = courtOptional.get();
 
+        reservation.setDate(date);
         reservation.setClub(club);
         reservation.setTennisCourt(court);
 
@@ -97,7 +98,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public Optional<Reservation> findReservationByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
-        return findReservationByCourtIdDateAndTime(courtId, date, time);
+        return dao.findAllReservationsByCourtIdDateAndTime(courtId, date, time);
     }
 
 }
