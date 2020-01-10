@@ -71,6 +71,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional
     public void createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
+        if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
+        if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
+
         Reservation reservation = dto.getEntity();
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(club, dto.getCourtId());
@@ -99,6 +102,11 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional(readOnly = true)
     public Optional<Reservation> findReservationByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
         return dao.findAllReservationsByCourtIdDateAndTime(courtId, date, time);
+    }
+
+    @Transactional
+    public void deleteReservation(Reservation reservation){
+        this.remove(reservation);
     }
 
 }
