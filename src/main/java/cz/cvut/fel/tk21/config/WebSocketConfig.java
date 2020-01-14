@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -28,11 +29,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         //TODO remove origin
         registry.addEndpoint("/websocket")
-                .setHandshakeHandler(defaultHandshakeHandler())
-                .setAllowedOrigins("*");
+                .setHandshakeHandler(handshakeHandler())
+                .setAllowedOrigins("*")
+                .withSockJS();
     }
 
-    private HandshakeHandler defaultHandshakeHandler(){
+    @Bean
+    public HandshakeHandler handshakeHandler(){
         return new DefaultHandshakeHandler(){
             public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map attributes) throws Exception {
                 if (request instanceof ServletServerHttpRequest) {
