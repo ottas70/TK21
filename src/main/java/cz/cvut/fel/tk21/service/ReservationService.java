@@ -46,6 +46,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         List<Reservation> reservations = this.findAllReservationsByClubAndDate(club, date);
 
         message.setDate(date);
+        message.setClubName(club.getName());
         message.setSeason(new CurrentSeasonDto(seasonName, seasonDates));
         message.setOpeningHours(club.getOpeningHoursByDate(date));
         message.setCourts(club.getAllAvailableCourts(date).stream().map(CourtDto::new).collect(Collectors.toList()));

@@ -14,6 +14,8 @@ public class ReservationMessage {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private LocalDate date;
 
+    private String clubName;
+
     private CurrentSeasonDto season;
 
     private FromToTime openingHours;
@@ -29,6 +31,14 @@ public class ReservationMessage {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getClubName() {
+        return clubName;
+    }
+
+    public void setClubName(String clubName) {
+        this.clubName = clubName;
     }
 
     public CurrentSeasonDto getSeason() {
