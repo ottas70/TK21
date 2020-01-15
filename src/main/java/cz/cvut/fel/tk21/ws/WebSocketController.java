@@ -45,21 +45,6 @@ public class WebSocketController {
         return reservationService.initialReservationMessage(club.get(), myDate);
     }
 
-    @MessageMapping("/ws/reservation/{clubId}/{date}/delete")
-    @SendTo("/topic/reservation/{clubId}/{date}")
-    public UpdateReservationMessage deleteReservation(@DestinationVariable Integer clubId, @DestinationVariable @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @Payload Integer id){
-        Optional<Club> club = clubService.find(clubId);
-        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-
-        Optional<Reservation> reservation = reservationService.find(id);
-        reservation.orElseThrow(() -> new ValidationException("Rezervace nebyla nalezena"));
-        if(!reservation.get().getDate().equals(date)) throw new ValidationException("Data se neshodují");
-
-        reservationService.deleteReservation(reservation.get());
-
-        return new UpdateReservationMessage(UpdateType.DELETE, reservation.get());
-    }
-
     @MessageExceptionHandler
     @SendToUser("/topic/error")
     public String handleException(Exception ex){

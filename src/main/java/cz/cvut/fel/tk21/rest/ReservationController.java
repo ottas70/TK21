@@ -38,7 +38,7 @@ public class ReservationController {
     @Autowired
     private SimpMessagingTemplate template;
 
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/club/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createReservation(@PathVariable("id") Integer id, @RequestBody CreateReservationDto reservationDto) {
         validator.validate(reservationDto);
 
@@ -56,6 +56,22 @@ public class ReservationController {
         this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.CREATE, reservation.get()));
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteReservation(@PathVariable("id") Integer id){
+        Optional<Reservation> reservationOptional = reservationService.find(id);
+        reservationOptional.orElseThrow(() -> new ValidationException("Rezervace nebyla nalezena"));
+        Reservation reservation = reservationOptional.get();
+
+        reservationService.deleteReservation(reservation);
+
+        //Websocket message for subscribers
+        String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
+        this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.DELETE, reservation));
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
