@@ -6,7 +6,7 @@ import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
-import cz.cvut.fel.tk21.ws.dto.CreateReservationDto;
+import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +81,6 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
         TennisCourt court = courtOptional.get();
 
-        reservation.setDate(date);
         reservation.setClub(club);
         reservation.setTennisCourt(court);
 

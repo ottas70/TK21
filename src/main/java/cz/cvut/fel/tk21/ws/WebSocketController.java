@@ -4,7 +4,7 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
-import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
+import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.ws.dto.*;
@@ -16,9 +16,7 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class WebSocketController {
@@ -45,20 +43,6 @@ public class WebSocketController {
         }
 
         return reservationService.initialReservationMessage(club.get(), myDate);
-    }
-
-    @MessageMapping("/ws/reservation/{clubId}/{date}/create")
-    @SendTo("/topic/reservation/{clubId}/{date}")
-    public UpdateReservationMessage createReservation(@DestinationVariable Integer clubId, @DestinationVariable @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @Payload CreateReservationDto reservationDto){
-        Optional<Club> club = clubService.find(clubId);
-        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-
-        reservationService.createReservationFromDTO(reservationDto, club.get(), date);
-
-        Optional<Reservation> reservation = reservationService.findReservationByCourtIdDateAndTime(reservationDto.getCourtId(), date, reservationDto.getTime());
-        reservation.orElseThrow(() -> new ValidationException("Nastala chyba při uložení rezervace"));
-
-        return new UpdateReservationMessage(UpdateType.CREATE, reservation.get());
     }
 
     @MessageMapping("/ws/reservation/{clubId}/{date}/delete")
