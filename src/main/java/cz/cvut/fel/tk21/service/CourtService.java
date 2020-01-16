@@ -79,4 +79,16 @@ public class CourtService extends BaseService<CourtDao, TennisCourt> {
         }
         return true;
     }
+
+    @Transactional(readOnly = true)
+    public boolean isCourtAvailableForUpdate(Club club, TennisCourt tennisCourt, LocalDate date, FromToTime time, Reservation reservation){
+        if(!club.getOpeningHours().isOpenedAtDateAndTime(date, time)) return false;
+
+        for (Reservation r : reservationService.findAllReservationsByCourtAndDate(tennisCourt, date)){
+            if(r.collides(time) && reservation.getId() != r.getId()){
+                return false;
+            }
+        }
+        return true;
+    }
 }

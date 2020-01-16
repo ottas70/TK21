@@ -51,13 +51,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/h2-console/*")
                 .permitAll();
+
         http.authorizeRequests()
                 .antMatchers("/websocket/**")
                 .permitAll();
 
         http.authorizeRequests()
                 .antMatchers("/*", "/static/**",
-                "/api/authenticate", "/api/user", "/api/logout", "/api/confirm")
+                "/api/authenticate", "/api/user", "/api/logout", "/api/confirm", "/api/reservation/**")
                 .permitAll();
 
         http.authorizeRequests()

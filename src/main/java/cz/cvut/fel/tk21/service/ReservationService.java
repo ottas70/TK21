@@ -7,6 +7,7 @@ import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
+import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,25 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici");
 
         dao.persist(reservation);
+    }
+
+    @Transactional
+    public void updateReservation(Reservation reservation, UpdateReservationDto updateDto){
+        if(!updateDto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
+        if(updateDto.getDate().isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
+        if(updateDto.getDate().equals(LocalDate.now()) && updateDto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
+
+        Optional<TennisCourt> courtOptional = courtService.findCourtInClub(reservation.getClub(), updateDto.getCourtId());
+        courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+        TennisCourt court = courtOptional.get();
+
+        if(!courtService.isCourtAvailableForUpdate(reservation.getClub(), court, updateDto.getDate(), updateDto.getTime(), reservation)) throw new ValidationException("Kurt není v tento čas k dispozici");
+
+        reservation.setTennisCourt(court);
+        reservation.setDate(updateDto.getDate());
+        reservation.setFromToTime(updateDto.getTime());
+
+        dao.update(reservation);
     }
 
     @Transactional(readOnly = true)

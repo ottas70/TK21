@@ -6,6 +6,7 @@ import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.Reservation;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -16,10 +17,8 @@ public class CreateReservationDto {
 
     private FromToTime time;
 
-    @NotBlank
     private int courtId;
 
-    @NotBlank
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private LocalDate date;
 
