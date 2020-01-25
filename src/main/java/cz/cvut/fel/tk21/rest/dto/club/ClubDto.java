@@ -19,15 +19,18 @@ public class ClubDto {
 
     private boolean isAllowedMng;
 
+    private boolean isAllowedRes;
+
     public ClubDto() {
     }
 
-    public ClubDto(Club club, boolean isAllowedMng) {
+    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes) {
         this.id = club.getId();
         this.name = club.getName();
         this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.isAllowedMng = isAllowedMng;
+        this.isAllowedRes = isAllowedRes;
     }
 
     public int getId() {
@@ -69,6 +72,15 @@ public class ClubDto {
 
     public void setAllowedMng(boolean allowedMng) {
         isAllowedMng = allowedMng;
+    }
+
+    @JsonProperty(value="isAllowedRes")
+    public boolean isAllowedRes() {
+        return isAllowedRes;
+    }
+
+    public void setAllowedRes(boolean allowedRes) {
+        isAllowedRes = allowedRes;
     }
 
     @JsonIgnore

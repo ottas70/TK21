@@ -116,6 +116,11 @@ public class Reservation extends AbstractEntity {
         if(time.getFrom().isBefore(fromToTime.getFrom()) && time.getTo().isAfter(fromToTime.getTo())) return true;
 
         return false;
+    }
 
+    public int getDuration(){
+       int fromMinutes = fromToTime.getFrom().getHour() * 60 + fromToTime.getFrom().getMinute();
+       int toMinutes = fromToTime.getTo().getHour() * 60 + fromToTime.getTo().getMinute();
+       return toMinutes - fromMinutes;
     }
 }

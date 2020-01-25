@@ -12,6 +12,7 @@ import cz.cvut.fel.tk21.rest.dto.club.settings.MaxReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
 import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class ClubController {
     private ClubService clubService;
 
     @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
     private RequestBodyValidator validator;
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +50,7 @@ public class ClubController {
     public ClubDto getClub(@PathVariable("id") Integer id) {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()));
+        return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()), reservationService.isCurrentUserAllowedToCreateReservation(club.get()));
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

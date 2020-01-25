@@ -1,7 +1,9 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.dao.ClubRelationDao;
 import cz.cvut.fel.tk21.dao.ReservationDao;
 import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
@@ -34,6 +36,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ClubRelationDao clubRelationDao;
 
     protected ReservationService(ReservationDao dao) {
         super(dao);
@@ -101,6 +106,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
+        if(!isCurrentUserAllowedToCreateReservation(club)) throw new UnauthorizedException("Nemáte oprávnění vytvářet rezervaci");
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
         if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
         if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
@@ -115,6 +121,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         }
 
         if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje");
+        if(reservation.getDuration() < club.getMinReservationTime() || reservation.getDuration() > club.getMaxReservationTime()) throw new ValidationException("Trvání rezervace nevyhovuje požadavkům klubu");
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(club, dto.getCourtId());
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
@@ -126,6 +133,17 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici");
 
         dao.persist(reservation);
+    }
+
+    @Transactional
+    public boolean isCurrentUserAllowedToCreateReservation(Club club){
+        User user = userService.getCurrentUser();
+        if(user == null && club.getReservationPermission() == ReservationPermission.ANYONE) return true;
+        if(user != null && club.getReservationPermission() == ReservationPermission.SIGNED) return true;
+        if(club.getReservationPermission() ==  ReservationPermission.CLUB_MEMBERS){
+            return clubRelationDao.hasRelationToThisClub(user, club);
+        }
+        return false;
     }
 
     @Transactional
