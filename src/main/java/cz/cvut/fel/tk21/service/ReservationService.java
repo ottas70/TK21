@@ -7,15 +7,13 @@ import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
-import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
+import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
 import cz.cvut.fel.tk21.ws.dto.AvailableCourtDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -148,6 +146,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void updateReservation(Reservation reservation, UpdateReservationDto updateDto){
+        if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut");
         if(!updateDto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
         if(updateDto.getDate().isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
         if(updateDto.getDate().equals(LocalDate.now()) && updateDto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
@@ -182,6 +181,8 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void deleteReservation(Reservation reservation){
+        //TODO delete reservation with some token when not registered and club has ANYONE reservation policy
+        if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut");
         this.remove(reservation);
     }
 
