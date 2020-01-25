@@ -28,7 +28,14 @@ public class Club extends AbstractEntity {
     private Address address;
 
     @Column
-    private boolean onlyRegisteredPlayerReservation = true;
+    @Enumerated(EnumType.STRING)
+    private ReservationPermission reservationPermission;
+
+    @Column
+    private int minReservationTime;
+
+    @Column
+    private int maxReservationTime;
 
     @ElementCollection
     private Map<Integer, Season> seasons;
@@ -75,12 +82,28 @@ public class Club extends AbstractEntity {
         this.address = address;
     }
 
-    public boolean isOnlyRegisteredPlayerReservation() {
-        return onlyRegisteredPlayerReservation;
+    public ReservationPermission getReservationPermission() {
+        return reservationPermission;
     }
 
-    public void setOnlyRegisteredPlayerReservation(boolean onlyRegisteredPlayerReservation) {
-        this.onlyRegisteredPlayerReservation = onlyRegisteredPlayerReservation;
+    public void setReservationPermission(ReservationPermission reservationPermission) {
+        this.reservationPermission = reservationPermission;
+    }
+
+    public int getMinReservationTime() {
+        return minReservationTime;
+    }
+
+    public void setMinReservationTime(int minReservationTime) {
+        this.minReservationTime = minReservationTime;
+    }
+
+    public int getMaxReservationTime() {
+        return maxReservationTime;
+    }
+
+    public void setMaxReservationTime(int maxReservationTime) {
+        this.maxReservationTime = maxReservationTime;
     }
 
     public Map<Integer, Season> getSeasons() {

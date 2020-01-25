@@ -8,6 +8,9 @@ import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.Season;
 import cz.cvut.fel.tk21.rest.dto.*;
 import cz.cvut.fel.tk21.rest.dto.club.*;
+import cz.cvut.fel.tk21.rest.dto.club.settings.MaxReservationDto;
+import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
+import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
@@ -153,6 +156,31 @@ public class ClubController {
 
     }
 
+    @RequestMapping(value = "/{id}/properties/reservation/permission", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateReservationPermission(@PathVariable("id") Integer id, @RequestBody ReservationPermissionDto reservationPermissionDto){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
+        clubService.updateReservationPermission(club.get(), reservationPermissionDto.getReservationPermission());
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/properties/reservation/min", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateMinReservationTime(@PathVariable("id") Integer id, @RequestBody MinReservationDto minReservationDto){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubService.updateMinReservationTime(club.get(), minReservationDto.getMinReservation());
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/properties/reservation/max", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateMaxReservationTime(@PathVariable("id") Integer id, @RequestBody MaxReservationDto maxReservationDto){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubService.updateMaxReservationTime(club.get(), maxReservationDto.getMaxReservation());
+        return ResponseEntity.noContent().build();
+    }
 
 }

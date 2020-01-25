@@ -57,6 +57,9 @@ public class DataInitializer implements ApplicationRunner {
         address.setZip("123 00");
         club.setAddress(address);
         club.setOpeningHours(getInitialOpeningHours());
+        club.setReservationPermission(ReservationPermission.SIGNED);
+        club.setMinReservationTime(15);
+        club.setMaxReservationTime(180);
         club.addCourt(getRandomTennisCourt(1));
         club.addCourt(getRandomTennisCourt(2));
         club.addCourt(getRandomTennisCourt(3));
@@ -78,6 +81,9 @@ public class DataInitializer implements ApplicationRunner {
         address2.setZip("150 00");
         club2.setAddress(address2);
         club2.setOpeningHours(getInitialOpeningHours());
+        club2.setReservationPermission(ReservationPermission.SIGNED);
+        club2.setMinReservationTime(15);
+        club2.setMaxReservationTime(180);
         club2.addCourt(getRandomTennisCourt(4));
         club2.addCourt(getRandomTennisCourt(5));
         club2.addCourt(getRandomTennisCourt(6));

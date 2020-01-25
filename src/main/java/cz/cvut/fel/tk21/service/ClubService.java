@@ -59,6 +59,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
         //Initial season
         club.setSeasons(getInitialSeason(DateUtils.getCurrentYear()));
 
+        club.setReservationPermission(ReservationPermission.SIGNED);
+        club.setMinReservationTime(15);
+        club.setMaxReservationTime(180);
         dao.persist(club);
 
         //links signed in user with this club as admin
@@ -194,6 +197,27 @@ public class ClubService extends BaseService<ClubDao, Club> {
         if(season.getSummer().getFrom().getYear() != year || season.getWinter().getFrom().getYear() != year)
             throw new BadRequestException("Datumy nesedí");
         club.addSeasonInYear(year, season);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateReservationPermission(Club club, ReservationPermission reservationPermission){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setReservationPermission(reservationPermission);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateMinReservationTime(Club club, int time){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setMinReservationTime(time);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateMaxReservationTime(Club club, int time){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setMaxReservationTime(time);
         this.update(club);
     }
 
