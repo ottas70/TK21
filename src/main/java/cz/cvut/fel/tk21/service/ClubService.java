@@ -35,6 +35,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Autowired
     private CourtService courtService;
 
+    @Autowired
+    private UserService userService;
+
     protected ClubService(ClubDao dao) {
         super(dao);
     }
@@ -75,12 +78,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public boolean isCurrentUserAllowedToManageThisClub(Club club){
-        if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) return false;
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userDao.getUserByEmail(email);
-        if(user.isEmpty()) return false;
-        User entity = user.get();
-        for (ClubRelation relation : clubRelationDao.findAllRelationsByUser(entity)){
+        User user = userService.getCurrentUser();
+        if(user == null) return false;
+        for (ClubRelation relation : clubRelationDao.findAllRelationsByUser(user)){
             if(relation.getClub().getId() == club.getId() && relation.getRoles().contains(UserRole.ADMIN)){
                 return true;
             }

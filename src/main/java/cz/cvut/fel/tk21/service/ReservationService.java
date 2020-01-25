@@ -12,6 +12,8 @@ import cz.cvut.fel.tk21.ws.dto.AvailableCourtDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Autowired
     private CourtService courtService;
+
+    @Autowired
+    private UserService userService;
 
     protected ReservationService(ReservationDao dao) {
         super(dao);
@@ -101,6 +106,15 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
 
         Reservation reservation = dto.getEntity();
+        User currentUser = userService.getCurrentUser();
+        if(currentUser != null){
+            reservation.setEmail(currentUser.getEmail());
+            reservation.setName(currentUser.getName());
+            reservation.setSurname(currentUser.getSurname());
+            reservation.setUser(currentUser);
+        }
+
+        if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje");
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(club, dto.getCourtId());
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));

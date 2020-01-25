@@ -3,12 +3,16 @@ package cz.cvut.fel.tk21.service;
 import cz.cvut.fel.tk21.dao.ConfirmationTokenDao;
 import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.UserRole;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +88,16 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public Optional<User> findUserByEmail(String email){
         return dao.getUserByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser(){
+        if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) return null;
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = dao.getUserByEmail(email);
+        if(user.isEmpty()) return null;
+        User entity = user.get();
+        return entity;
     }
 
 }
