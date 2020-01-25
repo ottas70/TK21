@@ -20,6 +20,8 @@ public class ReservationMessage {
 
     private FromToTime openingHours;
 
+    private AvailableCourtDto firstAvailableTime;
+
     private List<CourtDto> courts;
 
     private List<ReservationDto> reservations;
@@ -55,6 +57,14 @@ public class ReservationMessage {
 
     public void setOpeningHours(FromToTime openingHours) {
         this.openingHours = openingHours;
+    }
+
+    public AvailableCourtDto getFirstAvailableTime() {
+        return firstAvailableTime;
+    }
+
+    public void setFirstAvailableTime(AvailableCourtDto firstAvailableTime) {
+        this.firstAvailableTime = firstAvailableTime;
     }
 
     public List<CourtDto> getCourts() {

@@ -113,4 +113,9 @@ public class OpeningHours extends AbstractEntity {
         }
         return time.isAfter(hours.getTo());
     }
+
+    public FromToTime getOpeningTimesAtDate(LocalDate date){
+        if(!isOpenedAtDate(date)) return null;
+        return openingHours.get(Day.getDayFromCode(date.getDayOfWeek().getValue()));
+    }
 }

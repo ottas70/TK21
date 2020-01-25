@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
+import cz.cvut.fel.tk21.ws.dto.AvailableCourtDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,13 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
                 message.setSeason(new CurrentSeasonDto(seasonName, seasonDates));
             }
         }
+
         List<Reservation> reservations = this.findAllReservationsByClubAndDate(club, date);
 
         message.setDate(date);
         message.setClubName(club.getName());
         message.setOpeningHours(club.getOpeningHoursByDate(date));
+        message.setFirstAvailableTime(findNearestAvailableTime(club, date));
         message.setCourts(club.getAllAvailableCourts(date).stream().map(CourtDto::new).collect(Collectors.toList()));
         message.setReservations(reservations.stream().map(ReservationDto::new).collect(Collectors.toList()));
 
@@ -72,6 +75,23 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             date = date.plusDays(1);
         }
         throw new ValidationException("Club is closed within next year");
+    }
+
+    @Transactional(readOnly = true)
+    public AvailableCourtDto findNearestAvailableTime(Club club, LocalDate date){
+        if(!club.getOpeningHours().isOpenedAtDate(date)) return null;
+        FromToTime openingHours = club.getOpeningHours().getOpeningTimesAtDate(date);
+        LocalTime from = openingHours.getFrom();
+        while(from.plusHours(1).isBefore(openingHours.getTo()) || from.plusHours(1).equals(openingHours.getTo())){
+            for (TennisCourt court : club.getCourts()){
+                FromToTime reservationTime = new FromToTime(from, from.plusHours(1));
+                if(courtService.isCourtAvailable(club, court, date, reservationTime)){
+                    return new AvailableCourtDto(court.getId(), reservationTime);
+                }
+            }
+            from = from.plusMinutes(15);
+        }
+        return null;
     }
 
     @Transactional
