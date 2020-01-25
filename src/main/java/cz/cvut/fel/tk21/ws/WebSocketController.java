@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Controller
 public class WebSocketController {

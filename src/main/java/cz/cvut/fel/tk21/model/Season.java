@@ -47,6 +47,7 @@ public class Season implements Serializable {
 
     public FromToDate getSpecificSeason(LocalDate date){
         String name = getSeasonName(date);
+        if(name == null) return null;
         if(name.equals("summer")) return summer;
         if(name.equals("winter")) return winter;
         return null;

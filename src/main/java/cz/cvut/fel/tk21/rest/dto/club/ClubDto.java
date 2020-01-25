@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.Club;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ClubDto {
 
     private int id;
@@ -11,6 +14,8 @@ public class ClubDto {
     private String name;
 
     private AddressDto address;
+
+    private List<CourtDto> courts;
 
     private boolean isAllowedMng;
 
@@ -21,6 +26,7 @@ public class ClubDto {
         this.id = club.getId();
         this.name = club.getName();
         this.address = new AddressDto(club.getAddress());
+        this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.isAllowedMng = isAllowedMng;
     }
 
@@ -46,6 +52,14 @@ public class ClubDto {
 
     public void setAddress(AddressDto address) {
         this.address = address;
+    }
+
+    public List<CourtDto> getCourts() {
+        return courts;
+    }
+
+    public void setCourts(List<CourtDto> courts) {
+        this.courts = courts;
     }
 
     @JsonProperty(value="isAllowedMng")
