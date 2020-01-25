@@ -12,8 +12,11 @@ import java.time.LocalDate;
 
 public class CreateReservationDto {
 
-    @NotBlank
     private String email;
+
+    private String name;
+
+    private String surname;
 
     private FromToTime time;
 
@@ -27,6 +30,8 @@ public class CreateReservationDto {
 
     public CreateReservationDto(Reservation reservation) {
         this.email = reservation.getEmail();
+        this.name = reservation.getName();
+        this.surname = reservation.getSurname();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
         this.date = reservation.getDate();
@@ -38,6 +43,22 @@ public class CreateReservationDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public FromToTime getTime() {
@@ -70,6 +91,8 @@ public class CreateReservationDto {
         Reservation reservation = new Reservation();
 
         reservation.setEmail(email);
+        reservation.setName(name);
+        reservation.setSurname(surname);
         reservation.setFromToTime(time);
         reservation.setDate(date);
 
