@@ -155,6 +155,20 @@ public class ClubService extends BaseService<ClubDao, Club> {
         this.update(club);
     }
 
+    @Transactional
+    public void updateName(Club club, String name){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setName(name);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateDescription(Club club, String description){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setDescription(description);
+        this.update(club);
+    }
+
     private OpeningHours getInitialOpeningHours(){
         OpeningHours openingHours = new OpeningHours();
 

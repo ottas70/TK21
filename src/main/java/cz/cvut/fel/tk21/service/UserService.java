@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ConfirmationTokenDao;
 import cz.cvut.fel.tk21.dao.UserDao;
+import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
@@ -12,6 +13,9 @@ import cz.cvut.fel.tk21.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,9 @@ public class UserService extends BaseService<UserDao, User> {
     @Autowired
     private ConfirmationTokenDao confirmationTokenDao;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     protected UserService(UserDao dao) {
         super(dao);
     }
@@ -38,7 +45,6 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public int createUser(UserDto userDto) {
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        System.out.println(userDto.getPassword());
 
         if (!dao.isEmailUnique(userDto.getEmail())) {
             throw new ValidationException("Účet s tímto emailem již existuje");
@@ -98,6 +104,60 @@ public class UserService extends BaseService<UserDao, User> {
         if(user.isEmpty()) return null;
         User entity = user.get();
         return entity;
+    }
+
+    @Transactional
+    public void updateName(String name){
+        User user = getCurrentUser();
+        user.setName(name);
+        this.update(user);
+    }
+
+    @Transactional
+    public void updateSurname(String surname){
+        User user = getCurrentUser();
+        user.setSurname(surname);
+        this.update(user);
+    }
+
+    @Transactional
+    public void updateEmail(String email){
+        if (!dao.isEmailUnique(email)) {
+            throw new ValidationException("Účet s tímto emailem již existuje");
+        }
+
+        User user = getCurrentUser();
+        user.setEmail(email);
+        user.setVerifiedAccount(false);
+
+        ConfirmationToken token = new ConfirmationToken(user);
+        user.setConfirmationToken(token);
+
+        super.dao.update(user);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setSubject("Potvrzení registrace");
+        mailMessage.setFrom("noreply@tk21.cz");
+        mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
+                + "http://195.181.209.16"
+                + "/#/overeni/"+ token.getConfirmationToken());
+
+        mailService.sendEmail(mailMessage);
+    }
+
+    @Transactional
+    public void updatePassword(String oldPass, String newPass){
+        User user = getCurrentUser();
+
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), oldPass));
+        } catch (BadCredentialsException ex) {
+            throw new ValidationException("Hesla se neshodují");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPass));
+        this.update(user);
     }
 
 }

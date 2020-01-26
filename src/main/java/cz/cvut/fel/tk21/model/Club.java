@@ -27,6 +27,9 @@ public class Club extends AbstractEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Column
     @Enumerated(EnumType.STRING)
     private ReservationPermission reservationPermission;
@@ -83,6 +86,14 @@ public class Club extends AbstractEntity {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public ReservationPermission getReservationPermission() {
