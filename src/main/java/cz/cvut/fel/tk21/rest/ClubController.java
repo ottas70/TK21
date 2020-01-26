@@ -6,14 +6,15 @@ import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.Season;
+import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.rest.dto.*;
 import cz.cvut.fel.tk21.rest.dto.club.*;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MaxReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
-import cz.cvut.fel.tk21.service.ClubService;
-import cz.cvut.fel.tk21.service.OpeningHoursService;
-import cz.cvut.fel.tk21.service.ReservationService;
+import cz.cvut.fel.tk21.rest.dto.club.verification.UserVerificationDto;
+import cz.cvut.fel.tk21.rest.dto.club.verification.VerificationRequestDto;
+import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/club")
@@ -31,17 +33,23 @@ public class ClubController {
 
     private static final String DEFAULT_SIZE_OF_PAGE = "20";
 
-    @Autowired
-    private ClubService clubService;
+    private final ClubService clubService;
+    private final VerificationRequestService verificationRequestService;
+    private final OpeningHoursService openingHoursService;
+    private final ReservationService reservationService;
+    private final UserService userService;
+    private final ClubRelationService clubRelationService;
+    private final RequestBodyValidator validator;
 
-    @Autowired
-    private OpeningHoursService openingHoursService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private RequestBodyValidator validator;
+    public ClubController(ClubService clubService, VerificationRequestService verificationRequestService, OpeningHoursService openingHoursService, ReservationService reservationService, UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator) {
+        this.clubService = clubService;
+        this.verificationRequestService = verificationRequestService;
+        this.openingHoursService = openingHoursService;
+        this.reservationService = reservationService;
+        this.userService = userService;
+        this.clubRelationService = clubRelationService;
+        this.validator = validator;
+    }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerClub(@RequestBody ClubRegistrationDto club) {
@@ -90,6 +98,10 @@ public class ClubController {
         return new ClubSettingsDto(club.get(), year, isYearSet);
     }
 
+    /* *********************************
+     * OPENING HOURS
+     ********************************* */
+
     @RequestMapping(value="/{id}/opening-hours", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<Integer, FromToTime> getClubOpeningHours(@PathVariable("id") Integer id){
         final Optional<Club> club = clubService.find(id);
@@ -108,6 +120,10 @@ public class ClubController {
 
         return ResponseEntity.noContent().build();
     }
+
+    /* *********************************
+     * SEASONS
+     ********************************* */
 
     @RequestMapping(value = "/{id}/seasons", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public SeasonDto getSeason(@PathVariable("id") Integer id, @RequestParam(value="year", required = false) Integer year){
@@ -164,6 +180,10 @@ public class ClubController {
 
     }
 
+    /* *********************************
+     * PROPERTIES
+     ********************************* */
+
     @RequestMapping(value = "/{id}/properties/reservation/permission", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateReservationPermission(@PathVariable("id") Integer id, @RequestBody ReservationPermissionDto reservationPermissionDto){
         final Optional<Club> club = clubService.find(id);
@@ -189,6 +209,51 @@ public class ClubController {
 
         clubService.updateMaxReservationTime(club.get(), maxReservationDto.getMaxReservation());
         return ResponseEntity.noContent().build();
+    }
+
+    /* *********************************
+     * USER VERIFICATION
+     ********************************* */
+
+    @RequestMapping(value = "/{id}/user-verification", method = RequestMethod.POST)
+    public ResponseEntity<?> addMemberShip(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        verificationRequestService.addVerificationRequestToClub(club.get());
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(value = "/{id}/verification-requests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<VerificationRequestDto> getVerificationRequestsByClub(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        return verificationRequestService.findUnresolvedVerificationRequestsByClub(club.get())
+                .stream()
+                .map(VerificationRequestDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/{id}/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> verifyUser(@PathVariable("id") Integer id, @RequestBody UserVerificationDto userVerificationDto){
+        validator.validate(userVerificationDto);
+
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        final Optional<User> user = userService.find(userVerificationDto.getUserId());
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
+
+        boolean accepted = verificationRequestService.processVerification(club.get(), user.get(), userVerificationDto.getVerification());
+
+        if (accepted) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }else{
+            return ResponseEntity.noContent().build();
+        }
+
     }
 
 }

@@ -1,12 +1,11 @@
 package cz.cvut.fel.tk21.service;
 
-import cz.cvut.fel.tk21.dao.ClubRelationDao;
 import cz.cvut.fel.tk21.dao.ReservationDao;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
-import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
+import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
@@ -36,7 +35,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     private UserService userService;
 
     @Autowired
-    private ClubRelationDao clubRelationDao;
+    private ClubRelationService clubRelationService;
 
     protected ReservationService(ReservationDao dao) {
         super(dao);
@@ -139,7 +138,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(user == null && club.getReservationPermission() == ReservationPermission.ANYONE) return true;
         if(user != null && club.getReservationPermission() == ReservationPermission.SIGNED) return true;
         if(club.getReservationPermission() ==  ReservationPermission.CLUB_MEMBERS){
-            return clubRelationDao.hasRelationToThisClub(user, club);
+            return clubRelationService.isMemberOf(club, user);
         }
         return false;
     }

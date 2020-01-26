@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.rest.dto.club;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.rest.dto.club.settings.PropertiesDto;
+import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

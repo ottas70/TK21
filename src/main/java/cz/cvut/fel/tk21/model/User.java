@@ -53,6 +53,10 @@ public class User extends AbstractEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private Collection<Reservation> reservations;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    private Collection<VerificationRequest> verificationRequests;
+
     public String getName() {
         return name;
     }

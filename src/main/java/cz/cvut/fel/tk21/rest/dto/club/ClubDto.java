@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.rest.dto.club;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.rest.dto.club;
+package cz.cvut.fel.tk21.rest.dto.court;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

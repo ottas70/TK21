@@ -65,7 +65,6 @@ public class CourtService extends BaseService<CourtDao, TennisCourt> {
     @Transactional
     public Optional<TennisCourt> findCourtInClub(Club club, Integer courtId){
         return dao.findCourtByClubAndId(club, courtId);
-
     }
 
     @Transactional(readOnly = true)

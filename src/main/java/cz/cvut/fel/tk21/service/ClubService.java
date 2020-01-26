@@ -14,6 +14,7 @@ import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
 import cz.cvut.fel.tk21.rest.dto.club.SpecialOpeningHoursDto;
 import cz.cvut.fel.tk21.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     private UserDao userDao;
 
     @Autowired
-    private ClubRelationDao clubRelationDao;
+    private ClubRelationService clubRelationService;
 
     @Autowired
     private CourtService courtService;
@@ -73,11 +74,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
         Optional<User> user = userDao.getUserByEmail(email);
         if(user.isEmpty()) throw new ValidationException("Uživatel neexistuje");
 
-        ClubRelation relation = new ClubRelation();
-        relation.setClub(club);
-        relation.setUser(user.get());
-        relation.addRole(UserRole.ADMIN);
-        clubRelationDao.persist(relation);
+        clubRelationService.addUserToClub(club, user.get(), UserRole.ADMIN);
 
         return club.getId();
     }
@@ -86,12 +83,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     public boolean isCurrentUserAllowedToManageThisClub(Club club){
         User user = userService.getCurrentUser();
         if(user == null) return false;
-        for (ClubRelation relation : clubRelationDao.findAllRelationsByUser(user)){
-            if(relation.getClub().getId() == club.getId() && relation.getRoles().contains(UserRole.ADMIN)){
-                return true;
-            }
-        }
-        return false;
+        return clubRelationService.hasRole(club, user, UserRole.ADMIN);
     }
 
     @Transactional(readOnly = true)

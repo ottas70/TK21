@@ -70,6 +70,7 @@ public class DataInitializer implements ApplicationRunner {
         relation.setClub(club);
         relation.setUser(user1);
         relation.addRole(UserRole.ADMIN);
+        relation.addRole(UserRole.PROFESIONAL_PLAYER);
         clubRelationService.persist(relation);
 
         Club club2 = new Club();

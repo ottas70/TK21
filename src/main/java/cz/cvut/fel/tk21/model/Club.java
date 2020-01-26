@@ -49,6 +49,9 @@ public class Club extends AbstractEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private OpeningHours openingHours;
 
+    @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
+    private Collection<VerificationRequest> verificationRequests;
+
     public String getName() {
         return name;
     }
@@ -136,6 +139,14 @@ public class Club extends AbstractEntity {
 
     public void setOpeningHours(OpeningHours openingHours) {
         this.openingHours = openingHours;
+    }
+
+    public Collection<VerificationRequest> getVerificationRequests() {
+        return verificationRequests;
+    }
+
+    public void setVerificationRequests(Collection<VerificationRequest> verificationRequests) {
+        this.verificationRequests = verificationRequests;
     }
 
     public void addCourt(TennisCourt court) {

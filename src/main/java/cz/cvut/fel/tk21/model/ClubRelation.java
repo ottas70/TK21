@@ -19,6 +19,7 @@ public class ClubRelation extends AbstractEntity{
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = UserRole.class)
     private Set<UserRole> roles = new HashSet<>();
 
     public Club getClub() {

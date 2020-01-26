@@ -2,8 +2,7 @@ package cz.cvut.fel.tk21.ws.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import cz.cvut.fel.tk21.model.FromToTime;
-import cz.cvut.fel.tk21.rest.dto.club.CourtDto;
-import cz.cvut.fel.tk21.rest.dto.club.SeasonDto;
+import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 
 import java.time.LocalDate;
