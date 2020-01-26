@@ -31,21 +31,19 @@ public class MailService {
     @Async
     public void sendEmailConfirmation(Mail mail){
         try{
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message,
-                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                    StandardCharsets.UTF_8.name());
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
 
             Context context = new Context();
             context.setVariables(mail.getModel());
             String html = templateEngine.process("EmailConfirmation", context);
 
-            helper.setTo(mail.getTo());
-            helper.setText(html, true);
-            helper.setSubject(mail.getSubject());
-            helper.setFrom(mail.getFrom());
+            message.setTo(mail.getTo());
+            message.setText(html, true);
+            message.setSubject(mail.getSubject());
+            message.setFrom(mail.getFrom());
 
-            javaMailSender.send(message);
+            javaMailSender.send(mimeMessage);
         } catch (MessagingException ex) {
             log.error("Error while sending an email: " + ex.getMessage());
         }
