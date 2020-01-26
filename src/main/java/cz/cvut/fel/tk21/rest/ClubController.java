@@ -12,6 +12,7 @@ import cz.cvut.fel.tk21.rest.dto.club.settings.MaxReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
 import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.service.OpeningHoursService;
 import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
@@ -32,6 +33,9 @@ public class ClubController {
 
     @Autowired
     private ClubService clubService;
+
+    @Autowired
+    private OpeningHoursService openingHoursService;
 
     @Autowired
     private ReservationService reservationService;
@@ -100,7 +104,7 @@ public class ClubController {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        clubService.updateRegularOpeningHours(openingHours, club.get());
+        openingHoursService.updateRegularOpeningHours(openingHours, club.get());
 
         return ResponseEntity.noContent().build();
     }

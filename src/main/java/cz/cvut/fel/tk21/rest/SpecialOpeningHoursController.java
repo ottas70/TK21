@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.rest.dto.club.SpecialOpeningHoursDto;
 import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.service.OpeningHoursService;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class SpecialOpeningHoursController {
     private ClubService clubService;
 
     @Autowired
+    private OpeningHoursService openingHoursService;
+
+    @Autowired
     private RequestBodyValidator validator;
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,7 +37,7 @@ public class SpecialOpeningHoursController {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        SpecialOpeningHoursDto result = clubService.getSpecialOpeningHourByDate(club.get(), date);
+        SpecialOpeningHoursDto result = openingHoursService.getSpecialOpeningHourByDate(club.get(), date);
         if(result == null) throw new NotFoundException("Toto datum má normální otevírací dobu");
 
         return result;
@@ -47,12 +51,12 @@ public class SpecialOpeningHoursController {
         clubOptional.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
         Club club = clubOptional.get();
 
-        if(clubService.hasThisDayRegularOpeningHours(club, date)){
-            clubService.addSpecialOpeningHour(club, date, special.getFrom(), special.getTo());
+        if(openingHoursService.hasThisDayRegularOpeningHours(club, date)){
+            openingHoursService.addSpecialOpeningHour(club, date, special.getFrom(), special.getTo());
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
 
-        clubService.updateSpecialOpeningHour(club, date, special.getFrom(), special.getTo());
+        openingHoursService.updateSpecialOpeningHour(club, date, special.getFrom(), special.getTo());
         return ResponseEntity.noContent().build();
     }
 
@@ -61,11 +65,11 @@ public class SpecialOpeningHoursController {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        if(clubService.hasThisDayRegularOpeningHours(club.get(), date)){
+        if(openingHoursService.hasThisDayRegularOpeningHours(club.get(), date)){
             return ResponseEntity.notFound().build();
         }
 
-        clubService.removeSpecialOpeningHour(club.get(), date);
+        openingHoursService.removeSpecialOpeningHour(club.get(), date);
         return ResponseEntity.noContent().build();
     }
 
@@ -77,11 +81,11 @@ public class SpecialOpeningHoursController {
         clubOptional.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
         Club club = clubOptional.get();
 
-        if(!clubService.hasThisDayRegularOpeningHours(club, date)){
+        if(!openingHoursService.hasThisDayRegularOpeningHours(club, date)){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        clubService.addSpecialOpeningHour(club, date, special.getFrom(), special.getTo());
+        openingHoursService.addSpecialOpeningHour(club, date, special.getFrom(), special.getTo());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
