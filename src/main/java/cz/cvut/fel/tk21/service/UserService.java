@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.UserRole;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
+import cz.cvut.fel.tk21.model.mail.Mail;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class UserService extends BaseService<UserDao, User> {
+
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -61,15 +65,9 @@ public class UserService extends BaseService<UserDao, User> {
 
         super.dao.persist(user);
 
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
-        mailMessage.setSubject("Potvrzení registrace");
-        mailMessage.setFrom("noreply@tk21.cz");
-        mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
-                + "http://195.181.209.16"
-                + "/#/overeni/"+ token.getConfirmationToken());
+        //Email with confirmation token
+        sendEmailConfirmationEmail(user.getEmail(), token.getConfirmationToken());
 
-        mailService.sendEmail(mailMessage);
         return user.getId();
     }
 
@@ -135,15 +133,8 @@ public class UserService extends BaseService<UserDao, User> {
 
         super.dao.update(user);
 
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
-        mailMessage.setSubject("Potvrzení registrace");
-        mailMessage.setFrom("noreply@tk21.cz");
-        mailMessage.setText("Pro potvrzení vaší emailové adresy klikněte prosím zde:\n\n"
-                + "http://195.181.209.16"
-                + "/#/overeni/"+ token.getConfirmationToken());
-
-        mailService.sendEmail(mailMessage);
+        //Email with confirmation token
+        sendEmailConfirmationEmail(user.getEmail(), token.getConfirmationToken());
     }
 
     @Transactional
@@ -158,6 +149,19 @@ public class UserService extends BaseService<UserDao, User> {
 
         user.setPassword(passwordEncoder.encode(newPass));
         this.update(user);
+    }
+
+    private void sendEmailConfirmationEmail(String email, String token){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(email);
+        mail.setSubject("Potvrzení emailové adresy");
+
+        Map<String, Object> model = new HashMap();
+        model.put("token", token);
+        mail.setModel(model);
+
+        mailService.sendEmailConfirmation(mail);
     }
 
 }
