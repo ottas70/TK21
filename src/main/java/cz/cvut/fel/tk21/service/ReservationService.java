@@ -89,8 +89,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(!club.getOpeningHours().isOpenedAtDate(date)) return null;
         FromToTime openingHours = club.getOpeningHours().getOpeningTimesAtDate(date);
         LocalTime from = openingHours.getFrom();
+        List<TennisCourt> availableCourts = club.getAllAvailableCourts(date);
         while(from.plusHours(1).isBefore(openingHours.getTo()) || from.plusHours(1).equals(openingHours.getTo())){
-            for (TennisCourt court : club.getCourts()){
+            for (TennisCourt court : availableCourts){
                 FromToTime reservationTime = new FromToTime(from, from.plusHours(1));
                 if(courtService.isCourtAvailable(club, court, date, reservationTime)){
                     return new AvailableCourtDto(court.getId(), reservationTime);
