@@ -1,12 +1,11 @@
 package cz.cvut.fel.tk21.dao;
 
-import cz.cvut.fel.tk21.model.Club;
-import cz.cvut.fel.tk21.model.ClubRelation;
-import cz.cvut.fel.tk21.model.User;
-import cz.cvut.fel.tk21.model.UserRole;
+import cz.cvut.fel.tk21.model.*;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ClubRelationDao extends BaseDao<ClubRelation> {
@@ -20,6 +19,25 @@ public class ClubRelationDao extends BaseDao<ClubRelation> {
                 "WHERE c.user = :user", ClubRelation.class)
                 .setParameter("user", user)
                 .getResultList();
+    }
+
+    public List<ClubRelation> findAllRelationsByClub(Club club){
+        return em.createQuery("SELECT c from ClubRelation c " +
+                "WHERE c.club = :club", ClubRelation.class)
+                .setParameter("club", club)
+                .getResultList();
+    }
+
+    public Optional<ClubRelation> findRelationByUserAndClub(User user, Club club){
+        try{
+            return Optional.ofNullable(em.createQuery("SELECT c FROM ClubRelation c " +
+                    "WHERE c.user = :user AND c.club = :club", ClubRelation.class)
+                    .setParameter("user", user)
+                    .setParameter("club", club)
+                    .getSingleResult());
+        } catch (NoResultException e){
+            return Optional.empty();
+        }
     }
 
     public boolean hasRole(User user, Club club, UserRole role){

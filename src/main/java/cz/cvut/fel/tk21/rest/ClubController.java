@@ -3,12 +3,10 @@ package cz.cvut.fel.tk21.rest;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
-import cz.cvut.fel.tk21.model.Club;
-import cz.cvut.fel.tk21.model.FromToTime;
-import cz.cvut.fel.tk21.model.Season;
-import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.*;
 import cz.cvut.fel.tk21.rest.dto.club.*;
+import cz.cvut.fel.tk21.rest.dto.club.member.MemberDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MaxReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
@@ -226,6 +224,45 @@ public class ClubController {
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
         clubService.updateDescription(club.get(), description);
+        return ResponseEntity.noContent().build();
+    }
+
+    /* *********************************
+     * MEMBERS
+     ********************************* */
+
+    @RequestMapping(value = "/{id}/members", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MemberDto> getClubMembers(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        List<ClubRelation> relations = clubRelationService.findAllRelationsByClub(club.get());
+        return relations.stream().map(MemberDto::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/{id}/member/{member_id}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<?> addRole(@PathVariable("id") Integer id, @PathVariable("member_id") Integer member_id, @RequestBody String role){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        final Optional<User> user = userService.find(member_id);
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
+
+        clubRelationService.addRole(club.get(), user.get(), UserRole.getRoleFromString(role));
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(value = "/{id}/member/{member_id}", method = RequestMethod.DELETE, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<?> deleteRole(@PathVariable("id") Integer id, @PathVariable("member_id") Integer member_id, @RequestBody String role){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        final Optional<User> user = userService.find(member_id);
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
+
+        clubRelationService.deleteRole(club.get(), user.get(), UserRole.getRoleFromString(role));
+
         return ResponseEntity.noContent().build();
     }
 

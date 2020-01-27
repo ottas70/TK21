@@ -1,6 +1,9 @@
 package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ClubRelationDao;
+import cz.cvut.fel.tk21.exception.BadRequestException;
+import cz.cvut.fel.tk21.exception.UnauthorizedException;
+import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
@@ -10,12 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelation> {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ClubService clubService;
 
     protected ClubRelationService(ClubRelationDao dao) {
         super(dao);
@@ -50,6 +57,41 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     @Transactional(readOnly = true)
     public List<ClubRelation> findAllRelationsByUser(User user){
         return dao.findAllRelationsByUser(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClubRelation> findAllRelationsByClub(Club club){
+        return dao.findAllRelationsByClub(club);
+    }
+
+    @Transactional
+    public void addRole(Club club, User user, UserRole role){
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(role == null) throw new BadRequestException("Špatný dotaz");
+
+        Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
+        relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
+        ClubRelation relation = relationOptional.get();
+
+        if(relation.getRoles().contains(role)) return;
+
+        relation.addRole(role);
+        this.update(relation);
+    }
+
+    @Transactional
+    public void deleteRole(Club club, User user, UserRole role){
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(role == null) throw new BadRequestException("Špatný dotaz");
+
+        Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
+        relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
+        ClubRelation relation = relationOptional.get();
+
+        if(!relation.getRoles().contains(role)) return;
+
+        relation.removeRole(role);
+        this.update(relation);
     }
 
 }
