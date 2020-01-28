@@ -21,7 +21,11 @@ public class Reservation extends AbstractEntity {
     @ManyToOne
     private User user;
 
-    @ManyToOne Club club;
+    @ManyToOne
+    private Club club;
+
+    @Column
+    private int cyclicReservationId; // 0 for non-cyclic reservation
 
     // for non-registered users
     @Column
@@ -63,6 +67,18 @@ public class Reservation extends AbstractEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public int getCyclicReservationId() {
+        return cyclicReservationId;
+    }
+
+    public void setCyclicReservationId(int cyclicReservationId) {
+        this.cyclicReservationId = cyclicReservationId;
+    }
+
+    public boolean isCyclicReservation(){
+        return cyclicReservationId != 0;
     }
 
     public String getEmail() {

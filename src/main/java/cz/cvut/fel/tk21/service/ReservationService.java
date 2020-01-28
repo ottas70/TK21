@@ -14,6 +14,7 @@ import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -102,8 +103,8 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         return null;
     }
 
-    @Transactional
-    public void createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Reservation createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
         if(!isCurrentUserAllowedToCreateReservation(club)) throw new UnauthorizedException("Nemáte oprávnění vytvářet rezervaci");
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
         if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
@@ -127,10 +128,11 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
         reservation.setClub(club);
         reservation.setTennisCourt(court);
+        reservation.setDate(date);
 
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici");
 
-        dao.persist(reservation);
+        return dao.persist(reservation);
     }
 
     @Transactional
@@ -177,6 +179,11 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional(readOnly = true)
     public Optional<Reservation> findReservationByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
         return dao.findAllReservationsByCourtIdDateAndTime(courtId, date, time);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Reservation> findReservationByCyclicId(Integer cyclidId){
+        return dao.findAllReservationsByCyclicId(cyclidId);
     }
 
     @Transactional

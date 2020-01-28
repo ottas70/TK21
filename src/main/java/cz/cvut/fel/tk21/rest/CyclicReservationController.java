@@ -1,0 +1,108 @@
+package cz.cvut.fel.tk21.rest;
+
+import cz.cvut.fel.tk21.exception.BadRequestException;
+import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.CyclicReservation;
+import cz.cvut.fel.tk21.model.Reservation;
+import cz.cvut.fel.tk21.model.TennisCourt;
+import cz.cvut.fel.tk21.rest.dto.reservation.CreateCyclicReservationDto;
+import cz.cvut.fel.tk21.rest.dto.reservation.CyclicReservationReport;
+import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
+import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.service.CourtService;
+import cz.cvut.fel.tk21.service.CyclicReservationService;
+import cz.cvut.fel.tk21.service.ReservationService;
+import cz.cvut.fel.tk21.util.RequestBodyValidator;
+import cz.cvut.fel.tk21.ws.dto.UpdateReservationMessage;
+import cz.cvut.fel.tk21.ws.dto.UpdateType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("api/reservation/cyclic")
+public class CyclicReservationController {
+
+    @Autowired
+    private RequestBodyValidator validator;
+
+    @Autowired
+    private CourtService courtService;
+
+    @Autowired
+    private CyclicReservationService cyclicReservationService;
+
+    @Autowired
+    private ClubService clubService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @RequestMapping(value = "/club/{club_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CyclicReservationReport createCyclicReservation(@PathVariable("club_id") Integer club_id, @RequestParam @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @RequestBody CreateCyclicReservationDto dto){
+        validator.validate(dto);
+        if(dto.getDaysInBetween() < 1) throw new BadRequestException("Špatná dotaz");
+        if(!date.equals(dto.getDate())) throw new BadRequestException("Datumy se neshodují");
+
+        Optional<Club> club = clubService.find(club_id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        Optional<TennisCourt> tennisCourt = courtService.findCourtInClub(club.get(), dto.getCourtId());
+        tennisCourt.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+
+        CyclicReservation cyclicReservation = cyclicReservationService.createCyclicReservation(dto.getDaysInBetween());
+        CyclicReservationReport report =  cyclicReservationService.createReservationsBasedOnCyclicReservation(cyclicReservation, dto, club.get(), date);
+        report.setId(cyclicReservation.getId());
+
+        List<Reservation> createdReservations = cyclicReservationService.findAllReservationsByCyclicID(cyclicReservation.getId());
+
+        //Websocket messages for subscribers
+        for(Reservation reservation : createdReservations){
+            String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+            String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
+            this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.CREATE, reservation));
+        }
+
+        return report;
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ReservationDto> getCyclicReservationById(@PathVariable("id") Integer id){
+        Optional<CyclicReservation> cyclicReservationOptional = cyclicReservationService.find(id);
+        cyclicReservationOptional.orElseThrow(() -> new NotFoundException("Rezervace nebyla nalezena"));
+        CyclicReservation cyclicReservation = cyclicReservationOptional.get();
+
+        return cyclicReservationService.findAllReservationsByCyclicID(cyclicReservation.getId())
+                .stream().map(ReservationDto::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteCyclicReservationById(@PathVariable("id") Integer id){
+        Optional<CyclicReservation> cyclicReservationOptional = cyclicReservationService.find(id);
+        cyclicReservationOptional.orElseThrow(() -> new NotFoundException("Rezervace nebyla nalezena"));
+        CyclicReservation cyclicReservation = cyclicReservationOptional.get();
+
+        List<Reservation> reservations = cyclicReservationService.deleteCyclicReservation(cyclicReservation);
+
+        //Websocket messages for subscribers
+        for(Reservation reservation : reservations){
+            String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+            String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
+            this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.DELETE, reservation));
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+}

@@ -48,4 +48,11 @@ public class ReservationDao extends BaseDao<Reservation> {
         }
     }
 
+    public List<Reservation> findAllReservationsByCyclicId(int id){
+        return em.createQuery("SELECT r FROM Reservation r " +
+                "WHERE r.cyclicReservationId = :id", Reservation.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
 }
