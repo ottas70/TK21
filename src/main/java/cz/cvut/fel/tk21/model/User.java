@@ -57,6 +57,10 @@ public class User extends AbstractEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Collection<VerificationRequest> verificationRequests;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    private Collection<Post> posts;
+
     public String getName() {
         return name;
     }
@@ -119,5 +123,21 @@ public class User extends AbstractEntity {
 
     public void setReservations(Collection<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public Collection<VerificationRequest> getVerificationRequests() {
+        return verificationRequests;
+    }
+
+    public void setVerificationRequests(Collection<VerificationRequest> verificationRequests) {
+        this.verificationRequests = verificationRequests;
+    }
+
+    public Collection<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Collection<Post> posts) {
+        this.posts = posts;
     }
 }

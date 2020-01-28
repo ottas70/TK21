@@ -47,8 +47,8 @@ public abstract class BaseService<T extends BaseDao<R>, R extends AbstractEntity
 
     @Override
     @Transactional
-    public void persist(R entity) {
-        dao.persist(entity);
+    public R persist(R entity) {
+        return dao.persist(entity);
     }
 
     @Override

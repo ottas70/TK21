@@ -30,8 +30,9 @@ public interface GenericDao<T> {
      * Persists the specified entity.
      *
      * @param entity Entity to persist
+     * @return Persisted entity
      */
-    void persist(T entity);
+    T persist(T entity);
 
     /**
      * Persists the specified instances.

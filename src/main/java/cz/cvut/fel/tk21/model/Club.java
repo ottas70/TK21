@@ -55,6 +55,9 @@ public class Club extends AbstractEntity {
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<VerificationRequest> verificationRequests;
 
+    @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
+    private Collection<Post> posts;
+
     public String getName() {
         return name;
     }
@@ -158,6 +161,14 @@ public class Club extends AbstractEntity {
 
     public void setVerificationRequests(Collection<VerificationRequest> verificationRequests) {
         this.verificationRequests = verificationRequests;
+    }
+
+    public Collection<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Collection<Post> posts) {
+        this.posts = posts;
     }
 
     public void addCourt(TennisCourt court) {

@@ -47,10 +47,11 @@ public abstract class BaseDao<T extends AbstractEntity> implements GenericDao<T>
         }
     }
 
-    public void persist(T entity) {
+    public T persist(T entity) {
         Objects.requireNonNull(entity);
         try {
             em.persist(entity);
+            return entity;
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }

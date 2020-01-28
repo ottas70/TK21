@@ -40,8 +40,9 @@ public interface GenericService<T> {
     /**
      * Persists entity
      * @param entity entity to be persisted
+     * @return Persisted entity
      */
-    void persist(T entity);
+    T persist(T entity);
 
     /**
      * Persists all entities in given collection.
