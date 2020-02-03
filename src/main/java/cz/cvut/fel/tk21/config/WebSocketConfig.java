@@ -48,9 +48,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //TODO remove origin
         registry.addEndpoint("/websocket")
                 .setAllowedOrigins("*")
-                .addInterceptors(httpSessionHandshakeInterceptor());
-                //.withSockJS()
-                //.setInterceptors(httpSessionHandshakeInterceptor());
+                .withSockJS()
+                .setInterceptors(httpSessionHandshakeInterceptor());
     }
 
     @Bean
