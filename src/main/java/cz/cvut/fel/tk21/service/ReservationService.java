@@ -89,7 +89,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     public AvailableCourtDto findNearestAvailableTime(Club club, LocalDate date){
         if(!club.getOpeningHours().isOpenedAtDate(date)) return null;
         FromToTime openingHours = club.getOpeningHours().getOpeningTimesAtDate(date);
+        LocalTime now = LocalTime.now();
         LocalTime from = openingHours.getFrom();
+        if(now.isAfter(from)) from = now.plusHours(1).withMinute(0).withSecond(0);
         List<TennisCourt> availableCourts = club.getAllAvailableCourts(date);
         while(from.plusHours(1).isBefore(openingHours.getTo()) || from.plusHours(1).equals(openingHours.getTo())){
             for (TennisCourt court : availableCourts){
