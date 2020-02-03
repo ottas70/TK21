@@ -11,10 +11,16 @@ public class PropertiesDto {
 
     private int maxReservation;
 
+    private String name;
+
+    private String description;
+
     public PropertiesDto(Club club) {
         this.reservationPermission = club.getReservationPermission();
         this.minReservation = club.getMinReservationTime();
         this.maxReservation = club.getMaxReservationTime();
+        this.name = club.getName();
+        this.description = club.getDescription();
     }
 
     public ReservationPermission getReservationPermission() {
@@ -39,5 +45,21 @@ public class PropertiesDto {
 
     public void setMaxReservation(int maxReservation) {
         this.maxReservation = maxReservation;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
