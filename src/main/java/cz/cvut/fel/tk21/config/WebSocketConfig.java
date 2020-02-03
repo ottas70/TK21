@@ -1,5 +1,7 @@
 package cz.cvut.fel.tk21.config;
 
+import cz.cvut.fel.tk21.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -14,6 +16,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -44,8 +48,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //TODO remove origin
         registry.addEndpoint("/websocket")
                 .setAllowedOrigins("*")
-                .withSockJS()
-                .setInterceptors(httpSessionHandshakeInterceptor());
+                .addInterceptors(httpSessionHandshakeInterceptor());
+                //.withSockJS()
+                //.setInterceptors(httpSessionHandshakeInterceptor());
     }
 
     @Bean
@@ -59,7 +64,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     HttpServletRequest servletRequest = servletServerRequest.getServletRequest();
                     Cookie token = WebUtils.getCookie(servletRequest, "Credentials");
                     if (token == null) {
-                        map.put("token", "null");
+                        map.put("token", "none");
                     } else {
                         map.put("token", token.getValue());
                     }
@@ -84,9 +89,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
                     String token = (String) sessionAttributes.get("token");
-                    if(token != null){
-                        //Principal user = ... ;
-                        //accessor.setUser();
+                    if(!token.equals("none")){
+                        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                            Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                            if(user instanceof Principal){
+                                accessor.setUser((Principal) user);
+                            }
+                        }
                     }
                 }
 

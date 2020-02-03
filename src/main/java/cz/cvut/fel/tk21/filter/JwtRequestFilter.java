@@ -27,8 +27,6 @@ import java.io.OutputStream;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -42,28 +40,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authCookie.getValue();
         }
 
-        String username = null;
+        UserDetails userDetails = jwtUtil.retrieveUserDetails(jwt);
 
-        if(jwt != null && !jwt.equals("")){
-            try{
-                username = jwtUtil.extractUsername(jwt);
-            } catch (JwtException ex){
-                username = null;
-            }
-        }
-
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = null;
-            try{
-                userDetails = userDetailsService.loadUserByUsername(username);
-            } catch (UsernameNotFoundException ex){
-                userDetails = null;
-            }
-            if(userDetails != null && jwtUtil.isTokenValid(jwt, userDetails)){
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
+        if(userDetails != null){
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
