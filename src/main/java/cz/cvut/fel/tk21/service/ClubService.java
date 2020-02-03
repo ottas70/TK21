@@ -144,6 +144,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateMinReservationTime(Club club, int time){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(time < 0) time = 0;
         club.setMinReservationTime(time);
         this.update(club);
     }
@@ -151,6 +152,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateMaxReservationTime(Club club, int time){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(time < 0) time = 0;
         club.setMaxReservationTime(time);
         this.update(club);
     }
