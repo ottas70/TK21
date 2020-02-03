@@ -105,10 +105,10 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Reservation createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
-        if(!isCurrentUserAllowedToCreateReservation(club)) throw new UnauthorizedException("Nemáte oprávnění vytvářet rezervaci");
-        if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
-        if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
-        if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
+        if(!isCurrentUserAllowedToCreateReservation(club)) throw new UnauthorizedException("Nemáte oprávnění vytvářet rezervaci.");
+        if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
+        if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
+        if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
 
         Reservation reservation = dto.getEntity();
         User currentUser = userService.getCurrentUser();
@@ -119,18 +119,18 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             reservation.setUser(currentUser);
         }
 
-        if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje");
-        if(reservation.getDuration() < club.getMinReservationTime() || (reservation.getDuration() > club.getMaxReservationTime()) && club.getMaxReservationTime() != 0) throw new ValidationException("Trvání rezervace nevyhovuje požadavkům klubu");
+        if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje.");
+        if(reservation.getDuration() < club.getMinReservationTime() || (reservation.getDuration() > club.getMaxReservationTime()) && club.getMaxReservationTime() != 0) throw new ValidationException("Trvání rezervace nevyhovuje požadavkům klubu.");
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(club, dto.getCourtId());
-        courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+        courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen."));
         TennisCourt court = courtOptional.get();
 
         reservation.setClub(club);
         reservation.setTennisCourt(court);
         reservation.setDate(date);
 
-        if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici");
+        if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici.");
 
         return dao.persist(reservation);
     }
@@ -148,16 +148,16 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void updateReservation(Reservation reservation, UpdateReservationDto updateDto){
-        if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut");
-        if(!updateDto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace");
-        if(updateDto.getDate().isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
-        if(updateDto.getDate().equals(LocalDate.now()) && updateDto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat");
+        if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut.");
+        if(!updateDto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
+        if(updateDto.getDate().isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
+        if(updateDto.getDate().equals(LocalDate.now()) && updateDto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(reservation.getClub(), updateDto.getCourtId());
-        courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
+        courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen."));
         TennisCourt court = courtOptional.get();
 
-        if(!courtService.isCourtAvailableForUpdate(reservation.getClub(), court, updateDto.getDate(), updateDto.getTime(), reservation)) throw new ValidationException("Kurt není v tento čas k dispozici");
+        if(!courtService.isCourtAvailableForUpdate(reservation.getClub(), court, updateDto.getDate(), updateDto.getTime(), reservation)) throw new ValidationException("Kurt není v tento čas k dispozici.");
 
         reservation.setTennisCourt(court);
         reservation.setDate(updateDto.getDate());
