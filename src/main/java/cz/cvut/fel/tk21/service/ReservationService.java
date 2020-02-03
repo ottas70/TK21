@@ -105,7 +105,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Reservation createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
-        if(!isCurrentUserAllowedToCreateReservation(club)) throw new UnauthorizedException("Nemáte oprávnění vytvářet rezervaci.");
+        checkReservationPermission(club);
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
         if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
         if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
@@ -144,6 +144,15 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             return clubRelationService.isMemberOf(club, user);
         }
         return false;
+    }
+
+    @Transactional
+    public void checkReservationPermission(Club club){
+        User user = userService.getCurrentUser();
+        if(club.getReservationPermission() == ReservationPermission.SIGNED && user == null) throw new UnauthorizedException("NOT SIGNED IN");
+        if(club.getReservationPermission() == ReservationPermission.CLUB_MEMBERS && user == null) throw new UnauthorizedException("NOT SIGNED IN");
+        if(club.getReservationPermission() == ReservationPermission.CLUB_MEMBERS
+                && !clubRelationService.isMemberOf(club, user)) throw new UnauthorizedException("NOT A MEMBER");
     }
 
     @Transactional
