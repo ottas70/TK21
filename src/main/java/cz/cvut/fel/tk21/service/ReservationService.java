@@ -138,7 +138,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional
     public boolean isCurrentUserAllowedToCreateReservation(Club club){
         User user = userService.getCurrentUser();
-        if(user == null && club.getReservationPermission() == ReservationPermission.ANYONE) return true;
+        if(club.getReservationPermission() == ReservationPermission.ANYONE) return true;
         if(user != null && club.getReservationPermission() == ReservationPermission.SIGNED) return true;
         if(club.getReservationPermission() ==  ReservationPermission.CLUB_MEMBERS){
             return clubRelationService.isMemberOf(club, user);
