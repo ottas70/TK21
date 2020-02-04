@@ -8,17 +8,9 @@ import cz.cvut.fel.tk21.service.storage.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -44,7 +36,7 @@ public class DataInitializer implements ApplicationRunner {
     private FileStorageService fileStorageService;
 
     @Override
-    public void run(ApplicationArguments args) throws IOException {
+    public void run(ApplicationArguments args) {
         User user1 = new User();
         user1.setName("Otto");
         user1.setSurname("Vodvářka");
@@ -109,24 +101,6 @@ public class DataInitializer implements ApplicationRunner {
         relation2.setUser(user2);
         relation2.addRole(UserRole.ADMIN);
         clubRelationService.persist(relation2);
-
-
-        BufferedImage image = ImageIO.read(new URL("https://miro.medium.com/max/1120/1*Pu8o7uwrCaQt0ozbMksj8w.png"));
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image,"png",byteArrayOutputStream);
-        byteArrayOutputStream.flush();
-        String fileName = "abxezevcecececec" + ".png";
-
-        /********
-         * Step 6
-         * Now Create MultipartFile using MockMultipartFile by providing
-         * @param fileName name of the file
-         * @param imageType like "image/jpg"
-         * @param ByteArray from ByteArrayOutputStream
-         ********/
-        MultipartFile multipartFile = new MockMultipartFile(fileName,fileName,"image/png",byteArrayOutputStream.toByteArray());
-        byteArrayOutputStream.close(); // Close once it is done saving
-        fileStorageService.storeImage(multipartFile);   // call your upload/save method here
     }
 
     private OpeningHours getInitialOpeningHours(){
