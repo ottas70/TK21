@@ -1,6 +1,8 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.config.properties.FileStorageProperties;
 import cz.cvut.fel.tk21.dao.PostDao;
+import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Post;
@@ -8,9 +10,11 @@ import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.rest.dto.club.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
 import cz.cvut.fel.tk21.rest.dto.post.*;
+import cz.cvut.fel.tk21.service.storage.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +29,9 @@ public class PostService extends BaseService<PostDao, Post> {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     protected PostService(PostDao dao) {
         super(dao);
@@ -74,6 +81,26 @@ public class PostService extends BaseService<PostDao, Post> {
                 .stream().map(PostWithClubDto::new).collect(Collectors.toList());
         int lastPage = (int) Math.ceil(dao.countPostsByUser(user) / (double)size);
         return new PostsWithClubPaginatedDto(posts, page, lastPage);
+    }
+
+    @Transactional
+    public void uploadPostImages(Post post, MultipartFile[] files){
+        if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
+        for (MultipartFile file : files){
+            String filename = fileStorageService.storeImage(file);
+            post.addImage(filename);
+        }
+        this.update(post);
+    }
+
+    @Transactional
+    public void deletePostImage(Post post, String filename){
+        if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
+        if(!post.getImages().contains(filename)) throw new NotFoundException("Obrázek nebyl nalezen");
+
+        fileStorageService.deleteFile(filename);
+        post.removeImage(filename);
+        this.update(post);
     }
 
 }

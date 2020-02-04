@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,6 +112,28 @@ public class PostController {
         postService.deletePost(post.get());
 
         return ResponseEntity.noContent().build();
+    }
+
+    /* *********************************
+     * IMAGES
+     ********************************* */
+
+    @RequestMapping(value = "/{postId}/uploadFiles", method = RequestMethod.POST)
+    public ResponseEntity<?> uploadPostImages(@PathVariable("postId") Integer post_id, @RequestParam MultipartFile[] files){
+        final Optional<Post> post = postService.find(post_id);
+        post.orElseThrow(() -> new NotFoundException("Příspěvek nebyl nalezen"));
+
+        postService.uploadPostImages(post.get(), files);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(value = "/{postId}/{filename}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteImage(@PathVariable("postId") Integer post_id, @PathVariable("filename") String filename){
+        final Optional<Post> post = postService.find(post_id);
+        post.orElseThrow(() -> new NotFoundException("Příspěvek nebyl nalezen"));
+
+        postService.deletePostImage(post.get(), filename);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

@@ -6,6 +6,7 @@ import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.rest.dto.CreatedAtDto;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 
 public class PostDto {
 
@@ -21,14 +22,10 @@ public class PostDto {
     @NotBlank
     private String description;
 
-    public PostDto() {
-    }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Collection<String> images;
 
-    public PostDto(int id, CreatedAtDto created_at, String title, String description) {
-        this.id = id;
-        this.created_at = created_at;
-        this.title = title;
-        this.description = description;
+    public PostDto() {
     }
 
     public PostDto(Post post){
@@ -36,6 +33,7 @@ public class PostDto {
         this.created_at = new CreatedAtDto(post.getCreatedAt());
         this.title = post.getTitle();
         this.description = post.getDescription();
+        this.images = post.getImages();
     }
 
     public int getId() {
@@ -68,6 +66,14 @@ public class PostDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Collection<String> getImages() {
+        return images;
+    }
+
+    public void setImages(Collection<String> images) {
+        this.images = images;
     }
 
     @JsonIgnore
