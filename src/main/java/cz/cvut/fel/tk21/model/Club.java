@@ -11,14 +11,15 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Table(name = "Club")
+@Table(name = "Club",
+        indexes = {@Index(name = "nameSearch_index", columnList = "nameSearch", unique = false)})
 public class Club extends AbstractEntity {
 
     @Column(nullable = false)
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "nameSearch", nullable = false)
     private String nameSearch;
 
     @Column

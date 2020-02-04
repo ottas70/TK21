@@ -9,7 +9,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "User",
+        indexes = {@Index(name = "email_index", columnList = "email", unique = true)})
 @NamedQueries({
         @NamedQuery(name = "User.getByEmail", query = "select u from User u where u.email=:email")
 })
@@ -26,7 +27,7 @@ public class User extends AbstractEntity {
     private String surname;
 
     @Basic(optional = false)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, name = "email")
     @NotBlank(message = "Email is mandatory")
     @Email
     private String email;
