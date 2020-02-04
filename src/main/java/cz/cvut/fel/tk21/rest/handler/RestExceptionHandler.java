@@ -59,4 +59,9 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorInfo> unauthorizedException(HttpServletRequest request, UnauthorizedException e) {
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorInfo> fileStorageException(HttpServletRequest request, FileStorageException e) {
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
