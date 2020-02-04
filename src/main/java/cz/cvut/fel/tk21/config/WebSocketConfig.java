@@ -16,8 +16,10 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -38,6 +40,9 @@ import java.util.Map;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
@@ -48,8 +53,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //TODO remove origin
         registry.addEndpoint("/websocket")
                 .setAllowedOrigins("*")
-                .withSockJS()
-                .setInterceptors(httpSessionHandshakeInterceptor());
+                .addInterceptors(httpSessionHandshakeInterceptor());
     }
 
     @Bean
@@ -89,15 +93,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
                     String token = (String) sessionAttributes.get("token");
                     if(!token.equals("none")){
-                        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                            Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                            if(user instanceof Principal){
-                                accessor.setUser((Principal) user);
-                            }
+                        UserDetails userDetails = jwtUtil.retrieveUserDetails(token);
+                        if(userDetails != null){
+                            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            accessor.setUser(usernamePasswordAuthenticationToken);
                         }
                     }
                 }
-
                 return message;
             }
         });

@@ -18,15 +18,18 @@ public class ReservationDto {
 
     private int clubId;
 
+    private boolean editable;
+
     public ReservationDto() {
     }
 
-    public ReservationDto(Reservation reservation) {
+    public ReservationDto(Reservation reservation, boolean editable) {
         this.id = reservation.getId();
         this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
         this.clubId = reservation.getClub().getId();
+        this.editable = editable;
     }
 
     public int getId() {

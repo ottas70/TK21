@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.ws.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import cz.cvut.fel.tk21.model.FromToTime;
+import cz.cvut.fel.tk21.model.ReservationPermission;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 
@@ -24,6 +25,10 @@ public class ReservationMessage {
     private List<CourtDto> courts;
 
     private List<ReservationDto> reservations;
+
+    private ReservationPermission reservationPermission;
+
+    private boolean isAuthorized;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     public LocalDate getDate() {
@@ -80,5 +85,21 @@ public class ReservationMessage {
 
     public void setReservations(List<ReservationDto> reservations) {
         this.reservations = reservations;
+    }
+
+    public ReservationPermission getReservationPermission() {
+        return reservationPermission;
+    }
+
+    public void setReservationPermission(ReservationPermission reservationPermission) {
+        this.reservationPermission = reservationPermission;
+    }
+
+    public boolean isAuthorized() {
+        return isAuthorized;
+    }
+
+    public void setAuthorized(boolean authorized) {
+        isAuthorized = authorized;
     }
 }

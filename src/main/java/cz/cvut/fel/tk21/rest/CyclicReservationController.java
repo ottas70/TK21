@@ -43,6 +43,9 @@ public class CyclicReservationController {
     private CyclicReservationService cyclicReservationService;
 
     @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
     private ClubService clubService;
 
     @Autowired
@@ -83,7 +86,9 @@ public class CyclicReservationController {
         CyclicReservation cyclicReservation = cyclicReservationOptional.get();
 
         return cyclicReservationService.findAllReservationsByCyclicID(cyclicReservation.getId())
-                .stream().map(ReservationDto::new).collect(Collectors.toList());
+                .stream()
+                .map(r -> new ReservationDto(r, reservationService.isCurrentUserAllowedToEditReservation(r)))
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

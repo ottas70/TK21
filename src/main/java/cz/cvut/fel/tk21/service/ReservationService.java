@@ -43,7 +43,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     }
 
     @Transactional(readOnly = true)
-    public ReservationMessage initialReservationMessage(Club club, LocalDate date){
+    public ReservationMessage initialReservationMessage(Club club, LocalDate date, User user){
         ReservationMessage message = new ReservationMessage();
 
         Season season = club.getSeasonByDate(date);
@@ -66,7 +66,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         message.setOpeningHours(club.getOpeningHoursByDate(date));
         message.setFirstAvailableTime(findNearestAvailableTime(club, date));
         message.setCourts(club.getAllAvailableCourts(date).stream().map(CourtDto::new).collect(Collectors.toList()));
-        message.setReservations(reservations.stream().map(ReservationDto::new).collect(Collectors.toList()));
+        message.setReservations(reservations.stream().map(r -> new ReservationDto(r, isUserAllowedToEditReservation(user, r))).collect(Collectors.toList()));
+        message.setReservationPermission(club.getReservationPermission());
+        message.setAuthorized(isUserAllowedToCreateReservation(user, club));
 
         return message;
     }
@@ -140,12 +142,28 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional
     public boolean isCurrentUserAllowedToCreateReservation(Club club){
         User user = userService.getCurrentUser();
+        return isUserAllowedToCreateReservation(user, club);
+    }
+
+    @Transactional
+    public boolean isUserAllowedToCreateReservation(User user, Club club){
         if(club.getReservationPermission() == ReservationPermission.ANYONE) return true;
         if(user != null && club.getReservationPermission() == ReservationPermission.SIGNED) return true;
         if(club.getReservationPermission() ==  ReservationPermission.CLUB_MEMBERS){
             return clubRelationService.isMemberOf(club, user);
         }
         return false;
+    }
+
+    @Transactional
+    public boolean isCurrentUserAllowedToEditReservation(Reservation reservation){
+        return isUserAllowedToEditReservation(userService.getCurrentUser(), reservation);
+    }
+
+    @Transactional
+    public boolean isUserAllowedToEditReservation(User user, Reservation reservation){
+        if(user == null) return false;
+        return reservation.getUser().getId() == user.getId() || clubService.isUserAllowedToManageThisClub(user, reservation.getClub());
     }
 
     @Transactional
@@ -159,7 +177,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void updateReservation(Reservation reservation, UpdateReservationDto updateDto){
-        if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut.");
+        if(isUserAllowedToEditReservation(userService.getCurrentUser(), reservation)) throw new UnauthorizedException("Přístup zamítnut.");
         if(!updateDto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
         if(updateDto.getDate().isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
         if(updateDto.getDate().equals(LocalDate.now()) && updateDto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");

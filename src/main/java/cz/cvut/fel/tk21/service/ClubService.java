@@ -86,6 +86,12 @@ public class ClubService extends BaseService<ClubDao, Club> {
         return clubRelationService.hasRole(club, user, UserRole.ADMIN);
     }
 
+    @Transactional
+    public boolean isUserAllowedToManageThisClub(User user, Club club){
+        if(user == null) return false;
+        return clubRelationService.hasRole(club, user, UserRole.ADMIN);
+    }
+
     @Transactional(readOnly = true)
     public ClubSearchDto findAllPaginated(int page, int size) {
         return searchForClubsByName("", page, size);

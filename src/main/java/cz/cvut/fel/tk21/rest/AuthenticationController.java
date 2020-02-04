@@ -53,9 +53,10 @@ public class AuthenticationController {
 
         final User user = userService.findUserByEmail(userDetails.getUsername()).get();
 
+        //TODO add secure flag when using HTTPS
                 HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + token + ";" +
-                "HttpOnly=True");
+                "HttpOnly=True;Path=/");
 
         return new ResponseEntity<>(user, responseHeaders, HttpStatus.OK);
     }
@@ -64,7 +65,7 @@ public class AuthenticationController {
     public ResponseEntity<?> logout() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
-                "Max-Age=0;HttpOnly=True");
+                "Max-Age=0;HttpOnly=True;Path=/");
 
         return ResponseEntity.noContent().headers(responseHeaders).build();
     }

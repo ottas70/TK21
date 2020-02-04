@@ -5,6 +5,7 @@ import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.security.UserDetails;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -38,7 +40,12 @@ public class WebSocketController {
     @MessageMapping("/ws/reservation/{clubId}")
     @SendToUser("/topic/reservation/{clubId}")
     public ReservationMessage initialMessage(@DestinationVariable Integer clubId, @Payload(required = false) DateDto date, Principal principal){
-        //User user = userService.getCurrentUser();
+        User user = null;
+
+        if(principal != null){
+            UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) principal;
+            user = extractUserFromPrincipal(auth);
+        }
 
         Optional<Club> club = clubService.find(clubId);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
@@ -50,13 +57,18 @@ public class WebSocketController {
             myDate = date.getDate();
         }
 
-        return reservationService.initialReservationMessage(club.get(), myDate);
+        return reservationService.initialReservationMessage(club.get(), myDate, user);
     }
 
     @MessageExceptionHandler
     @SendToUser("/topic/error")
     public String handleException(Exception ex){
         return ex.getMessage();
+    }
+
+    private User extractUserFromPrincipal(UsernamePasswordAuthenticationToken auth){
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        return userDetails.getUser();
     }
 
 }
