@@ -72,4 +72,12 @@ public class ReservationDto {
     public void setClubId(int clubId) {
         this.clubId = clubId;
     }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
 }
