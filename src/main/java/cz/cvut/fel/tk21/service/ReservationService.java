@@ -66,7 +66,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         message.setOpeningHours(club.getOpeningHoursByDate(date));
         message.setFirstAvailableTime(findNearestAvailableTime(club, date));
         message.setCourts(club.getAllAvailableCourts(date).stream().map(CourtDto::new).collect(Collectors.toList()));
-        message.setReservations(reservations.stream().map(r -> new ReservationDto(r, isUserAllowedToEditReservation(user, r))).collect(Collectors.toList()));
+        message.setReservations(reservations.stream().map(r -> new ReservationDto(r, isUserAllowedToEditReservation(user, r), isOwner(r, user))).collect(Collectors.toList()));
         message.setReservationPermission(club.getReservationPermission());
         message.setAuthorized(isUserAllowedToCreateReservation(user, club));
 
@@ -164,6 +164,17 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     public boolean isUserAllowedToEditReservation(User user, Reservation reservation){
         if(user == null) return false;
         return reservation.getUser().getId() == user.getId() || clubService.isUserAllowedToManageThisClub(user, reservation.getClub());
+    }
+
+    @Transactional
+    public boolean isMine(Reservation reservation){
+        return isOwner(reservation, userService.getCurrentUser());
+    }
+
+    @Transactional
+    public boolean isOwner(Reservation reservation, User user){
+        if(user == null) return false;
+        return reservation.getUser().getId() == user.getId();
     }
 
     @Transactional

@@ -20,16 +20,19 @@ public class ReservationDto {
 
     private boolean editable;
 
+    private boolean mine;
+
     public ReservationDto() {
     }
 
-    public ReservationDto(Reservation reservation, boolean editable) {
+    public ReservationDto(Reservation reservation, boolean editable, boolean mine) {
         this.id = reservation.getId();
         this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
+        this.mine = mine;
     }
 
     public int getId() {
@@ -79,5 +82,13 @@ public class ReservationDto {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+    }
+
+    public boolean isMine() {
+        return mine;
+    }
+
+    public void setMine(boolean mine) {
+        this.mine = mine;
     }
 }

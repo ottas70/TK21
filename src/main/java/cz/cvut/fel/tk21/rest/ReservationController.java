@@ -50,7 +50,7 @@ public class ReservationController {
         reservationOptional.orElseThrow(() -> new NotFoundException("Rezervace nebyla nalezena"));
         Reservation reservation = reservationOptional.get();
 
-        return new ReservationDto(reservation, reservationService.isCurrentUserAllowedToEditReservation(reservation));
+        return new ReservationDto(reservation, reservationService.isCurrentUserAllowedToEditReservation(reservation), reservationService.isMine(reservation));
     }
 
     @RequestMapping(value = "/club/{clubId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +60,7 @@ public class ReservationController {
 
         List<Reservation> reservations = reservationService.findAllReservationsByClubAndDate(club.get(), date);
         return reservations.stream()
-                .map(r -> new ReservationDto(r, reservationService.isCurrentUserAllowedToEditReservation(r)))
+                .map(r -> new ReservationDto(r, reservationService.isCurrentUserAllowedToEditReservation(r), reservationService.isMine(r)))
                 .collect(Collectors.toList());
     }
 
@@ -81,7 +81,7 @@ public class ReservationController {
         String destination = "/topic/reservation/" + id + "/" + formattedDate;
         this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.CREATE, reservation.get()));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation.get(), reservationService.isCurrentUserAllowedToEditReservation(reservation.get())));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation.get(), reservationService.isCurrentUserAllowedToEditReservation(reservation.get()), reservationService.isMine(reservation.get())));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)

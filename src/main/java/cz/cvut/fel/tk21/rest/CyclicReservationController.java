@@ -87,7 +87,7 @@ public class CyclicReservationController {
 
         return cyclicReservationService.findAllReservationsByCyclicID(cyclicReservation.getId())
                 .stream()
-                .map(r -> new ReservationDto(r, reservationService.isCurrentUserAllowedToEditReservation(r)))
+                .map(r -> new ReservationDto(r, reservationService.isCurrentUserAllowedToEditReservation(r), reservationService.isMine(r)))
                 .collect(Collectors.toList());
     }
 
