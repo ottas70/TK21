@@ -101,7 +101,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     public ClubSearchDto searchForClubsByName(String name, int page, int size){
         List<ClubDto> clubs = new ArrayList<>();
         for(Club club : dao.findClubsByName(name, page, size)){
-            clubs.add(new ClubDto(club, this.isCurrentUserAllowedToManageThisClub(club), reservationService.isCurrentUserAllowedToCreateReservation(club)));
+            clubs.add(new ClubDto(club, this.isCurrentUserAllowedToManageThisClub(club), reservationService.isCurrentUserAllowedToCreateReservation(club), clubRelationService.isCurrentUserMemberOf(club)));
         }
         int lastPage = (int) Math.ceil(dao.countClubsByName(name) / (double)size);
         return new ClubSearchDto(clubs, page, lastPage);

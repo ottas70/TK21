@@ -31,22 +31,27 @@ public class MailService {
     @Async
     public void sendEmailConfirmation(Mail mail){
         try{
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
-
-            Context context = new Context();
-            context.setVariables(mail.getModel());
-            String html = templateEngine.process("EmailConfirmation", context);
-
-            message.setTo(mail.getTo());
-            message.setText(html, true);
-            message.setSubject(mail.getSubject());
-            message.setFrom(mail.getFrom());
-
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "EmailConfirmation");
             javaMailSender.send(mimeMessage);
         } catch (MessagingException ex) {
             log.error("Error while sending an email: " + ex.getMessage());
         }
+    }
+
+    private MimeMessage loadMessageTemplate(Mail mail, String template) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
+
+        Context context = new Context();
+        context.setVariables(mail.getModel());
+        String html = templateEngine.process(template, context);
+
+        message.setTo(mail.getTo());
+        message.setText(html, true);
+        message.setSubject(mail.getSubject());
+        message.setFrom(mail.getFrom());
+
+        return mimeMessage;
     }
 
 }

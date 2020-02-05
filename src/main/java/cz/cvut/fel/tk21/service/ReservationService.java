@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ReservationDao;
+import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,6 +135,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         reservation.setClub(club);
         reservation.setTennisCourt(court);
         reservation.setDate(date);
+        reservation.setToken(UUID.randomUUID().toString());
 
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici.");
 
@@ -218,7 +221,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public Optional<Reservation> findReservationByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
-        return dao.findAllReservationsByCourtIdDateAndTime(courtId, date, time);
+        return dao.findReservationByCourtIdDateAndTime(courtId, date, time);
     }
 
     @Transactional(readOnly = true)
@@ -228,9 +231,22 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void deleteReservation(Reservation reservation){
-        //TODO delete reservation with some token when not registered and club has ANYONE reservation policy
         if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut");
         this.remove(reservation);
     }
+
+    @Transactional
+    public void deleteReservationByToken(String token){
+        Optional<Reservation> reservationOptional = dao.findReservationsByToken(token);
+        reservationOptional.orElseThrow(() -> new BadRequestException("Invalid token"));
+        Reservation reservation = reservationOptional.get();
+
+        if(reservation.getDate().isBefore(LocalDate.now())) throw new ValidationException("Nelze mazat rezervace v minulosti");
+        if(reservation.getDate().equals(LocalDate.now()) && reservation.getFromToTime().getFrom().isBefore(LocalTime.now()))
+            throw new ValidationException("Nelze mazat rezervace v minulosti");
+
+        this.remove(reservation);
+    }
+
 
 }

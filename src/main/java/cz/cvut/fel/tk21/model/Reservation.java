@@ -37,6 +37,9 @@ public class Reservation extends AbstractEntity {
     @Column
     private String surname;
 
+    @Column
+    private String token;
+
     public LocalDate getDate() {
         return date;
     }
@@ -103,6 +106,14 @@ public class Reservation extends AbstractEntity {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Club getClub(){

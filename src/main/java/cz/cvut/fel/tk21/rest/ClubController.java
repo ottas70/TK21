@@ -60,7 +60,7 @@ public class ClubController {
     public ClubDto getClub(@PathVariable("id") Integer id) {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()), reservationService.isCurrentUserAllowedToCreateReservation(club.get()));
+        return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()), reservationService.isCurrentUserAllowedToCreateReservation(club.get()), clubRelationService.isCurrentUserMemberOf(club.get()));
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

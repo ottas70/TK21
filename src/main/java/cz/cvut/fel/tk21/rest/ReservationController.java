@@ -118,4 +118,11 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteReservationByToken(@RequestParam("token")String token) {
+        reservationService.deleteReservationByToken(token);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

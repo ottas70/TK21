@@ -22,16 +22,19 @@ public class ClubDto {
 
     private boolean isAllowedRes;
 
+    private boolean isMember;
+
     public ClubDto() {
     }
 
-    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes) {
+    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember) {
         this.id = club.getId();
         this.name = club.getName();
         this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
+        this.isMember = isMember;
     }
 
     public int getId() {
@@ -82,6 +85,14 @@ public class ClubDto {
 
     public void setAllowedRes(boolean allowedRes) {
         isAllowedRes = allowedRes;
+    }
+
+    public boolean isMember() {
+        return isMember;
+    }
+
+    public void setMember(boolean member) {
+        isMember = member;
     }
 
     @JsonIgnore

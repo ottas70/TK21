@@ -35,13 +35,24 @@ public class ReservationDao extends BaseDao<Reservation> {
                 .getResultList();
     }
 
-    public Optional<Reservation> findAllReservationsByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
+    public Optional<Reservation> findReservationByCourtIdDateAndTime(Integer courtId, LocalDate date, FromToTime time){
         try{
             return Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r " +
                     "WHERE r.tennisCourt.id = :id AND r.date = :date AND r.fromToTime = :time", Reservation.class)
                     .setParameter("id", courtId)
                     .setParameter("date", date)
                     .setParameter("time", time)
+                    .getSingleResult());
+        } catch (NoResultException e){
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Reservation> findReservationsByToken(String token){
+        try{
+            return Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r " +
+                    "WHERE r.token = :token", Reservation.class)
+                    .setParameter("token", token)
                     .getSingleResult());
         } catch (NoResultException e){
             return Optional.empty();
