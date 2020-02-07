@@ -24,10 +24,12 @@ public class ClubDto {
 
     private boolean isMember;
 
+    private int numOfRequests;
+
     public ClubDto() {
     }
 
-    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember) {
+    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests) {
         this.id = club.getId();
         this.name = club.getName();
         this.address = new AddressDto(club.getAddress());
@@ -35,6 +37,7 @@ public class ClubDto {
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
         this.isMember = isMember;
+        this.numOfRequests = numOfRequests;
     }
 
     public int getId() {

@@ -38,7 +38,7 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         if(user == null) throw new UnauthorizedException("Přístup zamítnut");
 
         if(clubRelationService.isMemberOf(club, user)) throw new ValidationException("ALREADY A MEMBER");
-        if(dao.exists(club, user)) throw new ValidationException("REQUEST EXISTS");
+        if(dao.existsUnresolvedRequest(club, user)) throw new ValidationException("REQUEST EXISTS");
 
         VerificationRequest verificationRequest = new VerificationRequest();
         verificationRequest.setClub(club);
@@ -90,6 +90,12 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         verificationRequest.setDenied(true);
 
         this.update(verificationRequest);
+    }
+
+    @Transactional
+    public int getNumOfVerificationRequests(Club club){
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) return -1;
+        return dao.countVerificationRequests(club);
     }
 
 }

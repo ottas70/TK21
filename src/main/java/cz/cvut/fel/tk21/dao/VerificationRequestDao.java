@@ -25,6 +25,15 @@ public class VerificationRequestDao extends BaseDao<VerificationRequest> {
                 .getResultList().isEmpty();
     }
 
+    public boolean existsUnresolvedRequest(Club club, User user){
+        return !em.createQuery("SELECT v from VerificationRequest v " +
+                "WHERE v.user = :user AND v.club = :club " +
+                "AND v.accepted = false AND v.denied = false", VerificationRequest.class)
+                .setParameter("user", user)
+                .setParameter("club", club)
+                .getResultList().isEmpty();
+    }
+
     public List<VerificationRequest> findUnresolvedVerificationRequestsByClub(Club club){
         return em.createQuery("SELECT v from VerificationRequest v " +
                 "WHERE v.club = :club AND v.accepted = false AND v.denied = false", VerificationRequest.class)
@@ -44,6 +53,10 @@ public class VerificationRequestDao extends BaseDao<VerificationRequest> {
         } catch (NoResultException ex){
             return Optional.empty();
         }
+    }
+
+    public int countVerificationRequests(Club club){
+        return findUnresolvedVerificationRequestsByClub(club).size();
     }
 
 }

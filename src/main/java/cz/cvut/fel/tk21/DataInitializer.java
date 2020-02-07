@@ -78,6 +78,10 @@ public class DataInitializer implements ApplicationRunner {
         relation.addRole(UserRole.PROFESSIONAL_PLAYER);
         clubRelationService.persist(relation);
 
+        for (int i = 1; i <= 3; i++) {
+            addNumberedUserInClub(i, club);
+        }
+
         Club club2 = new Club();
         club2.setId(3);
         club2.setName("Tk Písnice");
@@ -101,6 +105,15 @@ public class DataInitializer implements ApplicationRunner {
         relation2.setUser(user2);
         relation2.addRole(UserRole.ADMIN);
         clubRelationService.persist(relation2);
+
+        for (int i = 4; i <= 6; i++) {
+            addNumberedUserInClub(i, club2);
+        }
+
+        //Users with no club
+        for (int i = 7; i <= 9; i++) {
+            addNumberedUserInClub(i, null);
+        }
     }
 
     private OpeningHours getInitialOpeningHours(){
@@ -144,6 +157,24 @@ public class DataInitializer implements ApplicationRunner {
         court.setAvailableInSummer(random.nextInt(100) % 2 == 0);
         court.setAvailableInWinter(random.nextInt(100) % 2 == 0);
         return court;
+    }
+
+    private void addNumberedUserInClub(int number, Club club){
+        User user = new User();
+        user.setName("Some");
+        user.setSurname("User" + number);
+        user.setEmail("user" + number + "@gmail.com");
+        user.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
+        user.setVerifiedAccount(true);
+        userService.persist(user);
+
+        if(club != null){
+            ClubRelation relation = new ClubRelation();
+            relation.setClub(club);
+            relation.setUser(user);
+            relation.addRole(UserRole.RECREATIONAL_PLAYER);
+            clubRelationService.persist(relation);
+        }
     }
 
 }
