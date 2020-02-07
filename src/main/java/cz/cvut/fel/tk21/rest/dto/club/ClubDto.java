@@ -98,6 +98,14 @@ public class ClubDto {
         isMember = member;
     }
 
+    public int getNumOfRequests() {
+        return numOfRequests;
+    }
+
+    public void setNumOfRequests(int numOfRequests) {
+        this.numOfRequests = numOfRequests;
+    }
+
     @JsonIgnore
     public Club getEntity(){
         Club club = new Club();
