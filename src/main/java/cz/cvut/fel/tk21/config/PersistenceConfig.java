@@ -1,7 +1,9 @@
 package cz.cvut.fel.tk21.config;
 
+import com.jolbox.bonecp.BoneCPDataSource;
 import cz.cvut.fel.tk21.config.properties.DatabaseProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,8 +28,15 @@ public class PersistenceConfig {
         this.databaseProperties = databaseProperties;
     }
 
+    @Bean(name = "myDataSource")
+    public DataSource dataSource() {
+        final BoneCPDataSource ds = new BoneCPDataSource();
+        ds.setJdbcUrl(this.databaseProperties.getUrl());
+        return ds;
+    }
+    
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource ds) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("myDataSource") DataSource ds) {
         final LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(ds);
         emf.setJpaVendorAdapter(new EclipseLinkJpaVendorAdapter());

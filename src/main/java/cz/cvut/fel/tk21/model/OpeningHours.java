@@ -14,10 +14,12 @@ public class OpeningHours extends AbstractEntity {
     private Club club;
 
     @ElementCollection
+    @Column(length = 10000)
     @MapKeyEnumerated(EnumType.STRING)
     private Map<Day, FromToTime> openingHours;
 
     @ElementCollection
+    @Column(length = 10000)
     private Map<LocalDate, FromToTime> specialDays;
 
     public Club getClub() {

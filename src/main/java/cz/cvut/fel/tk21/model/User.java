@@ -9,10 +9,10 @@ import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 
 @Entity
-@Table(name = "User",
+@Table(name = "Users",
         indexes = {@Index(name = "email_index", columnList = "email", unique = true)})
 @NamedQueries({
-        @NamedQuery(name = "User.getByEmail", query = "select u from User u where u.email=:email")
+        @NamedQuery(name = "Users.getByEmail", query = "select u from User u where u.email=:email")
 })
 public class User extends AbstractEntity {
 
