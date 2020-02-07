@@ -32,6 +32,7 @@ public class PersistenceConfig {
     public DataSource dataSource() {
         final BoneCPDataSource ds = new BoneCPDataSource();
         ds.setJdbcUrl(this.databaseProperties.getUrl());
+        ds.setDriverClass(this.databaseProperties.getDriverClassName());
         return ds;
     }
     

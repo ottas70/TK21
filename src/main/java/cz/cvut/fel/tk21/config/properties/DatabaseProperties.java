@@ -7,6 +7,8 @@ public class DatabaseProperties {
 
     private String url;
 
+    private String driverClassName;
+
     private String ddlgeneration;
 
     public String getUrl() {
@@ -15,6 +17,14 @@ public class DatabaseProperties {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public void setDriverClassName(String driverClassName) {
+        this.driverClassName = driverClassName;
     }
 
     public String getDdlgeneration() {
