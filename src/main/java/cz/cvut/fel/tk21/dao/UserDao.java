@@ -16,7 +16,7 @@ public class UserDao extends BaseDao<User>{
     public Optional<User> getUserByEmail(String email) {
         try{
             return Optional.ofNullable(
-                    em.createNamedQuery("User.getByEmail", User.class)
+                    em.createNamedQuery("Users.getByEmail", User.class)
                             .setParameter("email", email)
                             .getSingleResult()
             );
