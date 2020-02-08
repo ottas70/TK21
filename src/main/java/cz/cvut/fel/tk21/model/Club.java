@@ -60,6 +60,11 @@ public class Club extends AbstractEntity {
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
 
+    /*** For Web scraping ***/
+
+    @Column
+    private int webId;
+
     public String getName() {
         return name;
     }
@@ -171,6 +176,14 @@ public class Club extends AbstractEntity {
 
     public void setPosts(Collection<Post> posts) {
         this.posts = posts;
+    }
+
+    public int getWebId() {
+        return webId;
+    }
+
+    public void setWebId(int webId) {
+        this.webId = webId;
     }
 
     public void addCourt(TennisCourt court) {

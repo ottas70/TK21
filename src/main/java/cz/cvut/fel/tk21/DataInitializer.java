@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21;
 
 import cz.cvut.fel.tk21.model.*;
+import cz.cvut.fel.tk21.scraping.ClubScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
@@ -33,7 +34,7 @@ public class DataInitializer implements ApplicationRunner {
     private Random random;
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private ClubScraper clubScraper;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -114,6 +115,12 @@ public class DataInitializer implements ApplicationRunner {
         for (int i = 7; i <= 9; i++) {
             addNumberedUserInClub(i, null);
         }
+
+        /*try {
+            clubScraper.findAllClubs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
     }
 
     private OpeningHours getInitialOpeningHours(){

@@ -6,6 +6,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configurable
 @EnableTransactionManagement
-@ComponentScan("cz.cvut.fel.tk21.service")
+@ComponentScan({"cz.cvut.fel.tk21.service", "cz.cvut.fel.tk21.scraping"})
 public class ServiceConfig {
 }

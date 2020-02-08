@@ -5,13 +5,13 @@ import javax.persistence.*;
 @Entity
 public class Address extends AbstractEntity{
 
-    @Column(nullable = false)
+    @Column
     private String street;
 
-    @Column(nullable = false)
+    @Column
     private String city;
 
-    @Column(nullable = false)
+    @Column
     private String zip;
 
     public String getStreet() {
