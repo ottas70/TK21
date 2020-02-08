@@ -16,7 +16,7 @@ public class WebScraper {
     @Autowired
     private ClubScraper clubScraper;
 
-    @Scheduled(cron = "0 45 12 * * *")
+    @Scheduled(cron = "0 25 12 * * *")
     public void scrapeCzTenis(){
         try {
             System.out.println("Started scraping");

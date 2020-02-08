@@ -32,7 +32,7 @@ public class ClubDto {
     public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests) {
         this.id = club.getId();
         this.name = club.getName();
-        this.address = new AddressDto(club.getAddress());
+        if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
