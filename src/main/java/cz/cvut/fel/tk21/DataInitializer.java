@@ -122,7 +122,7 @@ public class DataInitializer implements ApplicationRunner {
         try {
             //clubScraper.findAllClubs();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            //logger.error(e.getMessage(), e);
         }
     }
 
