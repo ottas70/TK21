@@ -1,17 +1,18 @@
 package cz.cvut.fel.tk21;
 
 import cz.cvut.fel.tk21.model.*;
-import cz.cvut.fel.tk21.scraping.ClubScraper;
+import cz.cvut.fel.tk21.scraping.WebScraper;
+import cz.cvut.fel.tk21.scraping.scrapers.ClubScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
-import cz.cvut.fel.tk21.service.storage.FileStorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import java.util.Random;
 
 @Component
 public class DataInitializer implements ApplicationRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     @Autowired
     private UserService userService;
@@ -116,11 +119,11 @@ public class DataInitializer implements ApplicationRunner {
             addNumberedUserInClub(i, null);
         }
 
-        /*try {
-            clubScraper.findAllClubs();
+        try {
+            //clubScraper.findAllClubs();
         } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+            logger.error(e.getMessage(), e);
+        }
     }
 
     private OpeningHours getInitialOpeningHours(){

@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.scraping;
 
+import cz.cvut.fel.tk21.scraping.scrapers.ClubScraper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,13 @@ public class WebScraper {
     @Autowired
     private ClubScraper clubScraper;
 
-    @Scheduled(cron = "0 25 12 * * *")
+    //TODO configure this
+    //@Scheduled(cron = "0 25 12 * * *")
     public void scrapeCzTenis(){
         try {
-            System.out.println("Started scraping");
             clubScraper.findAllClubs();
-            System.out.println("Finished scraping");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

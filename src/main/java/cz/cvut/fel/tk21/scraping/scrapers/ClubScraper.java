@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.scraping;
+package cz.cvut.fel.tk21.scraping.scrapers;
 
 import cz.cvut.fel.tk21.exception.WebScrapingException;
 import cz.cvut.fel.tk21.model.Address;
@@ -9,6 +9,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +21,16 @@ import java.util.List;
 @Component
 public class ClubScraper {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClubScraper.class);
+
     @Autowired
     private ClubService clubService;
 
     private static final String url = "http://cztenis.cz/adresar-klubu";
 
     public void findAllClubs() throws IOException {
+        logger.trace("Club scraping started");
+
         List<Club> clubs = new ArrayList<>();
 
         Document doc = Jsoup.connect(url).get();
@@ -47,9 +53,11 @@ public class ClubScraper {
         }
 
         clubService.persist(clubs);
+        logger.trace("Club scraping finished");
     }
 
     private Document docWithRegion(Document doc, int value) throws IOException {
+        logger.trace("Club scraping at region with value " + value);
         Element potentialForm = doc.select("form.well").first();
         assertNonNullElement(potentialForm, "Region selector");
         FormElement regionForm = (FormElement) potentialForm;
