@@ -7,10 +7,13 @@ import cz.cvut.fel.tk21.model.Reservation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.UserDetails;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
+import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.ws.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.messaging.handler.annotation.*;
@@ -21,10 +24,11 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Controller
 public class WebSocketController {
+
+    private static final Logger log = LoggerFactory.getLogger(WebSocketController.class);
 
     @Autowired
     private ReservationService reservationService;
@@ -63,6 +67,7 @@ public class WebSocketController {
     @MessageExceptionHandler
     @SendToUser("/topic/error")
     public String handleException(Exception ex){
+        ex.printStackTrace();
         return ex.getMessage();
     }
 
