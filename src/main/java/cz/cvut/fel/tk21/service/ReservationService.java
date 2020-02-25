@@ -191,7 +191,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public void updateReservation(Reservation reservation, UpdateReservationDto updateDto){
-        if(isUserAllowedToEditReservation(userService.getCurrentUser(), reservation)) throw new UnauthorizedException("Přístup zamítnut.");
+        if(!isUserAllowedToEditReservation(userService.getCurrentUser(), reservation)) throw new UnauthorizedException("Přístup zamítnut.");
         if(!updateDto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
         if(updateDto.getDate().isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
         if(updateDto.getDate().equals(LocalDate.now()) && updateDto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
