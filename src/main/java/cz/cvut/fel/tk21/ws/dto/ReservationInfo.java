@@ -19,6 +19,12 @@ public class ReservationInfo {
 
     private boolean editable;
 
+    private String name;
+
+    private String surname;
+
+    private String email;
+
     public ReservationInfo(Reservation reservation, boolean editable) {
         this.id = reservation.getId();
         this.date = reservation.getDate();
@@ -26,6 +32,17 @@ public class ReservationInfo {
         this.courtId = reservation.getTennisCourt().getId();
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
+        if(editable){
+            if(reservation.getUser() == null){
+                this.name = reservation.getName();
+                this.surname = reservation.getSurname();
+                this.email = reservation.getEmail();
+            } else {
+                this.name = reservation.getUser().getName();
+                this.surname = reservation.getUser().getSurname();
+                this.email = reservation.getUser().getEmail();
+            }
+        }
     }
 
     public int getId() {
@@ -74,5 +91,29 @@ public class ReservationInfo {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
