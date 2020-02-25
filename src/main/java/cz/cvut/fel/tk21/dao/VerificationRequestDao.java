@@ -41,11 +41,12 @@ public class VerificationRequestDao extends BaseDao<VerificationRequest> {
                 .getResultList();
     }
 
-    public Optional<VerificationRequest> findVerificationRequestByClubAndUser(Club club, User user){
+    public Optional<VerificationRequest> findOpenVerificationRequestByClubAndUser(Club club, User user){
         try{
             return Optional.ofNullable(
                     em.createQuery("SELECT v from VerificationRequest v " +
-                            "WHERE v.club = :club AND v.user = :user", VerificationRequest.class)
+                            "WHERE v.club = :club AND v.user = :user " +
+                            "AND v.accepted = false AND v.denied = false", VerificationRequest.class)
                             .setParameter("club", club)
                             .setParameter("user", user)
                             .getSingleResult()

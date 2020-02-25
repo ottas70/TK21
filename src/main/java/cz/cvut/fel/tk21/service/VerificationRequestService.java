@@ -60,7 +60,7 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
     public boolean processVerification(Club club, User user, String message){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
 
-        Optional<VerificationRequest> verificationRequest = dao.findVerificationRequestByClubAndUser(club, user);
+        Optional<VerificationRequest> verificationRequest = dao.findOpenVerificationRequestByClubAndUser(club, user);
         verificationRequest.orElseThrow(() -> new ValidationException("Požadavek nebyl nalezen"));
 
         if(message.equals("ACCEPT")){
