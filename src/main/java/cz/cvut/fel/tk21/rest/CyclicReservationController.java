@@ -14,6 +14,7 @@ import cz.cvut.fel.tk21.service.CourtService;
 import cz.cvut.fel.tk21.service.CyclicReservationService;
 import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
+import cz.cvut.fel.tk21.ws.WebsocketService;
 import cz.cvut.fel.tk21.ws.dto.UpdateReservationMessage;
 import cz.cvut.fel.tk21.ws.dto.UpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,23 +34,22 @@ import java.util.stream.Collectors;
 @RequestMapping("api/reservation/cyclic")
 public class CyclicReservationController {
 
-    @Autowired
-    private RequestBodyValidator validator;
+    private final RequestBodyValidator validator;
+    private final CourtService courtService;
+    private final CyclicReservationService cyclicReservationService;
+    private final ReservationService reservationService;
+    private final ClubService clubService;
+    private final WebsocketService websocketService;
 
     @Autowired
-    private CourtService courtService;
-
-    @Autowired
-    private CyclicReservationService cyclicReservationService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private ClubService clubService;
-
-    @Autowired
-    private SimpMessagingTemplate template;
+    public CyclicReservationController(RequestBodyValidator validator, CourtService courtService, CyclicReservationService cyclicReservationService, ReservationService reservationService, ClubService clubService, WebsocketService websocketService) {
+        this.validator = validator;
+        this.courtService = courtService;
+        this.cyclicReservationService = cyclicReservationService;
+        this.reservationService = reservationService;
+        this.clubService = clubService;
+        this.websocketService = websocketService;
+    }
 
     @RequestMapping(value = "/club/{club_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CyclicReservationReport createCyclicReservation(@PathVariable("club_id") Integer club_id, @RequestParam @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @RequestBody CreateCyclicReservationDto dto){
@@ -73,7 +73,7 @@ public class CyclicReservationController {
         for(Reservation reservation : createdReservations){
             String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
             String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-            this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.CREATE, reservation));
+            websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.CREATE);
         }
 
         return report;
@@ -103,7 +103,7 @@ public class CyclicReservationController {
         for(Reservation reservation : reservations){
             String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
             String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-            this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.DELETE, reservation));
+            websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.DELETE);
         }
 
         return ResponseEntity.noContent().build();

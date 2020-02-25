@@ -8,9 +8,9 @@ public class UpdateReservationMessage {
 
     private ReservationInfo reservation;
 
-    public UpdateReservationMessage(UpdateType type, Reservation reservation) {
+    public UpdateReservationMessage(UpdateType type, Reservation reservation, boolean editable) {
         this.type = type;
-        this.reservation = new ReservationInfo(reservation);
+        this.reservation = new ReservationInfo(reservation, editable);
     }
 
     public UpdateType getType() {

@@ -17,12 +17,15 @@ public class ReservationInfo {
 
     private int clubId;
 
-    public ReservationInfo(Reservation reservation) {
+    private boolean editable;
+
+    public ReservationInfo(Reservation reservation, boolean editable) {
         this.id = reservation.getId();
         this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
         this.clubId = reservation.getClub().getId();
+        this.editable = editable;
     }
 
     public int getId() {
@@ -65,4 +68,11 @@ public class ReservationInfo {
         this.clubId = clubId;
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
 }

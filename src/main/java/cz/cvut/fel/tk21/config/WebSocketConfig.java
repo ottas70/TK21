@@ -17,7 +17,10 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -34,8 +37,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -95,12 +100,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
                     String token = (String) sessionAttributes.get("token");
+                    if(accessor.getSessionId() == null) accessor.setSessionId(UUID.randomUUID().toString());
                     if(!token.equals("none")){
                         UserDetails userDetails = jwtUtil.retrieveUserDetails(token);
                         if(userDetails != null){
                             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                             accessor.setUser(usernamePasswordAuthenticationToken);
+                        } else {
+                            AnonymousAuthenticationToken anonymousAuthenticationToken = new AnonymousAuthenticationToken(UUID.randomUUID().toString(), accessor.getSessionId(), new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
+                            accessor.setUser(anonymousAuthenticationToken);
                         }
+                    } else {
+                        AnonymousAuthenticationToken anonymousAuthenticationToken = new AnonymousAuthenticationToken(UUID.randomUUID().toString(), accessor.getSessionId(), new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
+                        accessor.setUser(anonymousAuthenticationToken);
                     }
                 }
                 return message;

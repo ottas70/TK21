@@ -4,15 +4,14 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
-import cz.cvut.fel.tk21.rest.dto.CreatedDto;
-import cz.cvut.fel.tk21.rest.dto.club.ClubRegistrationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
+import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
-import cz.cvut.fel.tk21.ws.dto.UpdateReservationMessage;
+import cz.cvut.fel.tk21.ws.WebsocketService;
 import cz.cvut.fel.tk21.ws.dto.UpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -32,17 +32,18 @@ import java.util.stream.Collectors;
 @RequestMapping("api/reservation")
 public class ReservationController {
 
-    @Autowired
-    private RequestBodyValidator validator;
+    private final RequestBodyValidator validator;
+    private final ReservationService reservationService;
+    private final ClubService clubService;
+    private final WebsocketService websocketService;
 
     @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private ClubService clubService;
-
-    @Autowired
-    private SimpMessagingTemplate template;
+    public ReservationController(RequestBodyValidator validator, ReservationService reservationService, ClubService clubService, WebsocketService websocketService) {
+        this.validator = validator;
+        this.reservationService = reservationService;
+        this.clubService = clubService;
+        this.websocketService = websocketService;
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ReservationDto getReservationByID(@PathVariable("id") Integer id){
@@ -76,10 +77,11 @@ public class ReservationController {
         Optional<Reservation> reservation = reservationService.findReservationByCourtIdDateAndTime(reservationDto.getCourtId(), reservationDto.getDate(), reservationDto.getTime());
         reservation.orElseThrow(() -> new ValidationException("Nastala chyba při uložení rezervace"));
 
+
         //Websocket message for subscribers
         String formattedDate = reservationDto.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         String destination = "/topic/reservation/" + id + "/" + formattedDate;
-        this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.CREATE, reservation.get()));
+        websocketService.sendUpdateMessageToSubscribers(destination, reservation.get(), UpdateType.CREATE);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation.get(), reservationService.isCurrentUserAllowedToEditReservation(reservation.get()), reservationService.isMine(reservation.get())));
     }
@@ -97,7 +99,7 @@ public class ReservationController {
         //Websocket message for subscribers
         String formattedDate = reservationDto.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-        this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.UPDATE, reservation));
+        websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.UPDATE);
 
         return ResponseEntity.noContent().build();
     }
@@ -113,7 +115,7 @@ public class ReservationController {
         //Websocket message for subscribers
         String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-        this.template.convertAndSend(destination, new UpdateReservationMessage(UpdateType.DELETE, reservation));
+        websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.DELETE);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -123,6 +125,5 @@ public class ReservationController {
         reservationService.deleteReservationByToken(token);
         return ResponseEntity.noContent().build();
     }
-
 
 }

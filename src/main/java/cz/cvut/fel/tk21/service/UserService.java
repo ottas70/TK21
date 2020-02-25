@@ -53,6 +53,7 @@ public class UserService extends BaseService<UserDao, User> {
         if (!dao.isEmailUnique(userDto.getEmail())) {
             throw new ValidationException("Účet s tímto emailem již existuje");
         }
+
         User user = new User();
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());

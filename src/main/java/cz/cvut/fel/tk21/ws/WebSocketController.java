@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 
@@ -46,7 +47,7 @@ public class WebSocketController {
     public ReservationMessage initialMessage(@DestinationVariable Integer clubId, @Payload(required = false) DateDto date, Principal principal){
         User user = null;
 
-        if(principal != null){
+        if(!(principal instanceof AnonymousAuthenticationToken)){
             UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) principal;
             user = extractUserFromPrincipal(auth);
         }
