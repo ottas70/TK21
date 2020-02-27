@@ -3,7 +3,6 @@ package cz.cvut.fel.tk21.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,7 @@ public class OpeningHours extends AbstractEntity {
     @ElementCollection
     @Column(length = 10000)
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<Day, FromToTime> openingHours;
+    private Map<Day, FromToTime> regularHours;
 
     @ElementCollection
     @Column(length = 10000)
@@ -30,12 +29,12 @@ public class OpeningHours extends AbstractEntity {
         this.club = club;
     }
 
-    public Map<Day, FromToTime> getOpeningHours() {
-        return openingHours;
+    public Map<Day, FromToTime> getRegularHours() {
+        return regularHours;
     }
 
-    public void setOpeningHours(Map<Day, FromToTime> openingHours) {
-        this.openingHours = openingHours;
+    public void setRegularHours(Map<Day, FromToTime> openingHours) {
+        this.regularHours = openingHours;
     }
 
     public Map<LocalDate, FromToTime> getSpecialDays() {
@@ -74,7 +73,7 @@ public class OpeningHours extends AbstractEntity {
         }
 
         Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
-        FromToTime hours = openingHours.get(day);
+        FromToTime hours = regularHours.get(day);
 
         return hours.getFrom() != null;
     }
@@ -86,7 +85,7 @@ public class OpeningHours extends AbstractEntity {
             hours = specialDays.get(date);
         }else{
             Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
-            hours = openingHours.get(day);
+            hours = regularHours.get(day);
         }
 
         //Start is before opening
@@ -111,13 +110,13 @@ public class OpeningHours extends AbstractEntity {
             hours = specialDays.get(date);
         }else{
             Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
-            hours = openingHours.get(day);
+            hours = regularHours.get(day);
         }
         return time.isAfter(hours.getTo());
     }
 
     public FromToTime getOpeningTimesAtDate(LocalDate date){
         if(!isOpenedAtDate(date)) return null;
-        return openingHours.get(Day.getDayFromCode(date.getDayOfWeek().getValue()));
+        return regularHours.get(Day.getDayFromCode(date.getDayOfWeek().getValue()));
     }
 }

@@ -15,7 +15,6 @@ import cz.cvut.fel.tk21.rest.dto.club.verification.VerificationRequestDto;
 import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -106,7 +105,7 @@ public class ClubController {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
         Map<Integer, FromToTime> result = new HashMap<>();
-        club.get().getOpeningHours().getOpeningHours().forEach((k,v) -> result.put(k.getCode(), v));
+        club.get().getOpeningHours().getRegularHours().forEach((k, v) -> result.put(k.getCode(), v));
         return result;
     }
 

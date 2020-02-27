@@ -89,7 +89,7 @@ public class PostController {
 
         Post persistedPost = postService.createPostFromDto(postDto, club.get());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CreatedDto(persistedPost.getId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new PostDto(persistedPost));
     }
 
     @RequestMapping(value = "/{post_id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)

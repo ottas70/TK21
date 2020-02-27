@@ -1,27 +1,20 @@
 package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ClubDao;
-import cz.cvut.fel.tk21.dao.ClubRelationDao;
 import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
-import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRegistrationDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
-import cz.cvut.fel.tk21.rest.dto.club.SpecialOpeningHoursDto;
 import cz.cvut.fel.tk21.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -192,7 +185,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
         hoursMap.put(Day.FRIDAY, new FromToTime("09:00", "21:00"));
         hoursMap.put(Day.SATURDAY, new FromToTime("09:00", "21:00"));
         hoursMap.put(Day.SUNDAY, new FromToTime("09:00", "21:00"));
-        openingHours.setOpeningHours(hoursMap);
+        openingHours.setRegularHours(hoursMap);
 
         return openingHours;
     }

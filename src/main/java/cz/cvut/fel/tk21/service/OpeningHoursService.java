@@ -39,7 +39,7 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
             regular.put(Day.getDayFromCode(k), v);
         });
 
-        club.getOpeningHours().setOpeningHours(regular);
+        club.getOpeningHours().setRegularHours(regular);
         clubService.update(club);
     }
 

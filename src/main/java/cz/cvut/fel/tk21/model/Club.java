@@ -1,10 +1,8 @@
 package cz.cvut.fel.tk21.model;
 
 import cz.cvut.fel.tk21.util.StringUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -221,7 +219,7 @@ public class Club extends AbstractEntity {
 
         DayOfWeek day = date.getDayOfWeek();
         Day myDay = Day.getDayFromCode(day.getValue());
-        return openingHours.getOpeningHours().get(myDay);
+        return openingHours.getRegularHours().get(myDay);
     }
 
     public List<TennisCourt> getAllAvailableCourts(LocalDate date){

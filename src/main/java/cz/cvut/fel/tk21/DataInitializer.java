@@ -1,7 +1,6 @@
 package cz.cvut.fel.tk21;
 
 import cz.cvut.fel.tk21.model.*;
-import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.scraping.scrapers.ClubScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
@@ -137,7 +136,7 @@ public class DataInitializer implements ApplicationRunner {
         hoursMap.put(Day.FRIDAY, new FromToTime("09:00", "21:30"));
         hoursMap.put(Day.SATURDAY, new FromToTime("12:00", "15:00"));
         hoursMap.put(Day.SUNDAY, new FromToTime());
-        openingHours.setOpeningHours(hoursMap);
+        openingHours.setRegularHours(hoursMap);
 
         Map<LocalDate, FromToTime> specialHours = new HashMap<>();
         specialHours.put(LocalDate.parse("12-05-2019", DateTimeFormatter.ofPattern("MM-dd-yyyy")), new FromToTime("11:00", "16:00"));

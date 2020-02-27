@@ -30,6 +30,7 @@ public class PostDao extends BaseDao<Post>{
         query.select(root);
         ParameterExpression<Club> param = cb.parameter(Club.class);
         query.where(cb.equal(root.get("club"), param));
+        query.orderBy(cb.desc(root.get("createdAt")));
 
         TypedQuery<Post> typedQuery = em.createQuery(query);
         typedQuery.setParameter(param, club);
@@ -47,6 +48,7 @@ public class PostDao extends BaseDao<Post>{
         query.select(root);
         ParameterExpression<User> param = cb.parameter(User.class);
         query.where(cb.equal(root.get("user"), param));
+        query.orderBy(cb.desc(root.get("createdAt")));
 
         TypedQuery<Post> typedQuery = em.createQuery(query);
         typedQuery.setParameter(param, user);

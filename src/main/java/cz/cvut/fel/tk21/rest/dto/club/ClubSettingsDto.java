@@ -25,7 +25,7 @@ public class ClubSettingsDto {
 
     public ClubSettingsDto(Club club, int year, boolean isYearSet){
         this.openingHours = new HashMap<>();
-        club.getOpeningHours().getOpeningHours().forEach((k,v) -> this.openingHours.put(k.getCode(), v));
+        club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
 
         this.specialDays = new ArrayList<>();
         club.getOpeningHours().getSpecialDaysInYear(year)
