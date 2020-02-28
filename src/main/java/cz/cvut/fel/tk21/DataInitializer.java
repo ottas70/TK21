@@ -31,7 +31,6 @@ public class DataInitializer implements ApplicationRunner {
     private final Random random;
     private final ClubScraper clubScraper;
 
-    @Autowired
     public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random, ClubScraper clubScraper) {
         this.userService = userService;
         this.clubService = clubService;
@@ -39,6 +38,7 @@ public class DataInitializer implements ApplicationRunner {
         this.random = random;
         this.clubScraper = clubScraper;
     }
+
 
     @Override
     public void run(ApplicationArguments args) {

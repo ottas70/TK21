@@ -1,7 +1,9 @@
 package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.BadRequestException;
+import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
+import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.UserDetails;
@@ -9,7 +11,9 @@ import cz.cvut.fel.tk21.rest.dto.Info;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRelationshipDto;
 import cz.cvut.fel.tk21.rest.dto.user.PasswordChangeDto;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
+import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
 import cz.cvut.fel.tk21.service.ClubRelationService;
+import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +22,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final ClubRelationService clubRelationService;
+    private final RequestBodyValidator validator;
+    private final ClubService clubService;
 
     @Autowired
-    private ClubRelationService clubRelationService;
-
-    @Autowired
-    private RequestBodyValidator validator;
+    public UserController(UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, ClubService clubService) {
+        this.userService = userService;
+        this.clubRelationService = clubRelationService;
+        this.validator = validator;
+        this.clubService = clubService;
+    }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createUser(@RequestBody UserDto user) {
@@ -49,8 +53,17 @@ public class UserController {
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getMyDetails() {
-        return ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+    public UserResponseDto getMyDetails() {
+        User user = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+
+        Club rootClub = clubRelationService.findUsersRootClub(user);
+        ClubRelation rootRelation = null;
+        if(rootClub != null){
+            Optional<ClubRelation> relationOptional = clubRelationService.findClubRelationByUserAndClub(user, rootClub);
+            if(relationOptional.isPresent()) rootRelation = relationOptional.get();
+        }
+
+        return new UserResponseDto(user, rootRelation);
     }
 
     @RequestMapping(value = "/clubs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -96,6 +109,16 @@ public class UserController {
         validator.validate(dto);
 
         userService.updatePassword(dto.getOldPass(), dto.getNewPass());
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "pinned/{club_id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> setRootClub(@PathVariable("club_id") Integer club_id){
+        final Optional<Club> club = clubService.find(club_id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubRelationService.setRootClub(club.get());
+
         return ResponseEntity.noContent().build();
     }
 

@@ -50,6 +50,10 @@ public class ClubRelation extends AbstractEntity{
         return !roles.isEmpty();
     }
 
+    public boolean hasRole(UserRole role){
+        return roles.contains(role);
+    }
+
     public void addRole(UserRole role){
         roles.add(role);
     }

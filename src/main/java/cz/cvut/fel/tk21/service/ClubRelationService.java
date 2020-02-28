@@ -21,7 +21,6 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     @Autowired
     private UserService userService;
 
-    @Autowired
     private ClubService clubService;
 
     protected ClubRelationService(ClubRelationDao dao) {
@@ -65,6 +64,11 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         return dao.findAllRelationsByClub(club);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<ClubRelation> findClubRelationByUserAndClub(User user, Club club){
+        return dao.findRelationByUserAndClub(user, club);
+    }
+
     @Transactional
     public void addRole(Club club, User user, UserRole role){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
@@ -75,6 +79,11 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         ClubRelation relation = relationOptional.get();
 
         if(relation.getRoles().contains(role)) return;
+        if(role == UserRole.ADMIN && relation.getRoles().contains(UserRole.EMPLOYEE)
+                || role == UserRole.EMPLOYEE && relation.getRoles().contains(UserRole.ADMIN)
+                || role == UserRole.PROFESSIONAL_PLAYER && relation.getRoles().contains(UserRole.RECREATIONAL_PLAYER)
+                || role == UserRole.RECREATIONAL_PLAYER && relation.getRoles().contains(UserRole.PROFESSIONAL_PLAYER))
+            throw new ValidationException("Tato role koliduje se zbylými rolemi");
 
         relation.addRole(role);
         this.update(relation);
@@ -113,4 +122,30 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         this.remove(relation);
     }
 
+    @Transactional
+    public void setRootClub(Club club){
+        if(!this.isCurrentUserMemberOf(club)) throw new ValidationException("V tomto klubu nejste členem");
+        User user = userService.getCurrentUser();
+        user.setRootClub(club);
+        userService.update(user);
+    }
+
+    @Transactional
+    public Club findUsersRootClub(User user){
+        if(user.getRootClub() != null) return user.getRootClub();
+
+        List<ClubRelation> relations = this.findAllRelationsByUser(user);
+        //Is ADMIN somewhere
+        Optional<ClubRelation> adminOptional = relations.stream().filter(r -> r.hasRole(UserRole.ADMIN)).findFirst();
+        if(adminOptional.isPresent()) return adminOptional.get().getClub();
+
+        //Is Professional player somewhere
+        Optional<ClubRelation> playerOptional = relations.stream().filter(r -> r.hasRole(UserRole.PROFESSIONAL_PLAYER)).findFirst();
+        if(playerOptional.isPresent()) return playerOptional.get().getClub();
+
+        //Return first club
+        if(!relations.isEmpty()) return relations.get(0).getClub();
+
+        return null;
+    }
 }

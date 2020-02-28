@@ -21,9 +21,6 @@ import java.util.*;
 public class ClubService extends BaseService<ClubDao, Club> {
 
     @Autowired
-    private UserDao userDao;
-
-    @Autowired
     private ClubRelationService clubRelationService;
 
     @Autowired
@@ -67,7 +64,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
         //links signed in user with this club as admin
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if(email == null) throw new ValidationException("Uživatel neexistuje");
-        Optional<User> user = userDao.getUserByEmail(email);
+        Optional<User> user = userService.findUserByEmail(email);
         if(user.isEmpty()) throw new ValidationException("Uživatel neexistuje");
 
         clubRelationService.addUserToClub(club, user.get(), UserRole.ADMIN);
@@ -220,4 +217,8 @@ public class ClubService extends BaseService<ClubDao, Club> {
         return seasons;
     }
 
+    @Autowired
+    public void setClubRelationService(ClubRelationService clubRelationService) {
+        this.clubRelationService = clubRelationService;
+    }
 }

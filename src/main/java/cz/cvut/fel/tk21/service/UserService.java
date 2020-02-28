@@ -2,8 +2,8 @@ package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ConfirmationTokenDao;
 import cz.cvut.fel.tk21.dao.UserDao;
-import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
 import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.UserRole;
@@ -12,7 +12,6 @@ import cz.cvut.fel.tk21.model.mail.Mail;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,20 +30,17 @@ import java.util.Optional;
 public class UserService extends BaseService<UserDao, User> {
 
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
+    private final ConfirmationTokenDao confirmationTokenDao;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private ConfirmationTokenDao confirmationTokenDao;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    protected UserService(UserDao dao) {
+    protected UserService(UserDao dao, PasswordEncoder passwordEncoder, MailService mailService, ConfirmationTokenDao confirmationTokenDao, AuthenticationManager authenticationManager) {
         super(dao);
+        this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
+        this.confirmationTokenDao = confirmationTokenDao;
+        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
@@ -164,5 +161,4 @@ public class UserService extends BaseService<UserDao, User> {
 
         mailService.sendEmailConfirmation(mail);
     }
-
 }

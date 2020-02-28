@@ -43,6 +43,10 @@ public class User extends AbstractEntity {
     private boolean verifiedAccount;
 
     @JsonIgnore
+    @OneToOne
+    private Club rootClub;
+
+    @JsonIgnore
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private ConfirmationToken confirmationToken;
 
@@ -100,6 +104,14 @@ public class User extends AbstractEntity {
 
     public void setVerifiedAccount(boolean verifiedAccount) {
         this.verifiedAccount = verifiedAccount;
+    }
+
+    public Club getRootClub() {
+        return rootClub;
+    }
+
+    public void setRootClub(Club rootClub) {
+        this.rootClub = rootClub;
     }
 
     public ConfirmationToken getConfirmationToken() {

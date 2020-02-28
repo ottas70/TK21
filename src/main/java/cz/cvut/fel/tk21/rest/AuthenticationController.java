@@ -1,10 +1,13 @@
 package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
+import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.AuthenticationRequest;
-import cz.cvut.fel.tk21.model.security.AuthenticationResponse;
 import cz.cvut.fel.tk21.rest.dto.Info;
+import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
+import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.service.security.UserDetailsService;
 import cz.cvut.fel.tk21.util.JwtUtil;
@@ -18,23 +21,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final ClubRelationService clubRelationService;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    public AuthenticationController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, UserService userService, JwtUtil jwtUtil, ClubRelationService clubRelationService) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+        this.clubRelationService = clubRelationService;
+    }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
@@ -53,12 +59,19 @@ public class AuthenticationController {
 
         final User user = userService.findUserByEmail(userDetails.getUsername()).get();
 
+        Club rootClub = clubRelationService.findUsersRootClub(user);
+        ClubRelation rootRelation = null;
+        if(rootClub != null){
+            Optional<ClubRelation> relationOptional = clubRelationService.findClubRelationByUserAndClub(user, rootClub);
+            if(relationOptional.isPresent()) rootRelation = relationOptional.get();
+        }
+
         //TODO add secure flag when using HTTPS
                 HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + token + ";" +
                 "HttpOnly=True;Path=/");
 
-        return new ResponseEntity<>(user, responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponseDto(user, rootRelation), responseHeaders, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
