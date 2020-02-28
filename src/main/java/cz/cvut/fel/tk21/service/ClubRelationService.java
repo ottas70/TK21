@@ -21,6 +21,7 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     @Autowired
     private UserService userService;
 
+    @Autowired
     private ClubService clubService;
 
     protected ClubRelationService(ClubRelationDao dao) {
