@@ -64,6 +64,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ResponseEntity<?> logout() {
         HttpHeaders responseHeaders = new HttpHeaders();
+        //TODO add secure flag when using HTTPS
         responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
                 "Max-Age=0;HttpOnly=True;Path=/");
 

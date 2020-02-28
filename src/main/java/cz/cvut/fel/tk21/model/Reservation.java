@@ -1,18 +1,15 @@
 package cz.cvut.fel.tk21.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 public class Reservation extends AbstractEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate date;
 
-    @Column(nullable = false)
+    @Embedded
     private FromToTime fromToTime;
 
     @ManyToOne(optional = false)

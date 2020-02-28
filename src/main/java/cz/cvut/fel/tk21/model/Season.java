@@ -1,13 +1,24 @@
 package cz.cvut.fel.tk21.model;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Season implements Serializable {
+@Embeddable
+public class Season {
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "from", column = @Column(name = "SUMMER_FROM_DATE")),
+            @AttributeOverride(name = "to", column = @Column(name = "SUMMER_TO_DATE"))
+    })
     private FromToDate summer;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "from", column = @Column(name = "WINTER_FROM_DATE")),
+            @AttributeOverride(name = "to", column = @Column(name = "WINTER_TO_DATE"))
+    })
     private FromToDate winter;
 
     public Season() {

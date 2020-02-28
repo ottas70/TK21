@@ -13,6 +13,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,20 +25,20 @@ public class DataInitializer implements ApplicationRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final ClubService clubService;
+    private final ClubRelationService clubRelationService;
+    private final Random random;
+    private final ClubScraper clubScraper;
 
     @Autowired
-    private ClubService clubService;
-
-    @Autowired
-    private ClubRelationService clubRelationService;
-
-    @Autowired
-    private Random random;
-
-    @Autowired
-    private ClubScraper clubScraper;
+    public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random, ClubScraper clubScraper) {
+        this.userService = userService;
+        this.clubService = clubService;
+        this.clubRelationService = clubRelationService;
+        this.random = random;
+        this.clubScraper = clubScraper;
+    }
 
     @Override
     public void run(ApplicationArguments args) {
@@ -150,8 +152,8 @@ public class DataInitializer implements ApplicationRunner {
     private void setInitialSeasons(Club club){
         Map<Integer, Season> seasons = new HashMap<>();
 
-        Season season2019 = new Season(new FromToDate("03-01-2019", "09-30-2019"), new FromToDate("10-01-2019", "02-30-2020"));
-        Season season2020 = new Season(new FromToDate("03-01-2020", "09-30-2020"), new FromToDate("10-01-2020", "02-30-2021"));
+        Season season2019 = new Season(new FromToDate("03-01-2019", "09-30-2019"), new FromToDate("10-01-2019", "02-28-2020"));
+        Season season2020 = new Season(new FromToDate("03-01-2020", "09-30-2020"), new FromToDate("10-01-2020", "02-28-2021"));
         seasons.put(2019, season2019);
         seasons.put(2020, season2020);
 

@@ -40,7 +40,7 @@ public class Club extends AbstractEntity {
     private int maxReservationTime;
 
     @ElementCollection
-    @Column(length = 10000)
+    @CollectionTable(name = "SEASON")
     private Map<Integer, Season> seasons;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)

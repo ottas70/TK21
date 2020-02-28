@@ -13,6 +13,7 @@ import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,7 +81,14 @@ public class UserController {
         if(email == null) throw new BadRequestException("Chybný požadavek");
         if(!validator.isEmailValid(email)) throw new BadRequestException("Email není validní");
         userService.updateEmail(email);
-        return ResponseEntity.noContent().build();
+
+        //logout user
+        HttpHeaders responseHeaders = new HttpHeaders();
+        //TODO add secure flag when using HTTPS
+        responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
+                "Max-Age=0;HttpOnly=True;Path=/");
+
+        return ResponseEntity.noContent().headers(responseHeaders).build();
     }
 
     @RequestMapping(value = "/properties/password", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)

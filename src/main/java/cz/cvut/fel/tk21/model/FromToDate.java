@@ -4,14 +4,20 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class FromToDate implements Serializable {
+@Embeddable
+public class FromToDate {
 
+    @Column(name = "FROM_DATE", columnDefinition = "DATE")
     private LocalDate from;
+
+    @Column(name = "TO_DATE", columnDefinition = "DATE")
     private LocalDate to;
 
     public FromToDate() {

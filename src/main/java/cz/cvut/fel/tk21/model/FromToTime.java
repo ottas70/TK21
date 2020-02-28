@@ -5,12 +5,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.time.LocalTime;
 
-public class FromToTime implements Serializable {
+@Embeddable
+public class FromToTime {
 
+    @Column(name = "FROM_TIME", columnDefinition = "TIME")
     private LocalTime from;
+
+    @Column(name = "TO_TIME", columnDefinition = "TIME")
     private LocalTime to;
 
     public FromToTime() {
