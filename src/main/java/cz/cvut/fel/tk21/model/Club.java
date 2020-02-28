@@ -58,6 +58,9 @@ public class Club extends AbstractEntity {
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
 
+    @OneToMany
+    private Set<User> blocked;
+
     /*** For Web scraping ***/
 
     @Column
@@ -176,6 +179,14 @@ public class Club extends AbstractEntity {
         this.posts = posts;
     }
 
+    public Set<User> getBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(Set<User> blocked) {
+        this.blocked = blocked;
+    }
+
     public int getWebId() {
         return webId;
     }
@@ -234,6 +245,21 @@ public class Club extends AbstractEntity {
             if(seasonName.equals("summer") && court.isAvailableInSummer()) tennisCourts.add(court);
         }
         return tennisCourts;
+    }
+
+    public boolean isUserBlocked(User user){
+        for (User u : blocked){
+            if(u.getId() == user.getId()) return true;
+        }
+        return false;
+    }
+
+    public void addToBlocked(User user){
+        blocked.add(user);
+    }
+
+    public void removeFromBlocked(User user){
+        blocked.removeIf(u -> u.getId() == user.getId());
     }
 
 }

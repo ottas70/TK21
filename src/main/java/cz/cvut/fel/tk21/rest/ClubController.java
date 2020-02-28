@@ -240,6 +240,14 @@ public class ClubController {
         return relations.stream().map(MemberDto::new).collect(Collectors.toList());
     }
 
+    @RequestMapping(value = "/{id}/block", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<User> getBlockedUsers(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        return club.get().getBlocked();
+    }
+
     @RequestMapping(value = "/{id}/member/role/{member_id}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> addRole(@PathVariable("id") Integer id, @PathVariable("member_id") Integer member_id, @RequestBody String role){
         final Optional<Club> club = clubService.find(id);
@@ -262,6 +270,32 @@ public class ClubController {
         user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
 
         clubRelationService.deleteRole(club.get(), user.get(), UserRole.getRoleFromString(role));
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/block/{user_id}", method = RequestMethod.POST)
+    public ResponseEntity<?> blockUser(@PathVariable("id") Integer id, @PathVariable("user_id") Integer user_id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        final Optional<User> user = userService.find(user_id);
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
+
+        clubService.blockUser(club.get(), user.get());
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(value = "/{id}/block/{user_id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> unblockUser(@PathVariable("id") Integer id, @PathVariable("user_id") Integer user_id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        final Optional<User> user = userService.find(user_id);
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
+
+        clubService.unblockUser(club.get(), user.get());
 
         return ResponseEntity.noContent().build();
     }

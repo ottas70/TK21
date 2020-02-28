@@ -46,6 +46,10 @@ public class ClubRelation extends AbstractEntity{
         this.roles = roles;
     }
 
+    public boolean hasAnyRoles(){
+        return !roles.isEmpty();
+    }
+
     public void addRole(UserRole role){
         roles.add(role);
     }

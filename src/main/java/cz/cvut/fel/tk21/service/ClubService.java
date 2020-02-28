@@ -174,6 +174,27 @@ public class ClubService extends BaseService<ClubDao, Club> {
         this.update(club);
     }
 
+    @Transactional
+    public void blockUser(Club club, User user){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(club.isUserBlocked(user)) return;
+        if(!verificationRequestService.hasUserUnresolvedRequest(club, user)) throw new ValidationException("Tohoto uživatele nelze zablokovat");
+
+        club.addToBlocked(user);
+        this.update(club);
+
+        verificationRequestService.processVerification(club, user, "DENIED");
+    }
+
+    @Transactional
+    public void unblockUser(Club club, User user){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!club.isUserBlocked(user)) return;
+
+        club.removeFromBlocked(user);
+        this.update(club);
+    }
+
     private OpeningHours getInitialOpeningHours(){
         OpeningHours openingHours = new OpeningHours();
 

@@ -52,13 +52,13 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
 
     @Transactional
     public List<VerificationRequest> findUnresolvedVerificationRequestsByClub(Club club){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         return dao.findUnresolvedVerificationRequestsByClub(club);
     }
 
     @Transactional
     public boolean processVerification(Club club, User user, String message){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
 
         Optional<VerificationRequest> verificationRequest = dao.findOpenVerificationRequestByClubAndUser(club, user);
         verificationRequest.orElseThrow(() -> new ValidationException("Požadavek nebyl nalezen"));
@@ -96,6 +96,11 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
     public int getNumOfVerificationRequests(Club club){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) return -1;
         return dao.countVerificationRequests(club);
+    }
+
+    @Transactional
+    public boolean hasUserUnresolvedRequest(Club club, User user){
+        return dao.existsUnresolvedRequest(club, user);
     }
 
 }
