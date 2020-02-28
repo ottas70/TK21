@@ -240,7 +240,7 @@ public class ClubController {
         return relations.stream().map(MemberDto::new).collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/{id}/member/{member_id}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/{id}/member/role/{member_id}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> addRole(@PathVariable("id") Integer id, @PathVariable("member_id") Integer member_id, @RequestBody String role){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
@@ -253,7 +253,7 @@ public class ClubController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @RequestMapping(value = "/{id}/member/{member_id}", method = RequestMethod.DELETE, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/{id}/member/role/{member_id}", method = RequestMethod.DELETE, consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> deleteRole(@PathVariable("id") Integer id, @PathVariable("member_id") Integer member_id, @RequestBody String role){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
@@ -262,6 +262,19 @@ public class ClubController {
         user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
 
         clubRelationService.deleteRole(club.get(), user.get(), UserRole.getRoleFromString(role));
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/member/{member_id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteMembership(@PathVariable("id") Integer id, @PathVariable("member_id") Integer member_id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        final Optional<User> user = userService.find(member_id);
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
+
+        clubRelationService.removeMemberFromClub(club.get(), user.get());
 
         return ResponseEntity.noContent().build();
     }

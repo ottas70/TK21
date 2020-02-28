@@ -95,4 +95,16 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         this.update(relation);
     }
 
+    @Transactional
+    public void removeMemberFromClub(Club club, User user){
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(userService.getCurrentUser().getId() == user.getId()) throw new ValidationException("Nemůžete odebrát sám sebe");
+
+        Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
+        relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
+        ClubRelation relation = relationOptional.get();
+
+        this.remove(relation);
+    }
+
 }
