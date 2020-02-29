@@ -104,11 +104,7 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
 
         relation.removeRole(role);
 
-        if(relation.hasAnyRoles()){
-            this.update(relation);
-        } else {
-            this.remove(relation);
-        }
+        this.update(relation);
     }
 
     @Transactional
