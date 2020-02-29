@@ -313,6 +313,16 @@ public class ClubController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value = "/{id}/member/me", method = RequestMethod.DELETE)
+    public ResponseEntity<?> quitClub(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubRelationService.quitClub(club.get());
+
+        return ResponseEntity.noContent().build();
+    }
+
     /* *********************************
      * USER VERIFICATION
      ********************************* */

@@ -119,6 +119,20 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
         relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
         ClubRelation relation = relationOptional.get();
+        if(relation.getRoles().contains(UserRole.ADMIN)) throw new ValidationException("Uživatele s rolí admin nelze odstranit");
+
+        this.remove(relation);
+    }
+
+    @Transactional
+    public void quitClub(Club club){
+        User user = userService.getCurrentUser();
+        if(user == null) throw new BadRequestException("Uživatel musí být přihlášen");
+
+        Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
+        relationOptional.orElseThrow(() -> new ValidationException("Nejste členem klubu"));
+        ClubRelation relation = relationOptional.get();
+        if(relation.getRoles().contains(UserRole.ADMIN)) throw new ValidationException("ADMIN nemůže z klubu odejít");
 
         this.remove(relation);
     }
