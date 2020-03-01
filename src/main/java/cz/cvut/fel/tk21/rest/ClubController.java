@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.*;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -131,17 +133,26 @@ public class ClubController {
             isYearSet = false;
         }
 
-        final Optional<Club> club = clubService.find(id);
-        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+        final Optional<Club> clubOptional = clubService.find(id);
+        clubOptional.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+        Club club = clubOptional.get();
 
         Season season = null;
         if(isYearSet){
-            season = club.get().getSeasonInYear(year);
+            season = club.getSeasonInYear(year);
         }else{
-            season = club.get().getSeasonByDate(LocalDate.now());
+            season = club.getSeasonByDate(LocalDate.now());
         }
 
-        if(season == null) throw new NotFoundException("Sezóna neexistuje");
+        if(season == null){
+            if(DateUtils.getCurrentYear() + 1 == year){
+                clubService.addDefaultSeason(club, year);
+            } else {
+                throw new NotFoundException("Sezóna neexistuje");
+            }
+        }
+
+        season = club.getSeasonInYear(year);
 
         return new SeasonDto(season);
 
@@ -235,6 +246,9 @@ public class ClubController {
     public List<MemberDto> getClubMembers(@PathVariable("id") Integer id){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        User user = userService.getCurrentUser();
+        if(user == null || !clubService.isUserAllowedToManageThisClub(user, club.get())) throw new UnauthorizedException("Přístup odepřen");
 
         List<ClubRelation> relations = clubRelationService.findAllRelationsByClub(club.get());
         return relations.stream().map(MemberDto::new).collect(Collectors.toList());

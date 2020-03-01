@@ -21,7 +21,7 @@ public class UserResponseDto {
         this.name = user.getName();
         this.surname = user.getSurname();
         this.email = user.getEmail();
-        this.pinnedClub = new ClubRelationshipDto(clubRelation);
+        if(clubRelation != null) this.pinnedClub = new ClubRelationshipDto(clubRelation);
     }
 
     public int getId() {

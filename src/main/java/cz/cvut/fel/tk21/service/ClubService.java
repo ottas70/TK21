@@ -118,10 +118,16 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void addSeason(Club club, Season season, int year){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(season.getSummer().getFrom().getYear() != year || season.getWinter().getFrom().getYear() != year)
             throw new BadRequestException("Datumy nesedí");
         club.addSeasonInYear(year, season);
+        this.update(club);
+    }
+
+    @Transactional
+    public void addDefaultSeason(Club club, int year){
+        club.addSeasonInYear(year, getDefaultSeason(year));
         this.update(club);
     }
 
@@ -211,10 +217,13 @@ public class ClubService extends BaseService<ClubDao, Club> {
     private Map<Integer, Season> getInitialSeason(int year){
         Map<Integer, Season> seasons = new HashMap<>();
 
-        Season season = new Season(new FromToDate("03-01-" + year, "09-30-" + year), new FromToDate("10-01-" + year, "02-30-" + (year+1)));
-        seasons.put(year, season);
+        seasons.put(year, getDefaultSeason(year));
 
         return seasons;
+    }
+
+    private Season getDefaultSeason(int year){
+        return new Season(new FromToDate("04-01-" + year, "09-30-" + year), new FromToDate("10-01-" + year, "03-30-" + (year+1)));
     }
 
     @Autowired
