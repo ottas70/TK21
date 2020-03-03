@@ -37,7 +37,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
     }
 
     @Transactional
-    public CyclicReservationReport createReservationsBasedOnCyclicReservation(CyclicReservation cyclicReservation, CreateCyclicReservationDto dto, Club club, LocalDate date){
+    public CyclicReservationReport createReservationsBasedOnCyclicReservation(CyclicReservation cyclicReservation, CreateCyclicReservationDto dto, Club club, LocalDate date, int numOfReservations){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
 
         LocalDate initialDate = date;
@@ -49,7 +49,8 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
         List<LocalDate> successful = new ArrayList<>();
         List<LocalDate> failed = new ArrayList<>();
 
-        while(!date.isAfter(seasonTime.getTo())){
+        int counter = 0;
+        while(!date.isAfter(seasonTime.getTo()) && counter < numOfReservations){
             try{
                 Reservation reservation = reservationService.createReservationFromDTO(dto, club, date);
                 reservation.setCyclicReservationId(cyclicReservation.getId());
@@ -61,6 +62,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
                 failed.add(date);
             }
             date = date.plusDays(cyclicReservation.getDaysInBetween());
+            counter++;
         }
 
         this.update(cyclicReservation);
