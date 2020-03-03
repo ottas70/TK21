@@ -116,7 +116,7 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
         ClubRelation relation = relationOptional.get();
         if(relation.getRoles().contains(UserRole.ADMIN)) throw new ValidationException("Uživatele s rolí admin nelze odstranit");
-        if(user.getRootClub().getId() == club.getId()){
+        if(user.getRootClub() != null && user.getRootClub().getId() == club.getId()){
             user.setRootClub(null);
             userService.update(user);
         }
@@ -133,7 +133,7 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         relationOptional.orElseThrow(() -> new ValidationException("Nejste členem klubu"));
         ClubRelation relation = relationOptional.get();
         if(relation.getRoles().contains(UserRole.ADMIN)) throw new ValidationException("ADMIN nemůže z klubu odejít");
-        if(user.getRootClub().getId() == club.getId()){
+        if(user.getRootClub() != null && user.getRootClub().getId() == club.getId()){
             user.setRootClub(null);
             userService.update(user);
         }

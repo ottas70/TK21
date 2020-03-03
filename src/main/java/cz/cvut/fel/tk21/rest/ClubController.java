@@ -220,7 +220,7 @@ public class ClubController {
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/{id}/properties/reservation/club-name", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/{id}/properties/club-name", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> updateClubName(@PathVariable("id") Integer id, @RequestBody String name){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
@@ -229,7 +229,7 @@ public class ClubController {
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/{id}/properties/reservation/description", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/{id}/properties/description", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> updateClubDescription(@PathVariable("id") Integer id, @RequestBody String description){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
