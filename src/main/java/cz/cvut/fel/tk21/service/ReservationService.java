@@ -30,15 +30,14 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Autowired
     private ClubService clubService;
-
     @Autowired
     private CourtService courtService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private ClubRelationService clubRelationService;
+    @Autowired
+    private CyclicReservationService cyclicReservationService;
 
     protected ReservationService(ReservationDao dao) {
         super(dao);
@@ -232,6 +231,21 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional
     public void deleteReservation(Reservation reservation){
         if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut");
+
+        if(reservation.getInitialCyclicReservation() != null){
+            int cyclicId = reservation.getCyclicReservationId();
+            Optional<Reservation> next = dao.findReservationByCyclicIdAfterDate(cyclicId, reservation.getDate());
+            Optional<CyclicReservation> cyclicReservation = cyclicReservationService.find(cyclicId);
+            if(next.isEmpty()) {
+                cyclicReservation.ifPresent(cyclicReservationService::remove);
+                reservation.setInitialCyclicReservation(null);
+            } else {
+                cyclicReservation.get().setInitialReservation(next.get());
+                next.get().setInitialCyclicReservation(cyclicReservation.get());
+                this.update(next.get());
+            }
+        }
+
         this.remove(reservation);
     }
 

@@ -24,6 +24,9 @@ public class Reservation extends AbstractEntity {
     @Column
     private int cyclicReservationId; // 0 for non-cyclic reservation
 
+    @OneToOne(mappedBy = "initialReservation")
+    private CyclicReservation initialCyclicReservation;
+
     // for non-registered users
     @Column
     private String email;
@@ -79,6 +82,14 @@ public class Reservation extends AbstractEntity {
 
     public boolean isCyclicReservation(){
         return cyclicReservationId != 0;
+    }
+
+    public CyclicReservation getInitialCyclicReservation() {
+        return initialCyclicReservation;
+    }
+
+    public void setInitialCyclicReservation(CyclicReservation initialCyclicReservation) {
+        this.initialCyclicReservation = initialCyclicReservation;
     }
 
     public String getEmail() {

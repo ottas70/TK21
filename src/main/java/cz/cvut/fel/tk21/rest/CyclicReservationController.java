@@ -52,7 +52,7 @@ public class CyclicReservationController {
     }
 
     @RequestMapping(value = "/club/{club_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CyclicReservationReport createCyclicReservation(@PathVariable("club_id") Integer club_id, @RequestParam Integer limit, @RequestParam @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @RequestBody CreateCyclicReservationDto dto){
+    public CyclicReservationReport createCyclicReservation(@PathVariable("club_id") Integer club_id, @RequestParam(required = false, defaultValue = "1000000") Integer limit, @RequestParam @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @RequestBody CreateCyclicReservationDto dto){
         validator.validate(dto);
         if(dto.getDaysInBetween() < 1) throw new BadRequestException("Špatná dotaz");
         if(!date.equals(dto.getDate())) throw new BadRequestException("Datumy se neshodují");

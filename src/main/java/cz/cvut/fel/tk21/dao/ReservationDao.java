@@ -66,4 +66,18 @@ public class ReservationDao extends BaseDao<Reservation> {
                 .getResultList();
     }
 
+    public Optional<Reservation> findReservationByCyclicIdAfterDate(int id, LocalDate date){
+        try{
+            return Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r " +
+                    "WHERE r.cyclicReservationId = :id AND r.date > :date " +
+                    "ORDER BY r.date ASC", Reservation.class)
+                    .setParameter("id", id)
+                    .setParameter("date", date)
+                    .setMaxResults(1)
+                    .getSingleResult());
+        } catch (NoResultException e){
+            return Optional.empty();
+        }
+    }
+
 }

@@ -54,7 +54,11 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
             try{
                 Reservation reservation = reservationService.createReservationFromDTO(dto, club, date);
                 reservation.setCyclicReservationId(cyclicReservation.getId());
-                if(date.equals(initialDate)) cyclicReservation.setInitialReservation(reservation);
+                if(date.equals(initialDate)) {
+                    cyclicReservation.setInitialReservation(reservation);
+                    reservation.setInitialCyclicReservation(cyclicReservation);
+                    reservationService.update(reservation);
+                }
                 successful.add(date);
                 reservationService.update(reservation);
             } catch (Exception ex){
