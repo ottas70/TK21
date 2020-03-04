@@ -45,6 +45,7 @@ public class WebSocketController {
     @MessageMapping("/ws/reservation/{clubId}")
     @SendToUser("/topic/reservation/{clubId}")
     public ReservationMessage initialMessage(@DestinationVariable Integer clubId, @Payload(required = false) DateDto date, Principal principal){
+        log.info("Initial Message method entered");
         User user = null;
 
         if(!(principal instanceof AnonymousAuthenticationToken)){

@@ -10,9 +10,12 @@ import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
+import cz.cvut.fel.tk21.ws.WebSocketController;
 import cz.cvut.fel.tk21.ws.dto.AvailableCourtDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,6 +30,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReservationService extends BaseService<ReservationDao, Reservation> {
+
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
 
     @Autowired
     private ClubService clubService;
@@ -45,6 +50,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public ReservationMessage initialReservationMessage(Club club, LocalDate date, User user){
+        log.info("Initial Message service method entered");
         ReservationMessage message = new ReservationMessage();
 
         Season season = club.getSeasonByDate(date);
@@ -76,6 +82,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public LocalDate findNearestAvailableReservationDate(Club club){
+        log.info("find nearest date method entered");
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now();
         OpeningHours openingHours = club.getOpeningHours();
@@ -90,6 +97,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public AvailableCourtDto findNearestAvailableTime(Club club, LocalDate date){
+        log.info("find nearest time method entered");
         if(!club.getOpeningHours().isOpenedAtDate(date)) return null;
         FromToTime openingHours = club.getOpeningHours().getOpeningTimesAtDate(date);
         LocalTime now = LocalTime.now();
