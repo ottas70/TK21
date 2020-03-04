@@ -14,6 +14,8 @@ public class ClubDto {
 
     private String name;
 
+    private String desc;
+
     private AddressDto address;
 
     private List<CourtDto> courts;
@@ -32,6 +34,7 @@ public class ClubDto {
     public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests) {
         this.id = club.getId();
         this.name = club.getName();
+        this.desc = club.getDescription();
         if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.isAllowedMng = isAllowedMng;
@@ -54,6 +57,14 @@ public class ClubDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public AddressDto getAddress() {
