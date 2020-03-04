@@ -50,7 +50,6 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public ReservationMessage initialReservationMessage(Club club, LocalDate date, User user){
-        log.info("Initial Message service method entered");
         ReservationMessage message = new ReservationMessage();
 
         Season season = club.getSeasonByDate(date);
@@ -82,7 +81,6 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public LocalDate findNearestAvailableReservationDate(Club club){
-        log.info("find nearest date method entered");
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now();
         OpeningHours openingHours = club.getOpeningHours();
@@ -97,7 +95,6 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(readOnly = true)
     public AvailableCourtDto findNearestAvailableTime(Club club, LocalDate date){
-        log.info("find nearest time method entered");
         if(!club.getOpeningHours().isOpenedAtDate(date)) return null;
         FromToTime openingHours = club.getOpeningHours().getOpeningTimesAtDate(date);
         LocalTime now = LocalTime.now();

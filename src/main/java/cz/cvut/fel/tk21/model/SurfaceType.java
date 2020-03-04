@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SurfaceType {
 
-    CLAY("ANTUKA"), HARD("TVRDÝ POVRCH"), GRASS("TRÁVA");
+    CLAY("ANTUKA"), HARD("TVRDÝ POVRCH"), GRASS("TRÁVA"), ARTIFICIAL_GRASS("KOBEREC");
 
     private final String name;
 
