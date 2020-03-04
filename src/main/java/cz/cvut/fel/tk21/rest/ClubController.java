@@ -69,7 +69,6 @@ public class ClubController {
     public ClubSearchDto getAllClubs(
             @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
-        List<ClubDto> result = new ArrayList<>();
         if(size < 1) throw new BadRequestException("Size cannot be less than zero");
         if(page < 1) page = 1;
         return clubService.findAllPaginated(page,size);
@@ -235,6 +234,24 @@ public class ClubController {
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
         clubService.updateDescription(club.get(), description);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/properties/address", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateClubAddress(@PathVariable("id") Integer id, @RequestBody AddressDto addressDto){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubService.updateAddress(club.get(), addressDto.getEntity());
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/properties/contact", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateClubContact(@PathVariable("id") Integer id, @RequestBody ContactDto contactDto){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubService.updateContact(club.get(), contactDto);
         return ResponseEntity.noContent().build();
     }
 

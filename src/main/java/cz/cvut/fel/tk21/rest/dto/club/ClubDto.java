@@ -20,6 +20,8 @@ public class ClubDto {
 
     private List<CourtDto> courts;
 
+    private ContactDto contact;
+
     private boolean isAllowedMng;
 
     private boolean isAllowedRes;
@@ -37,6 +39,7 @@ public class ClubDto {
         this.desc = club.getDescription();
         if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
+        this.contact = new ContactDto(club);
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
         this.isMember = isMember;
@@ -81,6 +84,14 @@ public class ClubDto {
 
     public void setCourts(List<CourtDto> courts) {
         this.courts = courts;
+    }
+
+    public ContactDto getContact() {
+        return contact;
+    }
+
+    public void setContact(ContactDto contact) {
+        this.contact = contact;
     }
 
     @JsonProperty(value="isAllowedMng")

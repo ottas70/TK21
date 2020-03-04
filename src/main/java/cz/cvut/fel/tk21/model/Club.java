@@ -23,6 +23,12 @@ public class Club extends AbstractEntity {
     @Column
     private String email;
 
+    @Column
+    private String telephone;
+
+    @Column
+    private String web;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
@@ -89,6 +95,22 @@ public class Club extends AbstractEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getWeb() {
+        return web;
+    }
+
+    public void setWeb(String web) {
+        this.web = web;
     }
 
     public Address getAddress() {

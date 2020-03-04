@@ -9,6 +9,7 @@ import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRegistrationDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
+import cz.cvut.fel.tk21.rest.dto.club.ContactDto;
 import cz.cvut.fel.tk21.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -174,6 +175,22 @@ public class ClubService extends BaseService<ClubDao, Club> {
     public void updateDescription(Club club, String description){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
         club.setDescription(description);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateAddress(Club club, Address address){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setAddress(address);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateContact(Club club, ContactDto contactDto){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        club.setEmail(contactDto.getEmail());
+        club.setWeb(contactDto.getWeb());
+        club.setTelephone(contactDto.getTelephone());
         this.update(club);
     }
 

@@ -19,6 +19,8 @@ public class ClubSettingsDto {
 
     private List<CourtDto> courts;
 
+    private ContactDto contact;
+
     private SeasonDto seasons;
 
     private PropertiesDto properties;
@@ -33,6 +35,8 @@ public class ClubSettingsDto {
 
         this.courts = new ArrayList<>();
         club.getCourts().forEach((c) -> this.courts.add(new CourtDto(c)));
+
+        this.contact = new ContactDto(club);
 
         if(isYearSet){
             this.seasons = new SeasonDto(club.getSeasonInYear(year));
@@ -66,6 +70,14 @@ public class ClubSettingsDto {
 
     public void setCourts(List<CourtDto> courts) {
         this.courts = courts;
+    }
+
+    public ContactDto getContact() {
+        return contact;
+    }
+
+    public void setContact(ContactDto contact) {
+        this.contact = contact;
     }
 
     public SeasonDto getSeasons() {
