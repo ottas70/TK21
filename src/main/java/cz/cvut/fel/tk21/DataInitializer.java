@@ -61,6 +61,10 @@ public class DataInitializer implements ApplicationRunner {
         Club club = new Club();
         club.setId(1);
         club.setName("Tk Neride");
+        club.setDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque faucibus fringilla. Mauris metus. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Nullam sit amet magna in magna gravida vehicula. Aliquam erat volutpat. Etiam commodo dui eget wisi. Phasellus faucibus molestie nisl. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Nulla quis diam.");
+        club.setTelephone("723598253");
+        club.setEmail("neride@gmail.com");
+        club.setWeb("neride.cz");
         Address address = new Address();
         address.setStreet("V Chotejně 24");
         address.setCity("Praha");
@@ -90,6 +94,10 @@ public class DataInitializer implements ApplicationRunner {
         Club club2 = new Club();
         club2.setId(3);
         club2.setName("Tk Písnice");
+        club2.setDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque faucibus fringilla. Mauris metus. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Nullam sit amet magna in magna gravida vehicula. Aliquam erat volutpat. Etiam commodo dui eget wisi. Phasellus faucibus molestie nisl. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Nulla quis diam.");
+        club2.setTelephone("749724167");
+        club2.setEmail("pisnice@gmail.com");
+        club2.setWeb("pisnice.cz");
         Address address2 = new Address();
         address2.setStreet("Ve Dvorcích 12");
         address2.setCity("Praha");

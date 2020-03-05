@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.model.User;
@@ -14,6 +15,7 @@ import cz.cvut.fel.tk21.rest.dto.post.PostsWithClubPaginatedDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.PostService;
 import cz.cvut.fel.tk21.service.UserService;
+import cz.cvut.fel.tk21.util.FileUtil;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -123,8 +125,12 @@ public class PostController {
         final Optional<Post> post = postService.find(post_id);
         post.orElseThrow(() -> new NotFoundException("Příspěvek nebyl nalezen"));
 
-        postService.uploadPostImages(post.get(), files);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        for (MultipartFile file : files){
+            if(!FileUtil.isImage(file)) throw new ValidationException("Tento formát není podporován");
+        }
+
+        List<String> filenames = postService.uploadPostImages(post.get(), files);
+        return ResponseEntity.status(HttpStatus.CREATED).body(filenames);
     }
 
     @RequestMapping(value = "/{postId}/{filename}", method = RequestMethod.DELETE)

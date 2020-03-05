@@ -84,13 +84,16 @@ public class PostService extends BaseService<PostDao, Post> {
     }
 
     @Transactional
-    public void uploadPostImages(Post post, MultipartFile[] files){
+    public List<String> uploadPostImages(Post post, MultipartFile[] files){
         if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
+        List<String> filenames = new ArrayList<>();
         for (MultipartFile file : files){
             String filename = fileStorageService.storeImage(file);
             post.addImage(filename);
+            filenames.add(filename);
         }
         this.update(post);
+        return filenames;
     }
 
     @Transactional

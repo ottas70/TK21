@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.service.storage;
 import cz.cvut.fel.tk21.config.properties.FileStorageProperties;
 import cz.cvut.fel.tk21.exception.FileStorageException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -73,15 +74,7 @@ public class FileStorageService {
     }
 
     private String generateFilename(MultipartFile file){
-        String fileName = null;
-        if(file.getOriginalFilename() != null){
-            fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            fileName = generateRandomString(10) + fileName;
-        } else {
-            fileName = generateRandomString(20);
-        }
-
-        return fileName;
+        return generateRandomString(30) + FileUtil.getExtension(file);
     }
 
     private String generateRandomString(int length){
