@@ -14,6 +14,12 @@ public class FileUtil {
                 || contentType.equals("image/gif");
     }
 
+    public static boolean isPngOrJpg(MultipartFile file){
+        String contentType = file.getContentType();
+        return contentType.equals("image/jpeg")
+                || contentType.equals("image/png");
+    }
+
     public static String getExtension(MultipartFile file){
         try {
             MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();

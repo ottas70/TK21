@@ -71,6 +71,15 @@
             <version>1.18</version>
         </dependency>
 
+        <!-- Tinify API -->
+        <dependency>
+            <groupId>com.tinify</groupId>
+            <artifactId>tinify</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+
+
+
         <!-- Dev tools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

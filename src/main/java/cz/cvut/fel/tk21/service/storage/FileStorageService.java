@@ -1,17 +1,25 @@
 package cz.cvut.fel.tk21.service.storage;
 
+import com.tinify.*;
 import cz.cvut.fel.tk21.config.properties.FileStorageProperties;
 import cz.cvut.fel.tk21.exception.FileStorageException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.util.FileUtil;
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.IOException;
+import java.lang.Exception;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +30,8 @@ import java.util.Random;
 @Service
 public class FileStorageService {
 
+    private static final Logger log = LoggerFactory.getLogger(FileStorageService.class);
+
     private Path imagePath;
 
     @Autowired
@@ -30,6 +40,7 @@ public class FileStorageService {
     }
 
     public String storeImage(MultipartFile file){
+        file = compressImage(file);
         String fileName = generateFilename(file);
 
         try {
@@ -87,6 +98,20 @@ public class FileStorageService {
                 .limit(length)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+    private MultipartFile compressImage(MultipartFile file){
+        try {
+            byte[] resultData = Tinify.fromBuffer(file.getBytes()).toBuffer();
+            file = new CustomMultipartFile(resultData, file.getName(), file.getOriginalFilename(), file.getContentType());
+        } catch(AccountException | ClientException | ServerException | ConnectionException e) {
+            log.info(e.getMessage());
+        } catch(java.lang.Exception e) {
+            log.error(e.getMessage());
+        }
+
+        return file;
+
     }
 
 }
