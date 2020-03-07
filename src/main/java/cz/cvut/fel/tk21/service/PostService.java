@@ -5,17 +5,20 @@ import cz.cvut.fel.tk21.dao.PostDao;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.ImageDetail;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.rest.dto.club.ClubDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
 import cz.cvut.fel.tk21.rest.dto.post.*;
 import cz.cvut.fel.tk21.service.storage.FileStorageService;
+import cz.cvut.fel.tk21.service.storage.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +35,9 @@ public class PostService extends BaseService<PostDao, Post> {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private ImageService imageService;
 
     protected PostService(PostDao dao) {
         super(dao);
@@ -64,6 +70,12 @@ public class PostService extends BaseService<PostDao, Post> {
     @Transactional
     public void deletePost(Post post){
         if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
+
+        for (ImageDetail detail : post.getImages()){
+            fileStorageService.deleteFile(detail.getOriginalName());
+            fileStorageService.deleteFile(detail.getMiniName());
+        }
+
         this.remove(post);
     }
 
@@ -84,25 +96,46 @@ public class PostService extends BaseService<PostDao, Post> {
     }
 
     @Transactional
-    public List<String> uploadPostImages(Post post, MultipartFile[] files){
+    public List<ImageDetail> uploadPostImages(Post post, MultipartFile[] files){
         if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
-        List<String> filenames = new ArrayList<>();
+        List<ImageDetail> details = new ArrayList<>();
         for (MultipartFile file : files){
-            String filename = fileStorageService.storeImage(file);
-            post.addImage(filename);
-            filenames.add(filename);
+            imageService.checkImageSize(file);
+            byte[] image = imageService.resizeImageIfTooLarge(file);
+            AbstractMap.SimpleEntry<Integer, Integer> sizeOriginal = imageService.getSize(image);
+            String filenameOriginal = fileStorageService.storeImage(image, file.getContentType(), true);
+
+            //create mini
+            byte[] mini = imageService.createMiniature(image, file.getContentType());
+            AbstractMap.SimpleEntry<Integer, Integer> sizeMini = imageService.getSize(mini);
+            String filenameMini = fileStorageService.storeImage(mini, file.getContentType(), false);
+
+            //create DB object
+            ImageDetail detail = new ImageDetail();
+            detail.setOriginalName(filenameOriginal);
+            detail.setWidthOriginal(sizeOriginal.getKey());
+            detail.setHeightOriginal(sizeOriginal.getValue());
+            detail.setMiniName(filenameMini);
+            detail.setWidthMini(sizeMini.getKey());
+            detail.setHeightMini(sizeMini.getValue());
+
+            post.addImage(detail);
+            details.add(detail);
         }
+
         this.update(post);
-        return filenames;
+        return details;
     }
 
     @Transactional
     public void deletePostImage(Post post, String filename){
         if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
-        if(!post.getImages().contains(filename)) throw new NotFoundException("Obrázek nebyl nalezen");
+        ImageDetail detail = post.findByFilename(filename);
+        if(detail == null) throw new NotFoundException("Obrázek nebyl nalezen");
 
-        fileStorageService.deleteFile(filename);
-        post.removeImage(filename);
+        fileStorageService.deleteFile(detail.getOriginalName());
+        fileStorageService.deleteFile(detail.getMiniName());
+        post.removeImage(detail);
         this.update(post);
     }
 

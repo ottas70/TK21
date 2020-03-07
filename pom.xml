@@ -78,7 +78,12 @@
             <version>1.6.4</version>
         </dependency>
 
-
+        <!-- ImageJ -->
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+            <version>1.52t</version>
+        </dependency>
 
         <!-- Dev tools -->
         <dependency>

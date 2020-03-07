@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.rest.dto.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.cvut.fel.tk21.model.ImageDetail;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.rest.dto.CreatedAtDto;
 
@@ -23,7 +24,7 @@ public class PostDto {
     private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Collection<String> images;
+    private Collection<ImageDetail> images;
 
     public PostDto() {
     }
@@ -68,11 +69,11 @@ public class PostDto {
         this.description = description;
     }
 
-    public Collection<String> getImages() {
+    public Collection<ImageDetail> getImages() {
         return images;
     }
 
-    public void setImages(Collection<String> images) {
+    public void setImages(Collection<ImageDetail> images) {
         this.images = images;
     }
 

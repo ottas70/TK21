@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.ImageDetail;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.rest.dto.CreatedDto;
@@ -129,8 +130,8 @@ public class PostController {
             if(!FileUtil.isImage(file)) throw new ValidationException("Tento formát není podporován");
         }
 
-        List<String> filenames = postService.uploadPostImages(post.get(), files);
-        return ResponseEntity.status(HttpStatus.CREATED).body(filenames);
+        List<ImageDetail> details = postService.uploadPostImages(post.get(), files);
+        return ResponseEntity.status(HttpStatus.CREATED).body(details);
     }
 
     @RequestMapping(value = "/{postId}/{filename}", method = RequestMethod.DELETE)
