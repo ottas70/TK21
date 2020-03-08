@@ -4,13 +4,13 @@ import com.tinify.*;
 import cz.cvut.fel.tk21.exception.FileStorageException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.util.FileUtil;
+import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,13 +23,11 @@ public class ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageService.class);
     private static final int MAX_IMAGE_SIZE = 2000;
-    private static final int MIN_IMAGE_WIDTH = 2000;
     private static final int MINIATURE_IMAGE_WIDTH = 280;
 
     public byte[] compressImage(byte[] image) {
         try {
-            byte[] resultData = Tinify.fromBuffer(image).toBuffer();
-            return resultData;
+            return Tinify.fromBuffer(image).toBuffer();
         } catch (AccountException | ClientException | ServerException | ConnectionException e) {
             log.info(e.getMessage());
         } catch (java.lang.Exception e) {
@@ -43,20 +41,17 @@ public class ImageService {
             byte[] image = file.getBytes();
             InputStream in = new ByteArrayInputStream(image);
             BufferedImage originalImage = ImageIO.read(in);
+            String type = FileUtil.getExtension(file.getContentType()).substring(1);
 
             int height = originalImage.getHeight();
             int width = originalImage.getWidth();
 
             if (width >= height && width > MAX_IMAGE_SIZE) {
                 float ratio = MAX_IMAGE_SIZE / (float) width;
-                BufferedImage buffImage = scale(originalImage, ratio);
-                String type = FileUtil.getExtension(file.getContentType()).substring(1);
-                return imageToByteArray(buffImage, type);
+                return scale(originalImage, ratio, type);
             } else if (height >= width && width > MAX_IMAGE_SIZE) {
                 float ratio = MAX_IMAGE_SIZE / (float) height;
-                BufferedImage buffImage = scale(originalImage, ratio);
-                String type = FileUtil.getExtension(file.getContentType()).substring(1);
-                return imageToByteArray(buffImage, type);
+                return scale(originalImage, ratio, type);
             } else {
                 return image;
             }
@@ -108,32 +103,27 @@ public class ImageService {
             int width = originalImage.getWidth();
 
             float ratio = MINIATURE_IMAGE_WIDTH / (float) width;
-            BufferedImage buffImage = scale(originalImage, ratio);
             String type = FileUtil.getExtension(contentType).substring(1);
-            return imageToByteArray(buffImage, type);
+            return scale(originalImage, ratio, type);
         } catch (IOException e) {
             log.info("Failed to parse image to byte array");
             throw new FileStorageException("Something went wrong");
         }
     }
 
-    private BufferedImage scale(BufferedImage imageToScale, float ratio) {
-        BufferedImage scaledImage = null;
+    private byte[] scale(BufferedImage imageToScale, float ratio, String type) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (imageToScale != null) {
             int newWidth = (int) (imageToScale.getWidth() * ratio);
             int newHeight = (int) (imageToScale.getHeight() * ratio);
-            scaledImage = new BufferedImage(newWidth, newHeight, imageToScale.getType());
-            Graphics2D graphics2D = scaledImage.createGraphics();
-            graphics2D.drawImage(imageToScale, 0, 0, newWidth, newHeight, null);
-            graphics2D.dispose();
-        }
-        return scaledImage;
-    }
 
-    private byte[] imageToByteArray(BufferedImage image, String type) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(image, type, bos);
-        return bos.toByteArray();
+            Thumbnails.of(imageToScale)
+                    .size(newWidth, newHeight)
+                    .outputFormat(type)
+                    .toOutputStream(out);
+
+        }
+        return out.toByteArray();
     }
 
 }

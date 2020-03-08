@@ -37,6 +37,7 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         User user = userService.getCurrentUser();
         if(user == null) throw new UnauthorizedException("Přístup zamítnut");
 
+        if(club.isUserBlocked(user)) throw new ValidationException("BLOCKED");
         if(clubRelationService.isMemberOf(club, user)) throw new ValidationException("ALREADY A MEMBER");
         if(dao.existsUnresolvedRequest(club, user)) throw new ValidationException("REQUEST EXISTS");
 

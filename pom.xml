@@ -78,11 +78,11 @@
             <version>1.6.4</version>
         </dependency>
 
-        <!-- ImageJ -->
+        <!-- Thumbnailator -->
         <dependency>
-            <groupId>net.imagej</groupId>
-            <artifactId>ij</artifactId>
-            <version>1.52t</version>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.11</version>
         </dependency>
 
         <!-- Dev tools -->
