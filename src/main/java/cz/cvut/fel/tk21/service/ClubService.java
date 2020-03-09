@@ -60,14 +60,15 @@ public class ClubService extends BaseService<ClubDao, Club> {
         club.setReservationPermission(ReservationPermission.SIGNED);
         club.setMinReservationTime(15);
         club.setMaxReservationTime(180);
-        dao.persist(club);
 
         //links signed in user with this club as admin
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if(email == null) throw new ValidationException("Uživatel neexistuje");
         Optional<User> user = userService.findUserByEmail(email);
         if(user.isEmpty()) throw new ValidationException("Uživatel neexistuje");
+        club.setEmail(user.get().getEmail());
 
+        dao.persist(club);
         clubRelationService.addUserToClub(club, user.get(), UserRole.ADMIN);
 
         return club.getId();
@@ -234,7 +235,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
     private Map<Integer, Season> getInitialSeason(int year){
         Map<Integer, Season> seasons = new HashMap<>();
 
+        seasons.put(year - 1, getDefaultSeason(year - 1));
         seasons.put(year, getDefaultSeason(year));
+        seasons.put(year + 1, getDefaultSeason(year + 1));
 
         return seasons;
     }

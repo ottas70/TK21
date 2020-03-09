@@ -13,6 +13,9 @@ public class ContactDto {
 
     private String web;
 
+    public ContactDto() {
+    }
+
     public ContactDto(Club club) {
         this.telephone = club.getTelephone();
         this.email = club.getEmail();

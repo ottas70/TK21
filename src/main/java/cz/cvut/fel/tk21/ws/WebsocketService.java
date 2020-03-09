@@ -37,10 +37,12 @@ public class WebsocketService {
         Set<SimpSubscription> subscriptions = simpUserRegistry.findSubscriptions(simpSubscription -> simpSubscription.getDestination().equals("/user" + destination));
         for(SimpSubscription simpSubscription : subscriptions) {
             boolean editable = false;
+            boolean mine = false;
             if(updateType != UpdateType.DELETE){
                 editable = this.isReservationEditable(reservation, simpSubscription.getSession().getUser());
+                mine = this.isReservationMine(reservation, simpSubscription.getSession().getUser());
             }
-            this.template.convertAndSendToUser(simpSubscription.getSession().getUser().getName(), destination, new UpdateReservationMessage(updateType, reservation, editable));
+            this.template.convertAndSendToUser(simpSubscription.getSession().getUser().getName(), destination, new UpdateReservationMessage(updateType, reservation, editable, mine));
         }
     }
 
@@ -51,6 +53,15 @@ public class WebsocketService {
             if(userOptional.isPresent()) user = userOptional.get();
         }
         return reservationService.isUserAllowedToEditReservation(user, reservation);
+    }
+
+    private boolean isReservationMine(Reservation reservation, SimpUser simpUser){
+        User user = null;
+        if(StringUtils.isValidEmail(simpUser.getName())){
+            Optional<User> userOptional = userService.findUserByEmail(simpUser.getName());
+            if(userOptional.isPresent()) user = userOptional.get();
+        }
+        return reservationService.isOwner(reservation, user);
     }
 
 }
