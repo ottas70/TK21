@@ -101,6 +101,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         LocalTime from = openingHours.getFrom();
         if(now.isAfter(from) && date.equals(LocalDate.now())) from = now.plusHours(1).withMinute(0).withSecond(0);
         List<TennisCourt> availableCourts = club.getAllAvailableCourts(date);
+        if(availableCourts.isEmpty()) return null;
         while(from.plusHours(1).isBefore(openingHours.getTo()) || from.plusHours(1).equals(openingHours.getTo())){
             for (TennisCourt court : availableCourts){
                 FromToTime reservationTime = new FromToTime(from, from.plusHours(1));
@@ -109,6 +110,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
                 }
             }
             from = from.plusMinutes(15);
+            if(from.getHour() == 0 && from.getMinute() == 0) return null;
         }
         return null;
     }
