@@ -23,6 +23,7 @@ public class Post extends AbstractEntity{
     private String title;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverter.class)
     private Map<String, Object> description;
 
