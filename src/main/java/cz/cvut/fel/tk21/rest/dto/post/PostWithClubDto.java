@@ -6,6 +6,7 @@ import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.rest.dto.CreatedAtDto;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Map;
 
 public class PostWithClubDto {
 
@@ -18,8 +19,7 @@ public class PostWithClubDto {
     @NotBlank
     private String title;
 
-    @NotBlank
-    private String description;
+    private Map<String, Object> description;
 
     private ClubPostDto club;
 
@@ -58,11 +58,11 @@ public class PostWithClubDto {
         this.title = title;
     }
 
-    public String getDescription() {
+    public Map<String, Object> getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Map<String, Object> description) {
         this.description = description;
     }
 

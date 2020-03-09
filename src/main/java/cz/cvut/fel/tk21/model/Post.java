@@ -1,8 +1,11 @@
 package cz.cvut.fel.tk21.model;
 
+import cz.cvut.fel.tk21.model.converter.JsonConverter;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 @Entity
 public class Post extends AbstractEntity{
@@ -20,7 +23,8 @@ public class Post extends AbstractEntity{
     private String title;
 
     @Lob
-    private String description;
+    @Convert(converter = JsonConverter.class)
+    private Map<String, Object> description;
 
     @ElementCollection
     private Collection<ImageDetail> images;
@@ -57,11 +61,11 @@ public class Post extends AbstractEntity{
         this.title = title;
     }
 
-    public String getDescription() {
+    public Map<String, Object> getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Map<String, Object> description) {
         this.description = description;
     }
 

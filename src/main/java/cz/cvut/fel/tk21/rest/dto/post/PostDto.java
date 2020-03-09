@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.rest.dto.CreatedAtDto;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
+import java.util.Map;
 
 public class PostDto {
 
@@ -20,8 +21,7 @@ public class PostDto {
     @NotBlank
     private String title;
 
-    @NotBlank
-    private String description;
+    private Map<String, Object> description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Collection<ImageDetail> images;
@@ -61,11 +61,11 @@ public class PostDto {
         this.title = title;
     }
 
-    public String getDescription() {
+    public Map<String, Object> getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Map<String, Object> description) {
         this.description = description;
     }
 
