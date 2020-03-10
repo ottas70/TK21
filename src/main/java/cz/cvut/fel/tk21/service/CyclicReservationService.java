@@ -42,9 +42,9 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
 
         LocalDate initialDate = date;
         Season currentSeason = club.getSeasonByDate(date);
-        if(currentSeason == null) throw new ValidationException("V tomto termínu nelze rezervovat kurt");
+        if(currentSeason == null) throw new ValidationException("Nelze rezervovat kurt mimo sezónu");
         FromToDate seasonTime = currentSeason.getSpecificSeason(date);
-        if(seasonTime == null) throw new ValidationException("V tomto termínu nelze rezervovat kurt");
+        if(seasonTime == null) throw new ValidationException("Nelze rezervovat kurt mimo sezónu");
 
         List<LocalDate> successful = new ArrayList<>();
         List<LocalDate> failed = new ArrayList<>();
@@ -62,7 +62,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
                 successful.add(date);
                 reservationService.update(reservation);
             } catch (Exception ex){
-                if(date.equals(initialDate)) throw new ValidationException("V tento den nelze kurt rezervovat");
+                if(date.equals(initialDate)) throw new ValidationException(ex.getMessage());
                 failed.add(date);
             }
             date = date.plusDays(cyclicReservation.getDaysInBetween());
