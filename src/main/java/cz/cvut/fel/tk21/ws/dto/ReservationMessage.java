@@ -30,6 +30,8 @@ public class ReservationMessage {
 
     private boolean isAuthorized;
 
+    private boolean isAllowedToCreateCyclicRes;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     public LocalDate getDate() {
         return date;
@@ -101,5 +103,13 @@ public class ReservationMessage {
 
     public void setAuthorized(boolean authorized) {
         isAuthorized = authorized;
+    }
+
+    public boolean isAllowedToCreateCyclicRes() {
+        return isAllowedToCreateCyclicRes;
+    }
+
+    public void setAllowedToCreateCyclicRes(boolean allowedToCreateCyclicRes) {
+        isAllowedToCreateCyclicRes = allowedToCreateCyclicRes;
     }
 }

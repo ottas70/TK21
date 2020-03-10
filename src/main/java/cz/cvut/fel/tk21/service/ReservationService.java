@@ -75,6 +75,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         message.setReservations(reservations.stream().map(r -> new ReservationDto(r, isUserAllowedToEditReservation(user, r), isOwner(r, user))).collect(Collectors.toList()));
         message.setReservationPermission(club.getReservationPermission());
         message.setAuthorized(isUserAllowedToCreateReservation(user, club));
+        message.setAllowedToCreateCyclicRes(isUserAllowedToCreateCyclicReservation(club, user));
 
         return message;
     }
@@ -186,6 +187,12 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(user == null) return false;
         if(reservation.getUser() == null) return false;
         return reservation.getUser().getId() == user.getId();
+    }
+
+    @Transactional
+    public boolean isUserAllowedToCreateCyclicReservation(Club club, User user){
+        if(user == null) return false;
+        return clubService.isUserAllowedToManageThisClub(user, club);
     }
 
     @Transactional
