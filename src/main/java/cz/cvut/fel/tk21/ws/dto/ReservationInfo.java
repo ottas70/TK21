@@ -21,6 +21,8 @@ public class ReservationInfo {
 
     private boolean mine;
 
+    private int cyclicId;
+
     private String name;
 
     private String surname;
@@ -35,6 +37,7 @@ public class ReservationInfo {
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
         this.mine = mine;
+        this.cyclicId = reservation.getCyclicReservationId();
         if(editable){
             if(reservation.getUser() == null){
                 this.name = reservation.getName();
@@ -102,6 +105,14 @@ public class ReservationInfo {
 
     public void setMine(boolean mine) {
         this.mine = mine;
+    }
+
+    public int getCyclicId() {
+        return cyclicId;
+    }
+
+    public void setCyclicId(int cyclicId) {
+        this.cyclicId = cyclicId;
     }
 
     public String getName() {

@@ -143,6 +143,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         reservation.setTennisCourt(court);
         reservation.setDate(date);
         reservation.setToken(UUID.randomUUID().toString());
+        reservation.setCyclicReservationId(-1);
 
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici.");
 

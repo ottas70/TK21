@@ -22,7 +22,7 @@ public class Reservation extends AbstractEntity {
     private Club club;
 
     @Column
-    private int cyclicReservationId; // 0 for non-cyclic reservation
+    private int cyclicReservationId; // -1 for non-cyclic reservation
 
     @OneToOne(mappedBy = "initialReservation")
     private CyclicReservation initialCyclicReservation;
@@ -81,7 +81,7 @@ public class Reservation extends AbstractEntity {
     }
 
     public boolean isCyclicReservation(){
-        return cyclicReservationId != 0;
+        return cyclicReservationId != -1;
     }
 
     public CyclicReservation getInitialCyclicReservation() {

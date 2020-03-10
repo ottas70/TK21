@@ -22,6 +22,8 @@ public class ReservationDto {
 
     private boolean mine;
 
+    private int cyclidId;
+
     private String name;
 
     private String surname;
@@ -39,6 +41,7 @@ public class ReservationDto {
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
         this.mine = mine;
+        this.cyclidId = reservation.getCyclicReservationId();
         if(editable){
             if(reservation.getUser() == null){
                 this.name = reservation.getName();
@@ -107,6 +110,14 @@ public class ReservationDto {
 
     public void setMine(boolean mine) {
         this.mine = mine;
+    }
+
+    public int getCyclidId() {
+        return cyclidId;
+    }
+
+    public void setCyclidId(int cyclidId) {
+        this.cyclidId = cyclidId;
     }
 
     public String getName() {
