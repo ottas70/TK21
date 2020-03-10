@@ -52,10 +52,9 @@ public class CyclicReservationController {
     }
 
     @RequestMapping(value = "/club/{club_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CyclicReservationReport createCyclicReservation(@PathVariable("club_id") Integer club_id, @RequestParam(required = false, defaultValue = "1000000") Integer limit, @RequestParam @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date, @RequestBody CreateCyclicReservationDto dto){
+    public CyclicReservationReport createCyclicReservation(@PathVariable("club_id") Integer club_id, @RequestParam(required = false, defaultValue = "1000000") Integer limit, @RequestBody CreateCyclicReservationDto dto){
         validator.validate(dto);
         if(dto.getDaysInBetween() < 1) throw new BadRequestException("Špatná dotaz");
-        if(!date.equals(dto.getDate())) throw new BadRequestException("Datumy se neshodují");
 
         Optional<Club> club = clubService.find(club_id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
@@ -64,7 +63,7 @@ public class CyclicReservationController {
         tennisCourt.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
 
         CyclicReservation cyclicReservation = cyclicReservationService.createCyclicReservation(dto.getDaysInBetween());
-        CyclicReservationReport report =  cyclicReservationService.createReservationsBasedOnCyclicReservation(cyclicReservation, dto, club.get(), date, limit);
+        CyclicReservationReport report =  cyclicReservationService.createReservationsBasedOnCyclicReservation(cyclicReservation, dto, club.get(), dto.getDate(), limit);
         report.setId(cyclicReservation.getId());
 
         List<Reservation> createdReservations = cyclicReservationService.findAllReservationsByCyclicID(cyclicReservation.getId());

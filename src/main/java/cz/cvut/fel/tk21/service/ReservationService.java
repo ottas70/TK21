@@ -172,6 +172,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional
     public boolean isUserAllowedToEditReservation(User user, Reservation reservation){
         if(user == null) return false;
+        if(reservation.getUser() == null) return clubService.isUserAllowedToManageThisClub(user, reservation.getClub());
         return reservation.getUser().getId() == user.getId() || clubService.isUserAllowedToManageThisClub(user, reservation.getClub());
     }
 
@@ -183,6 +184,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional
     public boolean isOwner(Reservation reservation, User user){
         if(user == null) return false;
+        if(reservation.getUser() == null) return false;
         return reservation.getUser().getId() == user.getId();
     }
 
