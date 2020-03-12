@@ -22,7 +22,7 @@ public class ReservationDto {
 
     private boolean mine;
 
-    private int cyclidId;
+    private int cyclicId;
 
     private String name;
 
@@ -41,7 +41,7 @@ public class ReservationDto {
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
         this.mine = mine;
-        this.cyclidId = reservation.getCyclicReservationId();
+        this.cyclicId = reservation.getCyclicReservationId();
         if(editable){
             if(reservation.getUser() == null){
                 this.name = reservation.getName();
@@ -112,12 +112,12 @@ public class ReservationDto {
         this.mine = mine;
     }
 
-    public int getCyclidId() {
-        return cyclidId;
+    public int getCyclicId() {
+        return cyclicId;
     }
 
-    public void setCyclidId(int cyclidId) {
-        this.cyclidId = cyclidId;
+    public void setCyclicId(int cyclicId) {
+        this.cyclicId = cyclicId;
     }
 
     public String getName() {
