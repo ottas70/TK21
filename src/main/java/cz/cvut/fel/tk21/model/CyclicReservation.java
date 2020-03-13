@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -7,7 +8,7 @@ import javax.persistence.OneToOne;
 @Entity
 public class CyclicReservation extends AbstractEntity {
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private Reservation initialReservation;
 
     @Column

@@ -57,7 +57,6 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
                 if(date.equals(initialDate)) {
                     cyclicReservation.setInitialReservation(reservation);
                     reservation.setInitialCyclicReservation(cyclicReservation);
-                    reservationService.update(reservation);
                 }
                 successful.add(date);
                 reservationService.update(reservation);
@@ -73,7 +72,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
         return new CyclicReservationReport(successful, failed);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Reservation> findAllReservationsByCyclicID(Integer cyclid_id){
         return reservationService.findReservationByCyclicId(cyclid_id);
     }
