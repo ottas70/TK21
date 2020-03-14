@@ -79,9 +79,7 @@ public class ReservationController {
 
 
         //Websocket message for subscribers
-        String formattedDate = reservationDto.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        String destination = "/topic/reservation/" + id + "/" + formattedDate;
-        websocketService.sendUpdateMessageToSubscribers(destination, reservation.get(), UpdateType.CREATE);
+        websocketService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation.get(), UpdateType.CREATE);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation.get(), reservationService.isCurrentUserAllowedToEditReservation(reservation.get()), reservationService.isMine(reservation.get())));
     }
@@ -97,9 +95,7 @@ public class ReservationController {
         reservationService.updateReservation(reservation, reservationDto);
 
         //Websocket message for subscribers
-        String formattedDate = reservationDto.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-        websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.UPDATE);
+        websocketService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation, UpdateType.UPDATE);
 
         return ResponseEntity.noContent().build();
     }
@@ -113,9 +109,7 @@ public class ReservationController {
         reservationService.deleteReservation(reservation);
 
         //Websocket message for subscribers
-        String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-        websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.DELETE);
+        websocketService.sendUpdateMessageToSubscribers(id, reservation.getDate(), reservation, UpdateType.DELETE);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.ws.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.Reservation;
 
@@ -9,6 +10,7 @@ public class ReservationInfo {
 
     private int id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private LocalDate date;
 
     private FromToTime time;

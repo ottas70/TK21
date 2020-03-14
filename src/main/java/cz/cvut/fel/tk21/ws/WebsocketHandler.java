@@ -1,0 +1,141 @@
+package cz.cvut.fel.tk21.ws;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import cz.cvut.fel.tk21.exception.BadRequestException;
+import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.security.UserDetails;
+import cz.cvut.fel.tk21.ws.dto.ClubDateDto;
+import cz.cvut.fel.tk21.ws.dto.GeneralMessage;
+import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
+import cz.cvut.fel.tk21.ws.dto.UpdateMessageBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@Component
+public class WebsocketHandler extends TextWebSocketHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(WebsocketHandler.class);
+
+    private final ObjectMapper mapper;
+    private final Map<Integer, Map<LocalDate, List<WebSocketSession>>> subscriptions;
+    private final List<WebSocketSession> sessions;
+    private WebsocketService websocketService;
+
+    public WebsocketHandler() {
+        this.mapper = new ObjectMapper();
+        this.mapper.registerModule(new JavaTimeModule());
+        this.subscriptions = new ConcurrentHashMap<>();
+        this.sessions = new CopyOnWriteArrayList<>();
+    }
+
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        sessions.add(session);
+    }
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        GeneralMessage value = mapper.readValue(message.getPayload(), GeneralMessage.class);
+        switch (value.getType()){
+            case "UPDATE":
+                UpdateMessageBody body = mapper.readValue(value.getBody(), UpdateMessageBody.class);
+                handleUpdate(session, body);
+        }
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        unsubscribeAll(session);
+        sessions.remove(session);
+    }
+
+    private void handleUpdate(WebSocketSession session, UpdateMessageBody body){
+        try{
+            ClubDateDto unsubscribe = body.getUnsubscribe();
+            ClubDateDto subscribe = body.getSubscribe();
+            if(unsubscribe != null){
+                unsubscribe(session, unsubscribe.getDate(), unsubscribe.getClubId());
+            }
+            if(subscribe == null) throw new BadRequestException("Bad request");
+
+            User user = extractUserFromSession(session);
+            ReservationMessage message = websocketService.createInitialMessage(user, subscribe.getClubId(), subscribe.getDate());
+            subscribe(session, message.getDate(), subscribe.getClubId());
+            sendMessageToSession(session, message);
+        } catch (RuntimeException ex){
+            sendMessageToSession(session, ex.getMessage());
+        }
+    }
+
+    public void sendMessageToSession(WebSocketSession session, Object message){
+        try {
+            String json = mapper.writeValueAsString(message);
+            session.sendMessage(new TextMessage(json));
+        } catch (IOException e) {
+            logger.info("Failed to send message to session because " + e.getMessage());
+        }
+    }
+
+    private void subscribe(WebSocketSession session, LocalDate date, int clubId){
+        if(date == null) return;
+        subscriptions.computeIfAbsent(clubId, id -> new ConcurrentHashMap<>());
+        Map<LocalDate, List<WebSocketSession>> clubSubscriptions = subscriptions.get(clubId);
+        clubSubscriptions.computeIfAbsent(date , id -> new LinkedList<>());
+        List<WebSocketSession> clubDateSubscriptions = clubSubscriptions.get(date);
+        if(!clubDateSubscriptions.contains(session)){
+            clubDateSubscriptions.add(session);
+        }
+    }
+
+    private void unsubscribe(WebSocketSession session, LocalDate date, int clubId){
+        if(date == null) return;
+        subscriptions.computeIfAbsent(clubId, id -> new ConcurrentHashMap<>());
+        Map<LocalDate, List<WebSocketSession>> clubSubscriptions = subscriptions.get(clubId);
+        clubSubscriptions.computeIfAbsent(date , id -> new LinkedList<>());
+        List<WebSocketSession> clubDateSubscriptions = clubSubscriptions.get(date);
+        clubDateSubscriptions.remove(session);
+    }
+
+    private void unsubscribeAll(WebSocketSession session){
+        for (Map.Entry<Integer, Map<LocalDate, List<WebSocketSession>>> clubEntry : subscriptions.entrySet()){
+            for (Map.Entry<LocalDate, List<WebSocketSession>> dateEntry : clubEntry.getValue().entrySet()){
+                List<WebSocketSession> sessions = dateEntry.getValue();
+                sessions.remove(session);
+            }
+        }
+    }
+
+    private User extractUserFromSession(WebSocketSession session){
+        if(session.getPrincipal() == null) return null;
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) session.getPrincipal();
+        UserDetails userDetails = (UserDetails) token.getPrincipal();
+        return userDetails.getUser();
+    }
+
+    public List<WebSocketSession> findAllSubscriptions(int clubId, LocalDate date){
+        subscriptions.computeIfAbsent(clubId, id -> new ConcurrentHashMap<>());
+        subscriptions.get(clubId).computeIfAbsent(date , id -> new LinkedList<>());
+        return subscriptions.get(clubId).get(date);
+    }
+
+    @Autowired
+    public void setWebsocketService(WebsocketService websocketService) {
+        this.websocketService = websocketService;
+    }
+}

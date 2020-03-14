@@ -70,9 +70,7 @@ public class CyclicReservationController {
 
         //Websocket messages for subscribers
         for(Reservation reservation : createdReservations){
-            String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-            String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-            websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.CREATE);
+            websocketService.sendUpdateMessageToSubscribers(club_id, reservation.getDate(), reservation, UpdateType.CREATE);
         }
 
         return report;
@@ -100,9 +98,7 @@ public class CyclicReservationController {
 
         //Websocket messages for subscribers
         for(Reservation reservation : reservations){
-            String formattedDate = reservation.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-            String destination = "/topic/reservation/" + reservation.getClub().getId() + "/" + formattedDate;
-            websocketService.sendUpdateMessageToSubscribers(destination, reservation, UpdateType.DELETE);
+            websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
         }
 
         return ResponseEntity.noContent().build();

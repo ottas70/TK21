@@ -12,6 +12,7 @@ public class ReservationDto {
 
     private LocalDate date;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private FromToTime time;
 
     private int courtId;

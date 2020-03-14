@@ -1,67 +1,77 @@
 package cz.cvut.fel.tk21.ws;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.security.UserDetails;
+import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
-import cz.cvut.fel.tk21.service.UserService;
-import cz.cvut.fel.tk21.util.StringUtils;
+import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import cz.cvut.fel.tk21.ws.dto.UpdateReservationMessage;
 import cz.cvut.fel.tk21.ws.dto.UpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpSubscription;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class WebsocketService {
 
-    private final UserService userService;
-    private final SimpMessagingTemplate template;
-    private final SimpUserRegistry simpUserRegistry;
-    private final ReservationService reservationService;
+    @Autowired
+    private ClubService clubService;
 
     @Autowired
-    public WebsocketService(UserService userService, SimpMessagingTemplate template, SimpUserRegistry simpUserRegistry, ReservationService reservationService) {
-        this.userService = userService;
-        this.template = template;
-        this.simpUserRegistry = simpUserRegistry;
-        this.reservationService = reservationService;
+    private ReservationService reservationService;
+
+    @Autowired
+    private WebsocketHandler handler;
+
+    public ReservationMessage createInitialMessage(User user, int clubId, LocalDate date) {
+        Optional<Club> club = clubService.find(clubId);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        if(date == null){
+            date = reservationService.findNearestAvailableReservationDate(club.get());
+        }
+
+        return reservationService.initialReservationMessage(club.get(), date, user);
     }
 
-    public void sendUpdateMessageToSubscribers(String destination, Reservation reservation, UpdateType updateType){
-        Set<SimpSubscription> subscriptions = simpUserRegistry.findSubscriptions(simpSubscription -> simpSubscription.getDestination().equals("/user" + destination));
-        for(SimpSubscription simpSubscription : subscriptions) {
+    public void sendUpdateMessageToSubscribers(int clubId, LocalDate date, Reservation reservation, UpdateType updateType){
+        List<WebSocketSession> subscribers = handler.findAllSubscriptions(clubId, date);
+        for(WebSocketSession session : subscribers) {
             boolean editable = false;
             boolean mine = false;
             if(updateType != UpdateType.DELETE){
-                editable = this.isReservationEditable(reservation, simpSubscription.getSession().getUser());
-                mine = this.isReservationMine(reservation, simpSubscription.getSession().getUser());
+                User user = extractUserFromSession(session);
+                editable = this.isReservationEditable(reservation, user);
+                mine = this.isReservationMine(reservation, user);
             }
-            this.template.convertAndSendToUser(simpSubscription.getSession().getUser().getName(), destination, new UpdateReservationMessage(updateType, reservation, editable, mine));
+            handler.sendMessageToSession(session, new UpdateReservationMessage(updateType, reservation, editable, mine));
         }
     }
 
-    private boolean isReservationEditable(Reservation reservation, SimpUser simpUser){
-        User user = null;
-        if(StringUtils.isValidEmail(simpUser.getName())){
-            Optional<User> userOptional = userService.findUserByEmail(simpUser.getName());
-            if(userOptional.isPresent()) user = userOptional.get();
-        }
+    private boolean isReservationEditable(Reservation reservation, User user){
         return reservationService.isUserAllowedToEditReservation(user, reservation);
     }
 
-    private boolean isReservationMine(Reservation reservation, SimpUser simpUser){
-        User user = null;
-        if(StringUtils.isValidEmail(simpUser.getName())){
-            Optional<User> userOptional = userService.findUserByEmail(simpUser.getName());
-            if(userOptional.isPresent()) user = userOptional.get();
-        }
+    private boolean isReservationMine(Reservation reservation, User user){
         return reservationService.isOwner(reservation, user);
+    }
+
+    private User extractUserFromSession(WebSocketSession session){
+        if(session.getPrincipal() == null) return null;
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) session.getPrincipal();
+        UserDetails userDetails = (UserDetails) token.getPrincipal();
+        return userDetails.getUser();
     }
 
 }

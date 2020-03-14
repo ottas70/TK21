@@ -10,7 +10,6 @@ import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
-import cz.cvut.fel.tk21.ws.WebSocketController;
 import cz.cvut.fel.tk21.ws.dto.AvailableCourtDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
