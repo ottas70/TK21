@@ -5,10 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.UserDetails;
-import cz.cvut.fel.tk21.ws.dto.ClubDateDto;
-import cz.cvut.fel.tk21.ws.dto.GeneralMessage;
-import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
-import cz.cvut.fel.tk21.ws.dto.UpdateMessageBody;
+import cz.cvut.fel.tk21.ws.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +74,9 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
             User user = extractUserFromSession(session);
             ReservationMessage message = websocketService.createInitialMessage(user, subscribe.getClubId(), subscribe.getDate());
+            GeneralMessage dto = new GeneralMessage(UpdateType.INIT.toString(), message);
             subscribe(session, message.getDate(), subscribe.getClubId());
-            sendMessageToSession(session, message);
+            sendMessageToSession(session, dto);
         } catch (RuntimeException ex){
             sendMessageToSession(session, ex.getMessage());
         }

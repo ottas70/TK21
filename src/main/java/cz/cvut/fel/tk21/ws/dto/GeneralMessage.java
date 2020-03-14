@@ -6,6 +6,14 @@ public class GeneralMessage {
 
     private Object body;
 
+    public GeneralMessage() {
+    }
+
+    public GeneralMessage(String type, Object body) {
+        this.type = type;
+        this.body = body;
+    }
+
     public String getType() {
         return type;
     }
