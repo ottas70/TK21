@@ -4,7 +4,7 @@ public class GeneralMessage {
 
     private String type;
 
-    private String body;
+    private Object body;
 
     public String getType() {
         return type;
@@ -14,11 +14,11 @@ public class GeneralMessage {
         this.type = type;
     }
 
-    public String getBody() {
+    public Object getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(Object body) {
         this.body = body;
     }
 }

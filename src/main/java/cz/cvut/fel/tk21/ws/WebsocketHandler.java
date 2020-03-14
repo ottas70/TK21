@@ -54,7 +54,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
         GeneralMessage value = mapper.readValue(message.getPayload(), GeneralMessage.class);
         switch (value.getType()){
             case "UPDATE":
-                UpdateMessageBody body = mapper.readValue(value.getBody(), UpdateMessageBody.class);
+                String json = mapper.writeValueAsString(value.getBody());
+                UpdateMessageBody body = mapper.readValue(json, UpdateMessageBody.class);
                 handleUpdate(session, body);
         }
     }
