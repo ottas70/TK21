@@ -81,6 +81,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
     public List<Reservation> deleteCyclicReservation(CyclicReservation cyclicReservation){
         if(!clubService.isCurrentUserAllowedToManageThisClub(cyclicReservation.getInitialReservation().getClub())) throw new UnauthorizedException("Přístup odepřen");
 
+        Reservation initialReservation = cyclicReservation.getInitialReservation();
         this.remove(cyclicReservation);
 
         List<Reservation> reservations = this.findAllReservationsByCyclicID(cyclicReservation.getId());
@@ -88,6 +89,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
             reservationService.remove(r);
         }
 
+        reservations.add(initialReservation);
         return reservations;
     }
 

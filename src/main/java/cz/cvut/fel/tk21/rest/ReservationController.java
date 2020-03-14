@@ -95,7 +95,7 @@ public class ReservationController {
         reservationService.updateReservation(reservation, reservationDto);
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation, UpdateType.UPDATE);
+        websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservationDto.getDate(), reservation, UpdateType.UPDATE);
 
         return ResponseEntity.noContent().build();
     }
@@ -109,7 +109,7 @@ public class ReservationController {
         reservationService.deleteReservation(reservation);
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(id, reservation.getDate(), reservation, UpdateType.DELETE);
+        websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
