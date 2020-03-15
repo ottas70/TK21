@@ -28,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class WebsocketHandler extends TextWebSocketHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WebsocketHandler.class);
+    private final String HEARTBEAT = "-h-";
 
     private final ObjectMapper mapper;
     private final Map<Integer, Map<LocalDate, List<WebSocketSession>>> subscriptions;
@@ -48,6 +49,10 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        if(message.getPayload().equals(HEARTBEAT)){
+            handleHeartbeat(session);
+            return;
+        }
         GeneralMessage value = mapper.readValue(message.getPayload(), GeneralMessage.class);
         switch (value.getType()){
             case "UPDATE":
@@ -79,6 +84,14 @@ public class WebsocketHandler extends TextWebSocketHandler {
             sendMessageToSession(session, dto);
         } catch (RuntimeException ex){
             sendMessageToSession(session, ex.getMessage());
+        }
+    }
+
+    private void handleHeartbeat(WebSocketSession session){
+        try {
+            session.sendMessage(new TextMessage(HEARTBEAT));
+        } catch (IOException e) {
+            logger.info("Failed to send heartbeat message to session because " + e.getMessage());
         }
     }
 
