@@ -3,10 +3,14 @@ package cz.cvut.fel.tk21.rest.dto.club;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ClubDto {
@@ -22,6 +26,10 @@ public class ClubDto {
     private List<CourtDto> courts;
 
     private SeasonDto seasons;
+
+    private Map<Integer, FromToTime> openingHours;
+
+    private List<SpecialOpeningHoursDto> specialDays;
 
     private ContactDto contact;
 
@@ -43,6 +51,11 @@ public class ClubDto {
         if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.seasons = new SeasonDto(club.getSeasonByDate(LocalDate.now()));
+        this.openingHours = new HashMap<>();
+        club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
+        this.specialDays = new ArrayList<>();
+        club.getOpeningHours().getSpecialDaysInNextDays(14)
+                .forEach((k,v) -> this.specialDays.add(new SpecialOpeningHoursDto(k, v.getFrom(), v.getTo())));
         this.contact = new ContactDto(club);
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
@@ -96,6 +109,22 @@ public class ClubDto {
 
     public void setSeasons(SeasonDto seasons) {
         this.seasons = seasons;
+    }
+
+    public Map<Integer, FromToTime> getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(Map<Integer, FromToTime> openingHours) {
+        this.openingHours = openingHours;
+    }
+
+    public List<SpecialOpeningHoursDto> getSpecialDays() {
+        return specialDays;
+    }
+
+    public void setSpecialDays(List<SpecialOpeningHoursDto> specialDays) {
+        this.specialDays = specialDays;
     }
 
     public ContactDto getContact() {

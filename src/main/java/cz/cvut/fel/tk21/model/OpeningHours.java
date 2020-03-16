@@ -68,6 +68,14 @@ public class OpeningHours extends AbstractEntity {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    public Map<LocalDate, FromToTime> getSpecialDaysInNextDays(int days){
+        LocalDate target = LocalDate.now().plusDays(15);
+        LocalDate now = LocalDate.now();
+        return specialDays.entrySet().stream()
+                .filter(x -> x.getKey().isAfter(now) && x.getKey().isBefore(target))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
     public boolean isOpenedAtDate(LocalDate date){
         if(containsSpecialDate(date)){
             return specialDays.get(date).getFrom() != null;
