@@ -28,6 +28,8 @@ public class ReservationMessage {
 
     private ReservationPermission reservationPermission;
 
+    private boolean isMember;
+
     private boolean isAuthorized;
 
     private boolean isAllowedToCreateCyclicRes;
@@ -95,6 +97,14 @@ public class ReservationMessage {
 
     public void setReservationPermission(ReservationPermission reservationPermission) {
         this.reservationPermission = reservationPermission;
+    }
+
+    public boolean isMember() {
+        return isMember;
+    }
+
+    public void setMember(boolean member) {
+        isMember = member;
     }
 
     public boolean isAuthorized() {

@@ -75,6 +75,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         message.setCourts(club.getAllAvailableCourts(date).stream().map(CourtDto::new).collect(Collectors.toList()));
         message.setReservations(reservations.stream().map(r -> new ReservationDto(r, isUserAllowedToEditReservation(user, r), isOwner(r, user))).collect(Collectors.toList()));
         message.setReservationPermission(club.getReservationPermission());
+        message.setMember(clubRelationService.isMemberOf(club, user));
         message.setAuthorized(isUserAllowedToCreateReservation(user, club));
         message.setAllowedToCreateCyclicRes(isUserAllowedToCreateCyclicReservation(club, user));
 

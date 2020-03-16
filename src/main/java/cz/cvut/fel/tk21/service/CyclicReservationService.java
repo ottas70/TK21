@@ -38,7 +38,7 @@ public class CyclicReservationService extends BaseService<CyclicReservationDao, 
 
     @Transactional
     public CyclicReservationReport createReservationsBasedOnCyclicReservation(CyclicReservation cyclicReservation, CreateCyclicReservationDto dto, Club club, LocalDate date, int numOfReservations){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("NOT PERMISSION");
 
         LocalDate initialDate = date;
         Season currentSeason = club.getSeasonByDate(date);
