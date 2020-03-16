@@ -94,6 +94,9 @@ public class ClubController {
 
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        if(!clubService.isCurrentUserAllowedToManageThisClub(club.get())) throw new UnauthorizedException("Tento klub nemáte právo editovat");
+
         return new ClubSettingsDto(club.get(), year, isYearSet);
     }
 

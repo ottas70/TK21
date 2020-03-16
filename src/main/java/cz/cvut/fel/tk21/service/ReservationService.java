@@ -6,10 +6,12 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
+import cz.cvut.fel.tk21.model.mail.Mail;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
+import cz.cvut.fel.tk21.service.mail.MailService;
 import cz.cvut.fel.tk21.ws.dto.AvailableCourtDto;
 import cz.cvut.fel.tk21.ws.dto.CurrentSeasonDto;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
@@ -22,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +42,8 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     private ClubRelationService clubRelationService;
     @Autowired
     private CyclicReservationService cyclicReservationService;
+    @Autowired
+    private MailService mailService;
 
     protected ReservationService(ReservationDao dao) {
         super(dao);
@@ -138,10 +140,15 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen."));
         TennisCourt court = courtOptional.get();
 
+        String token = UUID.randomUUID().toString();
+        while(dao.findReservationsByToken(token).isPresent()){
+            token = UUID.randomUUID().toString();
+        }
+
         reservation.setClub(club);
         reservation.setTennisCourt(court);
         reservation.setDate(date);
-        reservation.setToken(UUID.randomUUID().toString());
+        reservation.setToken(token);
         reservation.setCyclicReservationId(-1);
 
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici.");
@@ -276,6 +283,19 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             throw new ValidationException("Nelze mazat rezervace v minulosti");
 
         this.remove(reservation);
+    }
+
+    public void sendReservationSummaryEmail(Reservation reservation){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(reservation.getUser() == null ? reservation.getEmail() : reservation.getUser().getEmail());
+        mail.setSubject("Shrnutí rezervace");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("deleteToken", reservation.getToken());
+        mail.setModel(model);
+
+        mailService.sendReservationSummary(mail);
     }
 
 

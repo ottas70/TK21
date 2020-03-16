@@ -72,16 +72,14 @@ public class ReservationController {
         Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        reservationService.createReservationFromDTO(reservationDto, club.get(), reservationDto.getDate());
-
-        Optional<Reservation> reservation = reservationService.findReservationByCourtIdDateAndTime(reservationDto.getCourtId(), reservationDto.getDate(), reservationDto.getTime());
-        reservation.orElseThrow(() -> new ValidationException("Nastala chyba při uložení rezervace"));
-
+        Reservation reservation = reservationService.createReservationFromDTO(reservationDto, club.get(), reservationDto.getDate());
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation.get(), UpdateType.CREATE);
+        websocketService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation, UpdateType.CREATE);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation.get(), reservationService.isCurrentUserAllowedToEditReservation(reservation.get()), reservationService.isMine(reservation.get())));
+        reservationService.sendReservationSummaryEmail(reservation);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation, reservationService.isCurrentUserAllowedToEditReservation(reservation), reservationService.isMine(reservation)));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)

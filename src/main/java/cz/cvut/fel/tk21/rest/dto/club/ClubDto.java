@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,8 @@ public class ClubDto {
     private AddressDto address;
 
     private List<CourtDto> courts;
+
+    private SeasonDto seasons;
 
     private ContactDto contact;
 
@@ -39,6 +42,7 @@ public class ClubDto {
         this.desc = club.getDescription();
         if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
+        this.seasons = new SeasonDto(club.getSeasonByDate(LocalDate.now()));
         this.contact = new ContactDto(club);
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
@@ -84,6 +88,14 @@ public class ClubDto {
 
     public void setCourts(List<CourtDto> courts) {
         this.courts = courts;
+    }
+
+    public SeasonDto getSeasons() {
+        return seasons;
+    }
+
+    public void setSeasons(SeasonDto seasons) {
+        this.seasons = seasons;
     }
 
     public ContactDto getContact() {

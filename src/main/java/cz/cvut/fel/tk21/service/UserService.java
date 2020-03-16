@@ -155,7 +155,7 @@ public class UserService extends BaseService<UserDao, User> {
         mail.setTo(email);
         mail.setSubject("Potvrzení emailové adresy");
 
-        Map<String, Object> model = new HashMap();
+        Map<String, Object> model = new HashMap<>();
         model.put("token", token);
         mail.setModel(model);
 

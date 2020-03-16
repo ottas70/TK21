@@ -38,6 +38,17 @@ public class MailService {
         }
     }
 
+    @Async
+    public void sendReservationSummary(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ReservationSummary");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+
     private MimeMessage loadMessageTemplate(Mail mail, String template) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
