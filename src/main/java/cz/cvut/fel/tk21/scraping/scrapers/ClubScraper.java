@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ClubScraper {
@@ -46,13 +47,24 @@ public class ClubScraper {
                 Elements cells = row.select("td");
                 String webId = cells.get(0).select("a").html();
                 Club club = loadClubFromId(Integer.parseInt(webId));
+                Optional<Club> storedClubOptional = clubService.findClubByWebId(Integer.parseInt(webId));
                 if(club != null){
-                    clubs.add(club);
+                    if(storedClubOptional.isEmpty()){
+                        clubService.persist(club);
+                    } else {
+                        Club storedClub = storedClubOptional.get();
+                        club.setId(storedClub.getId());
+                        clubService.update(club);
+                    }
+                } else {
+                    if(storedClubOptional.isPresent()){
+                        Club storedClub = storedClubOptional.get();
+                        storedClub.setWebId(0);
+                        clubService.update(storedClub);
+                    }
                 }
             }
         }
-
-        clubService.persist(clubs);
         logger.trace("Club scraping finished");
     }
 
@@ -88,6 +100,7 @@ public class ClubScraper {
 
         Elements nameCells = rows.get(0).select("td");
         String name = nameCells.get(1).select("strong").html();
+        if(name.length() > 6 && name.substring(name.length() - 6).equals("zrušen")) return null;
 
         Elements streetCells = rows.get(6).select("td");
         String street = streetCells.get(1).html();

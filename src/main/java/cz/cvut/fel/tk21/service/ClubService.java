@@ -104,6 +104,11 @@ public class ClubService extends BaseService<ClubDao, Club> {
     }
 
     @Transactional
+    public Optional<Club> findClubByWebId(int webId){
+        return dao.findClubByWebId(webId);
+    }
+
+    @Transactional
     public void addCourt(Club club, TennisCourt tennisCourt){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
         if(!courtService.isNameUniqueInClub(club, tennisCourt.getName())) throw new ValidationException("Kurt s tímto jménem již existuje");

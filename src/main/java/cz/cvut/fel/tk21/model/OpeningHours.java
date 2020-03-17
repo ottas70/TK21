@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -69,11 +70,13 @@ public class OpeningHours extends AbstractEntity {
     }
 
     public Map<LocalDate, FromToTime> getSpecialDaysInNextDays(int days){
-        LocalDate target = LocalDate.now().plusDays(15);
-        LocalDate now = LocalDate.now();
+        LocalDate target = LocalDate.now().plusDays(days + 1);
+        LocalDate now = LocalDate.now().minusDays(1);
         return specialDays.entrySet().stream()
                 .filter(x -> x.getKey().isAfter(now) && x.getKey().isBefore(target))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 
     public boolean isOpenedAtDate(LocalDate date){

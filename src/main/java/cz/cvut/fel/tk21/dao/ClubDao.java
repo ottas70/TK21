@@ -54,6 +54,19 @@ public class ClubDao extends BaseDao<Club>{
         }
     }
 
+    public Optional<Club> findClubByWebId(int webId){
+        try{
+            return Optional.ofNullable(
+                    em.createQuery("SELECT c from Club c " +
+                            "WHERE c.webId = :webId ", Club.class)
+                            .setParameter("webId", webId)
+                            .getSingleResult()
+            );
+        } catch (NoResultException ex){
+            return Optional.empty();
+        }
+    }
+
     public List<Club> findClubsByName(String name, int page, int size){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Club> query = cb.createQuery(Club.class);
