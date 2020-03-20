@@ -78,6 +78,7 @@ public class DataInitializer implements ApplicationRunner {
         club.addCourt(getRandomTennisCourt(2));
         club.addCourt(getRandomTennisCourt(3));
         setInitialSeasons(club);
+        club.setRegistered(true);
         clubService.persist(club);
 
         ClubRelation relation = new ClubRelation();
@@ -111,6 +112,7 @@ public class DataInitializer implements ApplicationRunner {
         club2.addCourt(getRandomTennisCourt(5));
         club2.addCourt(getRandomTennisCourt(6));
         setInitialSeasons(club2);
+        club2.setRegistered(true);
         clubService.persist(club2);
 
         ClubRelation relation2 = new ClubRelation();

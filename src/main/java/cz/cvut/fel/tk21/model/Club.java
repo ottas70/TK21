@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.model;
 
 import cz.cvut.fel.tk21.util.StringUtils;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -56,7 +57,7 @@ public class Club extends AbstractEntity {
     private List<TennisCourt> courts = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
-    private OpeningHours openingHours;
+    private OpeningHours openingHours = new OpeningHours();
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<VerificationRequest> verificationRequests;
@@ -71,6 +72,9 @@ public class Club extends AbstractEntity {
 
     @Column
     private int webId;
+
+    @Column
+    private boolean registered;
 
     public String getName() {
         return name;
@@ -215,6 +219,14 @@ public class Club extends AbstractEntity {
 
     public void setWebId(int webId) {
         this.webId = webId;
+    }
+
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
     }
 
     public void addCourt(TennisCourt court) {

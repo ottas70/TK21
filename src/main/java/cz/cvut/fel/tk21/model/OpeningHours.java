@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,12 +17,12 @@ public class OpeningHours extends AbstractEntity {
     @ElementCollection
     @CollectionTable(name = "REGULAR_HOURS")
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<Day, FromToTime> regularHours;
+    private Map<Day, FromToTime> regularHours = new HashMap<>();
 
     @ElementCollection
     @CollectionTable(name = "SPECIAL_DAYS")
     @MapKeyColumn(columnDefinition = "DATE")
-    private Map<LocalDate, FromToTime> specialDays;
+    private Map<LocalDate, FromToTime> specialDays = new HashMap<>();
 
     public Club getClub() {
         return club;

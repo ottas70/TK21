@@ -6,10 +6,7 @@ import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
-import cz.cvut.fel.tk21.rest.dto.club.ClubDto;
-import cz.cvut.fel.tk21.rest.dto.club.ClubRegistrationDto;
-import cz.cvut.fel.tk21.rest.dto.club.ClubSearchDto;
-import cz.cvut.fel.tk21.rest.dto.club.ContactDto;
+import cz.cvut.fel.tk21.rest.dto.club.*;
 import cz.cvut.fel.tk21.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,6 +57,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
         club.setReservationPermission(ReservationPermission.SIGNED);
         club.setMinReservationTime(15);
         club.setMaxReservationTime(180);
+        club.setRegistered(true);
 
         //links signed in user with this club as admin
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -94,10 +92,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public ClubSearchDto searchForClubsByName(String name, int page, int size){
-        List<ClubDto> clubs = new ArrayList<>();
+        List<BasicClubInfoDto> clubs = new ArrayList<>();
         for(Club club : dao.findClubsByName(name, page, size)){
-            clubs.add(new ClubDto(club, this.isCurrentUserAllowedToManageThisClub(club), reservationService.isCurrentUserAllowedToCreateReservation(club),
-                    clubRelationService.isCurrentUserMemberOf(club), verificationRequestService.getNumOfVerificationRequests(club)));
+            clubs.add(new BasicClubInfoDto(club));
         }
         int lastPage = (int) Math.ceil(dao.countClubsByName(name) / (double)size);
         return new ClubSearchDto(clubs, page, lastPage);

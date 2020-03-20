@@ -8,14 +8,14 @@ public class ClubSearchDto {
 
     private PageDto page;
 
-    private List<ClubDto> clubs;
+    private List<BasicClubInfoDto> clubs;
 
-    public ClubSearchDto(List<ClubDto> clubs, PageDto page) {
+    public ClubSearchDto(List<BasicClubInfoDto> clubs, PageDto page) {
         this.clubs = clubs;
         this.page = page;
     }
 
-    public ClubSearchDto(List<ClubDto> clubs, int currentPage, int lastPage) {
+    public ClubSearchDto(List<BasicClubInfoDto> clubs, int currentPage, int lastPage) {
         this.clubs = clubs;
         this.page = new PageDto(currentPage, lastPage);
     }
@@ -28,11 +28,11 @@ public class ClubSearchDto {
         this.page = page;
     }
 
-    public List<ClubDto> getClubs() {
+    public List<BasicClubInfoDto> getClubs() {
         return clubs;
     }
 
-    public void setClubs(List<ClubDto> clubs) {
+    public void setClubs(List<BasicClubInfoDto> clubs) {
         this.clubs = clubs;
     }
 }
