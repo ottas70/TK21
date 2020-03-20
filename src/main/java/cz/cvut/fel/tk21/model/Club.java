@@ -13,7 +13,7 @@ import java.util.*;
         indexes = {@Index(name = "nameSearch_index", columnList = "nameSearch", unique = false)})
 public class Club extends AbstractEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "Name is mandatory")
     private String name;
 
@@ -282,6 +282,10 @@ public class Club extends AbstractEntity {
 
     public void removeFromBlocked(User user){
         blocked.removeIf(u -> u.getId() == user.getId());
+    }
+
+    public boolean isWebScraped(){
+        return webId != 0;
     }
 
 }

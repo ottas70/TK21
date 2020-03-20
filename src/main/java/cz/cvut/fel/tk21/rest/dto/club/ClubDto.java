@@ -41,6 +41,8 @@ public class ClubDto {
 
     private int numOfRequests;
 
+    private boolean isScraped;
+
     public ClubDto() {
     }
 
@@ -61,6 +63,7 @@ public class ClubDto {
         this.isAllowedRes = isAllowedRes;
         this.isMember = isMember;
         this.numOfRequests = numOfRequests;
+        this.isScraped = club.isWebScraped();
     }
 
     public int getId() {
@@ -167,6 +170,14 @@ public class ClubDto {
 
     public void setNumOfRequests(int numOfRequests) {
         this.numOfRequests = numOfRequests;
+    }
+
+    public boolean isScraped() {
+        return isScraped;
+    }
+
+    public void setScraped(boolean scraped) {
+        isScraped = scraped;
     }
 
     @JsonIgnore

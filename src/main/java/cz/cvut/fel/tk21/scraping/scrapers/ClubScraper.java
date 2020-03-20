@@ -100,6 +100,7 @@ public class ClubScraper {
 
         Elements nameCells = rows.get(0).select("td");
         String name = nameCells.get(1).select("strong").html();
+        if(name == null || name.equals("")) return null;
         if(name.length() > 6 && name.substring(name.length() - 6).equals("zrušen")) return null;
 
         Elements streetCells = rows.get(6).select("td");

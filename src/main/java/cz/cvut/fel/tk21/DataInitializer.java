@@ -128,11 +128,11 @@ public class DataInitializer implements ApplicationRunner {
             addNumberedUserInClub(i, null);
         }
 
-        /*try {
+        try {
             clubScraper.findAllClubs();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }*/
+        }
     }
 
     private OpeningHours getInitialOpeningHours(){
