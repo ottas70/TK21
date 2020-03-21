@@ -43,6 +43,8 @@ public class ClubDto {
 
     private boolean isScraped;
 
+    private boolean isRegistered;
+
     public ClubDto() {
     }
 
@@ -53,8 +55,10 @@ public class ClubDto {
         if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.seasons = new SeasonDto(club.getSeasonByDate(LocalDate.now()));
-        this.openingHours = new HashMap<>();
-        club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
+        if(!club.getOpeningHours().getRegularHours().isEmpty()){
+            this.openingHours = new HashMap<>();
+            club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
+        }
         this.specialDays = new ArrayList<>();
         club.getOpeningHours().getSpecialDaysInNextDays(14)
                 .forEach((k,v) -> this.specialDays.add(new SpecialOpeningHoursDto(k, v.getFrom(), v.getTo())));
@@ -64,6 +68,7 @@ public class ClubDto {
         this.isMember = isMember;
         this.numOfRequests = numOfRequests;
         this.isScraped = club.isWebScraped();
+        this.isRegistered = club.isRegistered();
     }
 
     public int getId() {
@@ -178,6 +183,14 @@ public class ClubDto {
 
     public void setScraped(boolean scraped) {
         isScraped = scraped;
+    }
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
     }
 
     @JsonIgnore
