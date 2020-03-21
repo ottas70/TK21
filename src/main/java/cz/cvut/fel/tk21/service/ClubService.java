@@ -87,16 +87,16 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional(readOnly = true)
     public ClubSearchDto findAllPaginated(int page, int size) {
-        return searchForClubsByName("", page, size);
+        return searchForClubsByNameOrCity("", page, size);
     }
 
     @Transactional
-    public ClubSearchDto searchForClubsByName(String name, int page, int size){
+    public ClubSearchDto searchForClubsByNameOrCity(String name, int page, int size){
         List<BasicClubInfoDto> clubs = new ArrayList<>();
-        for(Club club : dao.findClubsByName(name, page, size)){
+        for(Club club : dao.findClubsByNameOrCity(name, page, size)){
             clubs.add(new BasicClubInfoDto(club));
         }
-        int lastPage = (int) Math.ceil(dao.countClubsByName(name) / (double)size);
+        int lastPage = (int) Math.ceil(dao.countClubsByNameOrCity(name) / (double)size);
         return new ClubSearchDto(clubs, page, lastPage);
     }
 

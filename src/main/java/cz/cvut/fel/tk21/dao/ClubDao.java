@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,14 +68,17 @@ public class ClubDao extends BaseDao<Club>{
         }
     }
 
-    public List<Club> findClubsByName(String name, int page, int size){
+    public List<Club> findClubsByNameOrCity(String name, int page, int size){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Club> query = cb.createQuery(Club.class);
         Root<Club> root = query.from(Club.class);
 
         query.select(root);
-        query.where(cb.like(root.get("nameSearch"),
-                "%" + StringUtils.stripAccentsWhitespaceAndToLowerCase(name) + "%"));
+        Predicate predicateName = cb.like(root.get("nameSearch"), "%" + StringUtils.stripAccentsWhitespaceAndToLowerCase(name) + "%");
+        Predicate predicateCity = cb.like(root.get("address").get("city"), "%" + name + "%");
+        Predicate predicateOr = cb.or(predicateCity, predicateName);
+
+        query.where(predicateOr);
 
         TypedQuery<Club> typedQuery = em.createQuery(query);
         typedQuery.setFirstResult((page-1) * size);
@@ -83,14 +87,17 @@ public class ClubDao extends BaseDao<Club>{
         return typedQuery.getResultList();
     }
 
-    public long countClubsByName(String name){
+    public long countClubsByNameOrCity(String name){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<Club> root = query.from(Club.class);
 
         query.select(cb.count(root));
-        query.where(cb.like(root.get("nameSearch"),
-                "%" + StringUtils.stripAccentsWhitespaceAndToLowerCase(name) + "%"));
+        Predicate predicateName = cb.like(root.get("nameSearch"), "%" + StringUtils.stripAccentsWhitespaceAndToLowerCase(name) + "%");
+        Predicate predicateCity = cb.like(root.get("address").get("city"), "%" + name + "%");
+        Predicate predicateOr = cb.or(predicateCity, predicateName);
+
+        query.where(predicateOr);
 
         return em.createQuery(query).getSingleResult();
     }

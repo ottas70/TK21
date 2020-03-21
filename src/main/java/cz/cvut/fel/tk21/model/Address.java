@@ -2,8 +2,8 @@ package cz.cvut.fel.tk21.model;
 
 import javax.persistence.*;
 
-@Entity
-public class Address extends AbstractEntity{
+@Embeddable
+public class Address {
 
     @Column
     private String street;

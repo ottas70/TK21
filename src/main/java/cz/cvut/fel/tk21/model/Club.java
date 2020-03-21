@@ -30,7 +30,7 @@ public class Club extends AbstractEntity {
     @Column
     private String web;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private Address address;
 
     @Column(columnDefinition = "TEXT")

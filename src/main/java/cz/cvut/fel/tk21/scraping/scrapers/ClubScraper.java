@@ -108,10 +108,11 @@ public class ClubScraper {
         Elements cityCells = rows.get(7).select("td");
         String city = cityCells.get(1).html();
         Address address = getAddress(street, city);
+        if(address == null) return null;
 
         Elements emailCells = rows.get(11).select("td");
         String email = emailCells.get(1).html();
-        if(email.equals("")) email = null;
+        if(email.equals("")) return null;
 
         Club club = new Club();
         club.setName(name);
@@ -124,6 +125,9 @@ public class ClubScraper {
 
     private Address getAddress(String street, String city_zip){
         if(street.equals("") && city_zip.equals("")) return null;
+        if(street.equals("0") && city_zip.equals("")) return null;
+        if(street.equals("") && city_zip.equals("0")) return null;
+        if(street.equals("0") && city_zip.equals("0")) return null;
         Address address = new Address();
         address.setStreet(street);
         if(!city_zip.equals("")){

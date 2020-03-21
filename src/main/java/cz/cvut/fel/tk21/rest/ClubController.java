@@ -81,7 +81,7 @@ public class ClubController {
             @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
         if(size < 1) throw new BadRequestException("Size cannot be less than zero");
         if(page < 1) page = 1;
-        return clubService.searchForClubsByName(name, page, size);
+        return clubService.searchForClubsByNameOrCity(name, page, size);
     }
 
     @RequestMapping(value = "/{id}/settings", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
