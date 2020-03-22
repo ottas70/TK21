@@ -9,11 +9,9 @@ import java.util.Set;
 @Table(name = "ClubRelation")
 public class ClubRelation extends AbstractEntity{
 
-    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
-    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 

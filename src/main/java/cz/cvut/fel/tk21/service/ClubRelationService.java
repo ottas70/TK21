@@ -39,6 +39,7 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
 
     @Transactional(readOnly = true)
     public boolean hasRole(Club club, User user, UserRole userRole){
+        if(user == null) return false;
         return dao.hasRole(user, club, userRole);
     }
 

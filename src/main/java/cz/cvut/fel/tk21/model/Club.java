@@ -50,10 +50,10 @@ public class Club extends AbstractEntity {
     @CollectionTable(name = "SEASON")
     private Map<Integer, Season> seasons;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.REMOVE)
     private Collection<ClubRelation> users;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
     private List<TennisCourt> courts = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)

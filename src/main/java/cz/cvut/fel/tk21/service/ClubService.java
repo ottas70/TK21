@@ -73,6 +73,20 @@ public class ClubService extends BaseService<ClubDao, Club> {
     }
 
     @Transactional
+    public void deleteClub(Club club){
+        if(!clubRelationService.hasRole(club, userService.getCurrentUser(), UserRole.ADMIN)) throw new UnauthorizedException("Přístup odepřen");
+        if(club.isWebScraped()){
+            club.setRegistered(false);
+            club.setUsers(null);
+            club.setPosts(null);
+            this.update(club);
+        } else {
+            club.setUsers(null);
+            this.remove(club);
+        }
+    }
+
+    @Transactional
     public boolean isCurrentUserAllowedToManageThisClub(Club club){
         User user = userService.getCurrentUser();
         if(user == null) return false;

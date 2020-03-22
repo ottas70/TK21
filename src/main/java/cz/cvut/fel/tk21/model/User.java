@@ -51,7 +51,7 @@ public class User extends AbstractEntity {
     private ConfirmationToken confirmationToken;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<ClubRelation> clubs;
 
     @JsonIgnore

@@ -100,6 +100,8 @@ public class ClubController {
         return new ClubSettingsDto(club.get(), year, isYearSet);
     }
 
+
+
     /* *********************************
      * OPENING HOURS
      ********************************* */
@@ -120,6 +122,14 @@ public class ClubController {
 
         openingHoursService.updateRegularOpeningHours(openingHours, club.get());
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteClub(@PathVariable("id") Integer id) {
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+        clubService.deleteClub(club.get());
         return ResponseEntity.noContent().build();
     }
 

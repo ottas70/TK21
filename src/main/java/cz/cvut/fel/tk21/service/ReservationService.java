@@ -132,6 +132,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             reservation.setName(currentUser.getName());
             reservation.setSurname(currentUser.getSurname());
             reservation.setUser(currentUser);
+        } else {
+            Optional<User> userOptional = userService.findUserByEmail(reservation.getEmail());
+            if(userOptional.isPresent()) throw new UnauthorizedException("USER EXISTS");
         }
 
         if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje.");
