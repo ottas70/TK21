@@ -58,6 +58,11 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
     }
 
     @Transactional
+    public void deleteAllVerificationRequestsByClub(Club club){
+        dao.findUnresolvedVerificationRequestsByClub(club).forEach(this::remove);
+    }
+
+    @Transactional
     public boolean processVerification(Club club, User user, String message){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
 

@@ -79,6 +79,16 @@ public class PostService extends BaseService<PostDao, Post> {
         this.remove(post);
     }
 
+    @Transactional
+    public void deleteAllPostsByClub(Club club){
+        this.findAllPostsByClub(club).forEach(this::deletePost);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> findAllPostsByClub(Club club){
+        return dao.findPostsByClub(club);
+    }
+
     @Transactional(readOnly = true)
     public PostsPaginatedDto findPostsPaginatedByClub(Club club, int page, int size) {
         List<PostDto> posts = dao.findPostsByClub(club, page, size)

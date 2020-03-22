@@ -34,6 +34,13 @@ public class VerificationRequestDao extends BaseDao<VerificationRequest> {
                 .getResultList().isEmpty();
     }
 
+    public List<VerificationRequest> findAllVerificationRequestsByClub(Club club){
+        return em.createQuery("SELECT v from VerificationRequest v " +
+                "WHERE v.club = :club", VerificationRequest.class)
+                .setParameter("club", club)
+                .getResultList();
+    }
+
     public List<VerificationRequest> findUnresolvedVerificationRequestsByClub(Club club){
         return em.createQuery("SELECT v from VerificationRequest v " +
                 "WHERE v.club = :club AND v.accepted = false AND v.denied = false", VerificationRequest.class)

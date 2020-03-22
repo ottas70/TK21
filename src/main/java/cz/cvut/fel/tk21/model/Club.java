@@ -50,7 +50,7 @@ public class Club extends AbstractEntity {
     @CollectionTable(name = "SEASON")
     private Map<Integer, Season> seasons;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ClubRelation> users;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
@@ -298,6 +298,13 @@ public class Club extends AbstractEntity {
 
     public boolean isWebScraped(){
         return webId != 0;
+    }
+
+    public void removeAllUsers(){
+        for (ClubRelation relation : this.users){
+            users.remove(relation);
+            relation.setClub(null);
+        }
     }
 
 }

@@ -66,6 +66,11 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         return dao.findAllRelationsByClub(club);
     }
 
+    @Transactional
+    public void deleteAllRelationsByClub(Club club){
+        dao.findAllRelationsByClub(club).forEach(this::remove);
+    }
+
     @Transactional(readOnly = true)
     public Optional<ClubRelation> findClubRelationByUserAndClub(User user, Club club){
         return dao.findRelationByUserAndClub(user, club);

@@ -33,6 +33,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Autowired
     private VerificationRequestService verificationRequestService;
 
+    @Autowired
+    private PostService postService;
+
     protected ClubService(ClubDao dao) {
         super(dao);
     }
@@ -75,13 +78,15 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void deleteClub(Club club){
         if(!clubRelationService.hasRole(club, userService.getCurrentUser(), UserRole.ADMIN)) throw new UnauthorizedException("Přístup odepřen");
+
+        clubRelationService.deleteAllRelationsByClub(club);
+        verificationRequestService.deleteAllVerificationRequestsByClub(club);
+        postService.deleteAllPostsByClub(club);
+
         if(club.isWebScraped()){
             club.setRegistered(false);
-            club.setUsers(null);
-            club.setPosts(null);
             this.update(club);
         } else {
-            club.setUsers(null);
             this.remove(club);
         }
     }

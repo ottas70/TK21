@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.dao;
 
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Post;
+import cz.cvut.fel.tk21.model.TennisCourt;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,13 @@ public class PostDao extends BaseDao<Post>{
 
     protected PostDao() {
         super(Post.class);
+    }
+
+    public List<Post> findPostsByClub(Club club){
+        return em.createQuery("SELECT p FROM Post p " +
+                "WHERE p.club = :club", Post.class)
+                .setParameter("club", club)
+                .getResultList();
     }
 
     public List<Post> findPostsByClub(Club club, int page, int size){
