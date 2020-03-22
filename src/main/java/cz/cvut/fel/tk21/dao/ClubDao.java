@@ -79,6 +79,7 @@ public class ClubDao extends BaseDao<Club>{
         Predicate predicateOr = cb.or(predicateCity, predicateName);
 
         query.where(predicateOr);
+        query.orderBy(cb.desc(root.get("registered")));
 
         TypedQuery<Club> typedQuery = em.createQuery(query);
         typedQuery.setFirstResult((page-1) * size);
