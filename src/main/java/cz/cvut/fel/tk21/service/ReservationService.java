@@ -277,7 +277,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     }
 
     @Transactional
-    public void deleteReservationByToken(String token){
+    public Reservation deleteReservationByToken(String token){
         Optional<Reservation> reservationOptional = dao.findReservationsByToken(token);
         reservationOptional.orElseThrow(() -> new BadRequestException("Invalid token"));
         Reservation reservation = reservationOptional.get();
@@ -287,6 +287,8 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             throw new ValidationException("Nelze mazat rezervace v minulosti");
 
         this.remove(reservation);
+
+        return reservation;
     }
 
     public void sendReservationSummaryEmail(Reservation reservation){

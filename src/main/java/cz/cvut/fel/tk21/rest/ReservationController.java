@@ -114,7 +114,11 @@ public class ReservationController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteReservationByToken(@RequestParam("token")String token) {
-        reservationService.deleteReservationByToken(token);
+        Reservation reservation = reservationService.deleteReservationByToken(token);
+
+        //Websocket message for subscribers
+        websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
+
         return ResponseEntity.noContent().build();
     }
 
