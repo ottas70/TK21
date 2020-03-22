@@ -1,7 +1,6 @@
 package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ClubDao;
-import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
@@ -62,17 +61,39 @@ public class ClubService extends BaseService<ClubDao, Club> {
         club.setMaxReservationTime(180);
         club.setRegistered(true);
 
-        //links signed in user with this club as admin
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(email == null) throw new ValidationException("Uživatel neexistuje");
-        Optional<User> user = userService.findUserByEmail(email);
-        if(user.isEmpty()) throw new ValidationException("Uživatel neexistuje");
-        club.setEmail(user.get().getEmail());
+        //links signed user with this club as admin
+        User user = userService.getCurrentUser();
+        String email = user.getEmail();
+        club.setEmails(new ArrayList<>(List.of(email)));
 
         dao.persist(club);
-        clubRelationService.addUserToClub(club, user.get(), UserRole.ADMIN);
+        clubRelationService.addUserToClub(club, user, UserRole.ADMIN);
 
         return club.getId();
+    }
+
+    @Transactional
+    public void registerScrapedClub(Club club){
+        if(userService.getCurrentUser() == null) throw new UnauthorizedException("Přístup odepřen");
+        if(!club.isContactEmail(userService.getCurrentUser().getEmail())) throw new UnauthorizedException("Přístup odepřen");
+        if(!club.isWebScraped()) throw new BadRequestException("Špatný dotaz");
+        if(club.isRegistered()) throw new ValidationException("Tento klub je již registrován");
+
+        //Initial opening hours
+        club.setOpeningHours(getInitialOpeningHours());
+
+        //Initial season
+        club.setSeasons(getInitialSeason(DateUtils.getCurrentYear()));
+
+        club.setReservationPermission(ReservationPermission.SIGNED);
+        club.setMinReservationTime(15);
+        club.setMaxReservationTime(180);
+        club.setRegistered(true);
+
+        User user = userService.getCurrentUser();
+
+        dao.update(club);
+        clubRelationService.addUserToClub(club, user, UserRole.ADMIN);
     }
 
     @Transactional
@@ -130,8 +151,13 @@ public class ClubService extends BaseService<ClubDao, Club> {
     }
 
     @Transactional
+    public List<Club> findAllClubsByContactEmail(String email){
+        return dao.findAllByContactEmail(email);
+    }
+
+    @Transactional
     public void addCourt(Club club, TennisCourt tennisCourt){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(!courtService.isNameUniqueInClub(club, tennisCourt.getName())) throw new ValidationException("Kurt s tímto jménem již existuje");
         club.addCourt(tennisCourt);
         this.update(club);
@@ -139,7 +165,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void removeCourt(Club club, TennisCourt tennisCourt){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         club.removeCourt(tennisCourt);
         this.update(club);
     }
@@ -161,7 +187,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void updateSeason(Club club, Season season, int year){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(season.getSummer().getFrom().getYear() != year || season.getWinter().getFrom().getYear() != year)
             throw new BadRequestException("Datumy nesedí");
         club.addSeasonInYear(year, season);
@@ -170,14 +196,14 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void updateReservationPermission(Club club, ReservationPermission reservationPermission){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         club.setReservationPermission(reservationPermission);
         this.update(club);
     }
 
     @Transactional
     public void updateMinReservationTime(Club club, int time){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(time < 0) time = 0;
         club.setMinReservationTime(time);
         this.update(club);
@@ -185,7 +211,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void updateMaxReservationTime(Club club, int time){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(time < 0) time = 0;
         club.setMaxReservationTime(time);
         this.update(club);
@@ -193,29 +219,29 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Transactional
     public void updateName(Club club, String name){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         club.setName(name);
         this.update(club);
     }
 
     @Transactional
     public void updateDescription(Club club, String description){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         club.setDescription(description);
         this.update(club);
     }
 
     @Transactional
     public void updateAddress(Club club, Address address){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         club.setAddress(address);
         this.update(club);
     }
 
     @Transactional
     public void updateContact(Club club, ContactDto contactDto){
-        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
-        club.setEmail(contactDto.getEmail());
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        club.setEmails(contactDto.getEmails());
         club.setWeb(contactDto.getWeb());
         club.setTelephone(contactDto.getTelephone());
         this.update(club);

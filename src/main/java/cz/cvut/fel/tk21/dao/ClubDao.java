@@ -120,4 +120,11 @@ public class ClubDao extends BaseDao<Club>{
                 .getResultList();
     }
 
+    public List<Club> findAllByContactEmail(String email){
+        return em.createQuery("SELECT c from Club c " +
+                "WHERE :email MEMBER OF c.emails", Club.class)
+                .setParameter("email", email)
+                .getResultList();
+    }
+
 }

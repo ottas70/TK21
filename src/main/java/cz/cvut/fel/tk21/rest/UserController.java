@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.UserDetails;
 import cz.cvut.fel.tk21.rest.dto.Info;
+import cz.cvut.fel.tk21.rest.dto.club.BasicClubInfoDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRelationshipDto;
 import cz.cvut.fel.tk21.rest.dto.user.PasswordChangeDto;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
@@ -73,6 +74,18 @@ public class UserController {
 
         List<ClubRelation> relations = clubRelationService.findAllRelationsByUser(user);
         return relations.stream().map(ClubRelationshipDto::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/clubs/register", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BasicClubInfoDto> getAllClubICanRegister(){
+        User user = userService.getCurrentUser();
+        if(user == null) throw new UnauthorizedException("Přístup odepřen");
+
+        List<Club> result = clubService.findAllClubsByContactEmail(user.getEmail());
+        return result.stream()
+                .filter(c -> !c.isRegistered())
+                .map(BasicClubInfoDto::new)
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/properties/name", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)

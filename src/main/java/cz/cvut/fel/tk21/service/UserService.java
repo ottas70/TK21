@@ -156,7 +156,7 @@ public class UserService extends BaseService<UserDao, User> {
         mail.setSubject("Potvrzení emailové adresy");
 
         Map<String, Object> model = new HashMap<>();
-        model.put("token", token);
+        model.put("verificationAddress", "http://195.181.209.16/#/overeni/" + token);
         mail.setModel(model);
 
         mailService.sendEmailConfirmation(mail);

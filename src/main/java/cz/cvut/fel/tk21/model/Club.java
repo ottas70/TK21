@@ -21,8 +21,8 @@ public class Club extends AbstractEntity {
     @Column(name = "nameSearch", nullable = false)
     private String nameSearch;
 
-    @Column
-    private String email;
+    @ElementCollection
+    private Collection<String> emails = new ArrayList<>();
 
     @Column
     private String telephone;
@@ -65,6 +65,7 @@ public class Club extends AbstractEntity {
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
 
+    @JoinTable(name = "CLUB_BLOCKED")
     @OneToMany
     private Set<User> blocked;
 
@@ -93,12 +94,12 @@ public class Club extends AbstractEntity {
         this.nameSearch = nameSearch;
     }
 
-    public String getEmail() {
-        return email;
+    public Collection<String> getEmails() {
+        return emails;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmails(Collection<String> emails) {
+        this.emails = emails;
     }
 
     public String getTelephone() {
@@ -227,6 +228,27 @@ public class Club extends AbstractEntity {
 
     public void setRegistered(boolean registered) {
         this.registered = registered;
+    }
+
+    public void addEmail(String email){
+        emails.add(email);
+    }
+
+    public void removeEmail(String email){
+        emails.removeIf(email::equals);
+    }
+
+    public void removeAllEmails(){
+        emails.clear();
+    }
+
+    public boolean isContactEmail(String email){
+        for (String s : emails){
+            if(s.equals(email)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addCourt(TennisCourt court) {

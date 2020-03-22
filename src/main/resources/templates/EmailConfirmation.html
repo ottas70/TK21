@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Email Confirmation</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Ověření e-mailové adresy TK21</title>
 </head>
 <body>
-
-<p style="color: red">
-    <h1>Pro</h1> potvrzení vaší emailové adresy klikněte prosím zde: http://195.181.209.16/#/overeni/[[${token}]]
-</p>
-
+	<div style="display: flex; flex-wrap: wrap;">
+		<div style="margin: 0 20px 20px 0;">
+			<img src="http://195.181.209.16/logoEmail.png" alt="Logo" style="width: 70px;">
+		</div>
+		<div style="flex-grow: 1; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; font-family: sans-serif;">
+			<p>Vážený/á pane/paní,</p>
+			<p>Z <a href="http://195.181.209.16/">aplikace TK21</a> byl založen účet s touto e-mailovou adresou. E-mail je potřeba ověřit. Pro ověření klikněte prosím <a href="[[${verificationAddress}]]">zde</a>.</p>
+			<p>Pokud jste nezakládali účet s touto adresou, e-mail ignorujte.</p>
+			<p>
+				S práním hezkého dne<br/>
+				<a href="http://195.181.209.16/">aplikace TK21 - tenisový klub 21. století</a>
+			</p>
+		</div>
+	</div>
 </body>
 </html>

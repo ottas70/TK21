@@ -57,6 +57,15 @@ public class ClubController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new CreatedDto(clubId));
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public ResponseEntity<?> registerScrapedClub(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubService.registerScrapedClub(club.get());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CreatedDto(id));
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ClubDto getClub(@PathVariable("id") Integer id) {
         final Optional<Club> club = clubService.find(id);

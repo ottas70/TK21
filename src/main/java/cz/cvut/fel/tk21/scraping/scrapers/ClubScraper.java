@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.exception.WebScrapingException;
 import cz.cvut.fel.tk21.model.Address;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.service.ClubService;
+import cz.cvut.fel.tk21.util.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,14 +113,16 @@ public class ClubScraper {
         if(address == null) return null;
 
         Elements emailCells = rows.get(11).select("td");
-        String email = emailCells.get(1).html();
-        if(email.equals("")) return null;
+        String emailString = emailCells.get(1).html();
+        if(emailString.equals("")) return null;
+        Collection<String> emails = this.extractEmails(emailString);
+        if(emails.isEmpty()) return null;
 
         Club club = new Club();
         club.setName(name);
         club.setWebId(id);
         club.setAddress(address);
-        club.setEmail(email);
+        club.setEmails(emails);
 
         return club;
     }
@@ -154,6 +158,18 @@ public class ClubScraper {
         }
 
         return address;
+    }
+
+    private Collection<String> extractEmails(String email){
+        Collection<String> emails = new ArrayList<>();
+        String[] split = email.split(",");
+        for (String s : split){
+            String trimmed = s.trim();
+            if(StringUtils.isValidEmail(trimmed)){
+                emails.add(trimmed);
+            }
+        }
+        return emails;
     }
 
     private void assertNonNullElement(Element element, String name){
