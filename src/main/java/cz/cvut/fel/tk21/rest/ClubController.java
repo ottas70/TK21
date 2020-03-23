@@ -74,6 +74,14 @@ public class ClubController {
                 clubRelationService.isCurrentUserMemberOf(club.get()), verificationRequestService.getNumOfVerificationRequests(club.get()));
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteClub(@PathVariable("id") Integer id) {
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+        clubService.deleteClub(club.get());
+        return ResponseEntity.noContent().build();
+    }
+
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ClubSearchDto getAllClubs(
             @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
@@ -131,14 +139,6 @@ public class ClubController {
 
         openingHoursService.updateRegularOpeningHours(openingHours, club.get());
 
-        return ResponseEntity.noContent().build();
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteClub(@PathVariable("id") Integer id) {
-        final Optional<Club> club = clubService.find(id);
-        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        clubService.deleteClub(club.get());
         return ResponseEntity.noContent().build();
     }
 

@@ -21,6 +21,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
     private ClubRelationService clubRelationService;
 
     @Autowired
+    private ClubService clubService;
+
+    @Autowired
     private CourtService courtService;
 
     @Autowired
@@ -220,6 +223,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateName(Club club, String name){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(clubService.findClubByName(name).isPresent()) throw new ValidationException("Klub s tímto názvem již existuje");
         club.setName(name);
         this.update(club);
     }
