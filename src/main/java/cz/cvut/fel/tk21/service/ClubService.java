@@ -223,6 +223,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateName(Club club, String name){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(club.isWebScraped()) throw new ValidationException("U klubu převzatého z Cztenis nelze tato položka upravovat");
         if(clubService.findClubByName(name).isPresent()) throw new ValidationException("Klub s tímto názvem již existuje");
         club.setName(name);
         this.update(club);
@@ -238,6 +239,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateAddress(Club club, Address address){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        if(club.isWebScraped()) throw new ValidationException("U klubu převzatého z Cztenis nelze tato položka upravovat");
         club.setAddress(address);
         this.update(club);
     }
@@ -245,7 +247,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Transactional
     public void updateContact(Club club, ContactDto contactDto){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
-        club.setEmails(contactDto.getEmails());
+        if(!club.isWebScraped()){
+            club.setEmails(contactDto.getEmails());
+        }
         club.setWeb(contactDto.getWeb());
         club.setTelephone(contactDto.getTelephone());
         this.update(club);
