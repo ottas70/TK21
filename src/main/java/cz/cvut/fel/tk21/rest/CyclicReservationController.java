@@ -14,18 +14,13 @@ import cz.cvut.fel.tk21.service.CourtService;
 import cz.cvut.fel.tk21.service.CyclicReservationService;
 import cz.cvut.fel.tk21.service.ReservationService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
-import cz.cvut.fel.tk21.ws.WebsocketService;
-import cz.cvut.fel.tk21.ws.dto.UpdateReservationMessage;
-import cz.cvut.fel.tk21.ws.dto.UpdateType;
+import cz.cvut.fel.tk21.ws.service.ReservationWsService;
+import cz.cvut.fel.tk21.ws.dto.helperDto.UpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,16 +34,16 @@ public class CyclicReservationController {
     private final CyclicReservationService cyclicReservationService;
     private final ReservationService reservationService;
     private final ClubService clubService;
-    private final WebsocketService websocketService;
+    private final ReservationWsService reservationWsService;
 
     @Autowired
-    public CyclicReservationController(RequestBodyValidator validator, CourtService courtService, CyclicReservationService cyclicReservationService, ReservationService reservationService, ClubService clubService, WebsocketService websocketService) {
+    public CyclicReservationController(RequestBodyValidator validator, CourtService courtService, CyclicReservationService cyclicReservationService, ReservationService reservationService, ClubService clubService, ReservationWsService reservationWsService) {
         this.validator = validator;
         this.courtService = courtService;
         this.cyclicReservationService = cyclicReservationService;
         this.reservationService = reservationService;
         this.clubService = clubService;
-        this.websocketService = websocketService;
+        this.reservationWsService = reservationWsService;
     }
 
     @RequestMapping(value = "/club/{club_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +65,7 @@ public class CyclicReservationController {
 
         //Websocket messages for subscribers
         for(Reservation reservation : createdReservations){
-            websocketService.sendUpdateMessageToSubscribers(club_id, reservation.getDate(), reservation, UpdateType.CREATE);
+            reservationWsService.sendUpdateMessageToSubscribers(club_id, reservation.getDate(), reservation, UpdateType.CREATE);
         }
 
         return report;
@@ -98,7 +93,7 @@ public class CyclicReservationController {
 
         //Websocket messages for subscribers
         for(Reservation reservation : reservations){
-            websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
+            reservationWsService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
         }
 
         return ResponseEntity.noContent().build();

@@ -1,7 +1,6 @@
 package cz.cvut.fel.tk21.model;
 
 import cz.cvut.fel.tk21.util.StringUtils;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -61,6 +60,9 @@ public class Club extends AbstractEntity {
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<VerificationRequest> verificationRequests;
+
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    private Collection<Invitation> professionalPlayerInvitations;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
@@ -196,6 +198,14 @@ public class Club extends AbstractEntity {
 
     public void setVerificationRequests(Collection<VerificationRequest> verificationRequests) {
         this.verificationRequests = verificationRequests;
+    }
+
+    public Collection<Invitation> getProfessionalPlayerInvitations() {
+        return professionalPlayerInvitations;
+    }
+
+    public void setProfessionalPlayerInvitations(Collection<Invitation> professionalPlayerInvitation) {
+        this.professionalPlayerInvitations = professionalPlayerInvitation;
     }
 
     public Collection<Post> getPosts() {

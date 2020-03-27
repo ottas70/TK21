@@ -34,35 +34,33 @@ public class User extends AbstractEntity {
 
     @Basic(optional = false)
     @Column(nullable = false)
-    @JsonIgnore
     private String password;
 
     @Basic(optional = false)
     @Column(nullable = false)
-    @JsonIgnore
     private boolean verifiedAccount;
 
-    @JsonIgnore
     @OneToOne
     private Club rootClub;
 
-    @JsonIgnore
+    /*** For Web scraping ***/
+    private long webId;
+
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private ConfirmationToken confirmationToken;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<ClubRelation> clubs;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private Collection<Reservation> reservations;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Collection<VerificationRequest> verificationRequests;
 
-    @JsonIgnore
+    @OneToOne(mappedBy = "user")
+    private Invitation professionalPlayerInvitation;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
 
@@ -146,11 +144,27 @@ public class User extends AbstractEntity {
         this.verificationRequests = verificationRequests;
     }
 
+    public Invitation getProfessionalPlayerInvitation() {
+        return professionalPlayerInvitation;
+    }
+
+    public void setProfessionalPlayerInvitation(Invitation professionalPlayerInvitation) {
+        this.professionalPlayerInvitation = professionalPlayerInvitation;
+    }
+
     public Collection<Post> getPosts() {
         return posts;
     }
 
     public void setPosts(Collection<Post> posts) {
         this.posts = posts;
+    }
+
+    public long getWebId() {
+        return webId;
+    }
+
+    public void setWebId(long webId) {
+        this.webId = webId;
     }
 }

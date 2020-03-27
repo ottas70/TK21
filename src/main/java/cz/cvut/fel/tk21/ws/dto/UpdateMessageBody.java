@@ -1,5 +1,7 @@
 package cz.cvut.fel.tk21.ws.dto;
 
+import cz.cvut.fel.tk21.ws.dto.helperDto.ClubDateDto;
+
 public class UpdateMessageBody {
 
     private ClubDateDto unsubscribe;

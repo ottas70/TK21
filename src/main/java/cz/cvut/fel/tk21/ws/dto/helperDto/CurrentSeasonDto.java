@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.ws.dto;
+package cz.cvut.fel.tk21.ws.dto.helperDto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.FromToDate;

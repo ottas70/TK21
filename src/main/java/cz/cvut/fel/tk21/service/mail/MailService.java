@@ -48,6 +48,26 @@ public class MailService {
         }
     }
 
+    @Async
+    public void sendProfessionalPlayerInvite(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ProfessionalPlayerInvitation");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
+    public void sendInvitationAccepted(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "InvitationAccepted");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
 
     private MimeMessage loadMessageTemplate(Mail mail, String template) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

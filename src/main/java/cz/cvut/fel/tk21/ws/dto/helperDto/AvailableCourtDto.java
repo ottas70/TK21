@@ -1,4 +1,4 @@
-package cz.cvut.fel.tk21.ws.dto;
+package cz.cvut.fel.tk21.ws.dto.helperDto;
 
 import cz.cvut.fel.tk21.model.FromToTime;
 

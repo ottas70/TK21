@@ -5,6 +5,8 @@ import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.ReservationPermission;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
+import cz.cvut.fel.tk21.ws.dto.helperDto.AvailableCourtDto;
+import cz.cvut.fel.tk21.ws.dto.helperDto.CurrentSeasonDto;
 
 import java.time.LocalDate;
 import java.util.List;

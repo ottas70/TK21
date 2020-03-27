@@ -76,6 +76,12 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
         return dao.findRelationByUserAndClub(user, club);
     }
 
+    @Transactional(readOnly = true)
+    public boolean hasRoleSomewhere(User user, UserRole role){
+        return dao.hasRoleSomewhere(user, role);
+    }
+
+
     @Transactional
     public void addRole(Club club, User user, UserRole role){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
@@ -97,9 +103,38 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     }
 
     @Transactional
+    public void addRoleWithoutPermissionCheck(Club club, User user, UserRole role){
+        if(role == null) throw new BadRequestException("Špatný dotaz");
+
+        Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
+        relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
+        ClubRelation relation = relationOptional.get();
+
+        if(relation.getRoles().contains(role)) return;
+
+        relation.addRole(role);
+        this.update(relation);
+    }
+
+    @Transactional
     public void deleteRole(Club club, User user, UserRole role){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(userService.getCurrentUser().getId() == user.getId()) throw new ValidationException("Nemůžete odebírat svoje role");
+        if(role == null) throw new BadRequestException("Špatný dotaz");
+
+        Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
+        relationOptional.orElseThrow(() -> new ValidationException("Uživatel není členem klubu"));
+        ClubRelation relation = relationOptional.get();
+
+        if(!relation.getRoles().contains(role)) return;
+
+        relation.removeRole(role);
+
+        this.update(relation);
+    }
+
+    @Transactional
+    public void deleteRoleWithoutPermissionCheck(Club club, User user, UserRole role){
         if(role == null) throw new BadRequestException("Špatný dotaz");
 
         Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);

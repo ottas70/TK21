@@ -1,7 +1,5 @@
-package cz.cvut.fel.tk21.ws;
+package cz.cvut.fel.tk21.ws.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
@@ -9,13 +7,14 @@ import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.UserDetails;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
+import cz.cvut.fel.tk21.util.WsUtil;
 import cz.cvut.fel.tk21.ws.dto.ReservationMessage;
 import cz.cvut.fel.tk21.ws.dto.UpdateReservationMessage;
-import cz.cvut.fel.tk21.ws.dto.UpdateType;
+import cz.cvut.fel.tk21.ws.dto.helperDto.UpdateType;
+import cz.cvut.fel.tk21.ws.handler.ReservationWsHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.time.LocalDate;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class WebsocketService {
+public class ReservationWsService {
 
     @Autowired
     private ClubService clubService;
@@ -32,7 +31,7 @@ public class WebsocketService {
     private ReservationService reservationService;
 
     @Autowired
-    private WebsocketHandler handler;
+    private ReservationWsHandler handler;
 
     public ReservationMessage createInitialMessage(User user, int clubId, LocalDate date) {
         Optional<Club> club = clubService.find(clubId);
@@ -51,7 +50,7 @@ public class WebsocketService {
             boolean editable = false;
             boolean mine = false;
             if(updateType != UpdateType.DELETE){
-                User user = extractUserFromSession(session);
+                User user = WsUtil.extractUserFromSession(session);
                 editable = this.isReservationEditable(reservation, user);
                 mine = this.isReservationMine(reservation, user);
             }
@@ -65,13 +64,6 @@ public class WebsocketService {
 
     private boolean isReservationMine(Reservation reservation, User user){
         return reservationService.isOwner(reservation, user);
-    }
-
-    private User extractUserFromSession(WebSocketSession session){
-        if(session.getPrincipal() == null) return null;
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) session.getPrincipal();
-        UserDetails userDetails = (UserDetails) token.getPrincipal();
-        return userDetails.getUser();
     }
 
 }

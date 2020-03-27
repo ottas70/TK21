@@ -1,6 +1,7 @@
 package cz.cvut.fel.tk21.ws.dto;
 
 import cz.cvut.fel.tk21.model.Reservation;
+import cz.cvut.fel.tk21.ws.dto.helperDto.UpdateType;
 
 public class UpdateReservationMessage {
 

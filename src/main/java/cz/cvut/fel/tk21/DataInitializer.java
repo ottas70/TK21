@@ -2,9 +2,11 @@ package cz.cvut.fel.tk21;
 
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.scraping.scrapers.ClubScraper;
+import cz.cvut.fel.tk21.scraping.scrapers.PlayerScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
+import cz.cvut.fel.tk21.ws.dto.PlayerInfoMessageBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +31,17 @@ public class DataInitializer implements ApplicationRunner {
     private final ClubService clubService;
     private final ClubRelationService clubRelationService;
     private final Random random;
-    private final ClubScraper clubScraper;
 
-    public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random, ClubScraper clubScraper) {
+    @Autowired
+    private ClubScraper clubScraper;
+    @Autowired
+    private PlayerScraper playerScraper;
+
+    public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random) {
         this.userService = userService;
         this.clubService = clubService;
         this.clubRelationService = clubRelationService;
         this.random = random;
-        this.clubScraper = clubScraper;
     }
 
 
@@ -68,7 +73,7 @@ public class DataInitializer implements ApplicationRunner {
 
         Club club = new Club();
         club.setId(1);
-        club.setName("Tk Neride");
+        club.setName("TK Neridé");
         club.setDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque faucibus fringilla. Mauris metus. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Nullam sit amet magna in magna gravida vehicula. Aliquam erat volutpat. Etiam commodo dui eget wisi. Phasellus faucibus molestie nisl. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Nulla quis diam.");
         club.setTelephone("723598253");
         club.addEmail("neride@gmail.com");
@@ -93,7 +98,7 @@ public class DataInitializer implements ApplicationRunner {
         relation.setClub(club);
         relation.setUser(user1);
         relation.addRole(UserRole.ADMIN);
-        relation.addRole(UserRole.PROFESSIONAL_PLAYER);
+        relation.addRole(UserRole.RECREATIONAL_PLAYER);
         clubRelationService.persist(relation);
 
         for (int i = 1; i <= 3; i++) {

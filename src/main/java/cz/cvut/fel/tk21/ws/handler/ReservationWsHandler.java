@@ -1,10 +1,14 @@
-package cz.cvut.fel.tk21.ws;
+package cz.cvut.fel.tk21.ws.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.UserDetails;
+import cz.cvut.fel.tk21.util.WsUtil;
+import cz.cvut.fel.tk21.ws.dto.helperDto.ClubDateDto;
+import cz.cvut.fel.tk21.ws.dto.helperDto.UpdateType;
+import cz.cvut.fel.tk21.ws.service.ReservationWsService;
 import cz.cvut.fel.tk21.ws.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +29,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class WebsocketHandler extends TextWebSocketHandler {
+public class ReservationWsHandler extends TextWebSocketHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(WebsocketHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ReservationWsHandler.class);
     private final String HEARTBEAT = "-h-";
 
     private final ObjectMapper mapper;
     private final Map<Integer, Map<LocalDate, List<WebSocketSession>>> subscriptions;
     private final List<WebSocketSession> sessions;
-    private WebsocketService websocketService;
+    private ReservationWsService reservationWsService;
 
-    public WebsocketHandler() {
+    public ReservationWsHandler() {
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());
         this.subscriptions = new ConcurrentHashMap<>();
@@ -77,8 +81,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
             }
             if(subscribe == null) throw new BadRequestException("Bad request");
 
-            User user = extractUserFromSession(session);
-            ReservationMessage message = websocketService.createInitialMessage(user, subscribe.getClubId(), subscribe.getDate());
+            User user = WsUtil.extractUserFromSession(session);
+            ReservationMessage message = reservationWsService.createInitialMessage(user, subscribe.getClubId(), subscribe.getDate());
             GeneralMessage dto = new GeneralMessage(UpdateType.INIT.toString(), message);
             subscribe(session, message.getDate(), subscribe.getClubId());
             sendMessageToSession(session, dto);
@@ -133,13 +137,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private User extractUserFromSession(WebSocketSession session){
-        if(session.getPrincipal() == null) return null;
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) session.getPrincipal();
-        UserDetails userDetails = (UserDetails) token.getPrincipal();
-        return userDetails.getUser();
-    }
-
     public List<WebSocketSession> findAllSubscriptions(int clubId, LocalDate date){
         subscriptions.computeIfAbsent(clubId, id -> new ConcurrentHashMap<>());
         subscriptions.get(clubId).computeIfAbsent(date , id -> new LinkedList<>());
@@ -147,7 +144,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
     }
 
     @Autowired
-    public void setWebsocketService(WebsocketService websocketService) {
-        this.websocketService = websocketService;
+    public void setReservationWsService(ReservationWsService reservationWsService) {
+        this.reservationWsService = reservationWsService;
     }
 }

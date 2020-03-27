@@ -1,7 +1,6 @@
 package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.NotFoundException;
-import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
@@ -9,21 +8,17 @@ import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
-import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
-import cz.cvut.fel.tk21.ws.WebsocketService;
-import cz.cvut.fel.tk21.ws.dto.UpdateType;
+import cz.cvut.fel.tk21.ws.service.ReservationWsService;
+import cz.cvut.fel.tk21.ws.dto.helperDto.UpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,14 +30,14 @@ public class ReservationController {
     private final RequestBodyValidator validator;
     private final ReservationService reservationService;
     private final ClubService clubService;
-    private final WebsocketService websocketService;
+    private final ReservationWsService reservationWsService;
 
     @Autowired
-    public ReservationController(RequestBodyValidator validator, ReservationService reservationService, ClubService clubService, WebsocketService websocketService) {
+    public ReservationController(RequestBodyValidator validator, ReservationService reservationService, ClubService clubService, ReservationWsService reservationWsService) {
         this.validator = validator;
         this.reservationService = reservationService;
         this.clubService = clubService;
-        this.websocketService = websocketService;
+        this.reservationWsService = reservationWsService;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,7 +70,7 @@ public class ReservationController {
         Reservation reservation = reservationService.createReservationFromDTO(reservationDto, club.get(), reservationDto.getDate());
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation, UpdateType.CREATE);
+        reservationWsService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation, UpdateType.CREATE);
 
         reservationService.sendReservationSummaryEmail(reservation);
 
@@ -93,7 +88,7 @@ public class ReservationController {
         reservationService.updateReservation(reservation, reservationDto);
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservationDto.getDate(), reservation, UpdateType.UPDATE);
+        reservationWsService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservationDto.getDate(), reservation, UpdateType.UPDATE);
 
         return ResponseEntity.noContent().build();
     }
@@ -107,7 +102,7 @@ public class ReservationController {
         reservationService.deleteReservation(reservation);
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
+        reservationWsService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -117,7 +112,7 @@ public class ReservationController {
         Reservation reservation = reservationService.deleteReservationByToken(token);
 
         //Websocket message for subscribers
-        websocketService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
+        reservationWsService.sendUpdateMessageToSubscribers(reservation.getClub().getId(), reservation.getDate(), reservation, UpdateType.DELETE);
 
         return ResponseEntity.noContent().build();
     }
