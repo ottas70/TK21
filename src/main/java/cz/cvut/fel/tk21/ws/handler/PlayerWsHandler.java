@@ -100,11 +100,9 @@ public class PlayerWsHandler extends TextWebSocketHandler {
 
             List<PlayerInfoCzTenis> players = playerWsService.findPlayerOnCzTenis(body, club.get());
             requests.put(session, players);
-            List<GeneralMessage> dtos = players.stream()
-                    .map(p -> new GeneralMessage("PLAYER_RESULTS", p))
-                    .collect(Collectors.toList());
+            GeneralMessage message = new GeneralMessage("PLAYER_RESULTS", players);
 
-            sendMessageToSession(session, dtos);
+            sendMessageToSession(session, message);
         } catch (RuntimeException | IOException ex){
             sendMessageToSession(session, ex.getMessage());
         }
