@@ -52,6 +52,7 @@ public class ClubScraper {
                 Optional<Club> storedClubOptional = clubService.findClubByWebId(Integer.parseInt(webId));
                 if(club != null){
                     if(storedClubOptional.isEmpty()){
+                        System.out.println(club.getName());
                         clubService.persist(club);
                     } else {
                         Club storedClub = storedClubOptional.get();

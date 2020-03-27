@@ -73,7 +73,7 @@ public class DataInitializer implements ApplicationRunner {
 
         Club club = new Club();
         club.setId(1);
-        club.setName("TK Neridé");
+        club.setName("Test TK Neridé");
         club.setDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque faucibus fringilla. Mauris metus. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Nullam sit amet magna in magna gravida vehicula. Aliquam erat volutpat. Etiam commodo dui eget wisi. Phasellus faucibus molestie nisl. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Nulla quis diam.");
         club.setTelephone("723598253");
         club.addEmail("neride@gmail.com");
@@ -107,7 +107,7 @@ public class DataInitializer implements ApplicationRunner {
 
         Club club2 = new Club();
         club2.setId(3);
-        club2.setName("Tk Písnice");
+        club2.setName("Test Tk Písnice");
         club2.setDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla non arcu lacinia neque faucibus fringilla. Mauris metus. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Nullam sit amet magna in magna gravida vehicula. Aliquam erat volutpat. Etiam commodo dui eget wisi. Phasellus faucibus molestie nisl. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Nulla quis diam.");
         club2.setTelephone("749724167");
         club2.addEmail("pisnice@gmail.com");
