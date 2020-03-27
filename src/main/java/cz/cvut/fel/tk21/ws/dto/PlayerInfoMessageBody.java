@@ -10,9 +10,6 @@ public class PlayerInfoMessageBody {
 
     private String surname;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
-    private LocalDate birthDate;
-
     private String playerEmail;
 
     private int clubId;
@@ -31,15 +28,6 @@ public class PlayerInfoMessageBody {
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
     }
 
     public String getPlayerEmail() {

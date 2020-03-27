@@ -67,10 +67,9 @@ public class PlayerScraper {
             String clubName = cells.get(2).html();
 
             String playersName = detail.getSurname() + " " + detail.getName();
-            LocalDate playersBirthDate = detail.getBirthDate();
             String playersClubName = club.getName();
 
-            if(name.equals(playersName) && birthDate.isEqual(playersBirthDate) && clubName.equals(playersClubName)){
+            if(name.equals(playersName) && clubName.equals(playersClubName)){
                 String href = cells.get(0).select("a").attr("href");
                 long id = Long.parseLong(href.split("/")[2]);
 
