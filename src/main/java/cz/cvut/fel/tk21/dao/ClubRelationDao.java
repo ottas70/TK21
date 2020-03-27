@@ -28,6 +28,14 @@ public class ClubRelationDao extends BaseDao<ClubRelation> {
                 .getResultList();
     }
 
+    public List<ClubRelation> findAllRelationsByClubAndRole(Club club, UserRole role){
+        return em.createQuery("SELECT c from ClubRelation c " +
+                "WHERE c.club = :club AND :role MEMBER OF c.roles", ClubRelation.class)
+                .setParameter("club", club)
+                .setParameter("role", role)
+                .getResultList();
+    }
+
     public Optional<ClubRelation> findRelationByUserAndClub(User user, Club club){
         try{
             return Optional.ofNullable(em.createQuery("SELECT c FROM ClubRelation c " +

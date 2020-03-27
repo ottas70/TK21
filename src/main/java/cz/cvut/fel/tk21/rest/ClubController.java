@@ -376,6 +376,31 @@ public class ClubController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value = "{id}/competitive-members", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<User> getAllCompetitiveMembers(@PathVariable("id") Integer id){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        User user = userService.getCurrentUser();
+        if(user == null || !clubService.isUserAllowedToManageThisClub(user, club.get())) throw new UnauthorizedException("Přístup odepřen");
+
+        List<ClubRelation> relations = clubRelationService.findAllRelationsByClubAndRole(club.get(), UserRole.PROFESSIONAL_PLAYER);
+        return relations.stream().map(ClubRelation::getUser).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "{id}/competitive-members/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> removeRoleProfessionalPlayer(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        User user = userService.getCurrentUser();
+        if(user == null || !clubService.isUserAllowedToManageThisClub(user, club.get())) throw new UnauthorizedException("Přístup odepřen");
+
+        clubRelationService.deleteRole(club.get(), user, UserRole.PROFESSIONAL_PLAYER);
+
+        return ResponseEntity.noContent().build();
+    }
+
     /* *********************************
      * USER VERIFICATION
      ********************************* */

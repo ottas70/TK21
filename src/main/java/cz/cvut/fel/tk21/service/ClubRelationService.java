@@ -77,6 +77,11 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     }
 
     @Transactional(readOnly = true)
+    public List<ClubRelation> findAllRelationsByClubAndRole(Club club, UserRole role){
+        return dao.findAllRelationsByClubAndRole(club, role);
+    }
+
+    @Transactional(readOnly = true)
     public boolean hasRoleSomewhere(User user, UserRole role){
         return dao.hasRoleSomewhere(user, role);
     }

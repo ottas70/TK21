@@ -32,35 +32,46 @@ public class User extends AbstractEntity {
     @Email
     private String email;
 
+    @JsonIgnore
     @Basic(optional = false)
     @Column(nullable = false)
     private String password;
 
+    @JsonIgnore
     @Basic(optional = false)
     @Column(nullable = false)
     private boolean verifiedAccount;
 
+    @JsonIgnore
     @OneToOne
     private Club rootClub;
 
     /*** For Web scraping ***/
+    @JsonIgnore
+    @Column
     private long webId;
 
+    @JsonIgnore
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private ConfirmationToken confirmationToken;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<ClubRelation> clubs;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private Collection<Reservation> reservations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Collection<VerificationRequest> verificationRequests;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user")
     private Invitation professionalPlayerInvitation;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
 
