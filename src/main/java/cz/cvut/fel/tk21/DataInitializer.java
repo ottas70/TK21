@@ -71,6 +71,14 @@ public class DataInitializer implements ApplicationRunner {
         user3.setVerifiedAccount(true);
         userService.persist(user3);
 
+        User user4 = new User();
+        user4.setName("Tenis");
+        user4.setSurname("Neride TEST");
+        user4.setEmail("tkneride@seznam.cz");
+        user4.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
+        user4.setVerifiedAccount(true);
+        userService.persist(user4);
+
         Club club = new Club();
         club.setId(1);
         club.setName("Test TK Neridé");
