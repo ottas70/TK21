@@ -2,12 +2,11 @@ package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.model.Invitation;
+import cz.cvut.fel.tk21.rest.dto.user.NewPasswordDto;
 import cz.cvut.fel.tk21.service.InvitationService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -27,6 +26,17 @@ public class InvitationController {
         invitation.orElseThrow(() -> new BadRequestException("Chybný dotaz"));
 
         invitationService.acceptInvitation(invitation.get());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/professional/password/{token}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> changePasswordNonRegisteredPlayer(@PathVariable("token") String token, @RequestBody NewPasswordDto dto){
+        Optional<Invitation> invitationOptional = invitationService.findByConfirmationToken(token);
+        invitationOptional.orElseThrow(() -> new BadRequestException("Chybný dotaz"));
+        Invitation invitation = invitationOptional.get();
+
+        invitationService.changePasswordAndAcceptInvitation(invitation, dto.getPassword());
 
         return ResponseEntity.ok().build();
     }

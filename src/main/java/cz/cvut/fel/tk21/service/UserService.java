@@ -70,6 +70,19 @@ public class UserService extends BaseService<UserDao, User> {
     }
 
     @Transactional
+    public User createNonVerifiedUser(String name, String surname, String email){
+        User user = new User();
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPassword(null);
+        user.setVerifiedAccount(false);
+
+        dao.persist(user);
+        return user;
+    }
+
+    @Transactional
     public boolean isEmailTokenValid(String token){
         Optional<ConfirmationToken> confirmationToken = confirmationTokenDao.findByConfirmationToken(token);
         if(confirmationToken.isPresent()){

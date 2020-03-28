@@ -11,6 +11,7 @@ import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.InvitationService;
 import cz.cvut.fel.tk21.service.UserService;
+import cz.cvut.fel.tk21.util.StringUtils;
 import cz.cvut.fel.tk21.ws.dto.PlayerInfoMessageBody;
 import cz.cvut.fel.tk21.ws.dto.helperDto.PlayerInfoCzTenis;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,30 +55,37 @@ public class PlayerWsService {
 
     public String inviteRegisteredUser(PlayerInfoCzTenis playerInfo, User user, Club club){
         if(clubRelationService.hasRoleSomewhere(user, UserRole.PROFESSIONAL_PLAYER)) throw new ValidationException("Uživatel již je někde závodním hráčem");
+        if(user.getProfessionalPlayerInvitation() != null
+                && user.getProfessionalPlayerInvitation().getClub().getId() == club.getId())
+            throw new ValidationException("Hráč je již pozván do vašeho klubu");
 
         Invitation invite = invitationService.createInvitation(club, user, playerInfo.getId());
-        invitationService.persist(invite);
 
         invitationService.sendProfessionalPlayerInviteMail(invite);
         return "SUCCESS";
     }
 
     public String inviteNonRegisteredUser(PlayerInfoCzTenis player, Club club){
-        //TODO
-        return "NOT IMPLEMENTED YET";
+        User user = userService.createNonVerifiedUser(player.getName(), player.getSurname(), player.getPlayerEmail());
+        Invitation invite = invitationService.createInvitation(club, user, player.getId());
+        invitationService.sendProfessionalPlayerInviteMailNonRegisteredPlayer(invite);
+        return "SUCCESS";
     }
 
     public boolean isAuthorizedToRegisterPlayer(User user, Club club){
         return clubService.isUserAllowedToManageThisClub(user, club);
     }
 
-    public boolean isAlreadyRegistered(String email, Club club){
-        Optional<User> user = userService.findUserByEmail(email);
-        if(user.isEmpty()) return false;
+    public void checkInfoValidity(PlayerInfoMessageBody info, Club club){
+        if(!StringUtils.isValidEmail(info.getPlayerEmail())) throw new ValidationException("Nevalidní email");
+        Optional<User> user = userService.findUserByEmail(info.getPlayerEmail());
+        if(user.isEmpty()) return;
+        if(!user.get().getName().equals(info.getName()) || !user.get().getSurname().equals(info.getSurname())){
+            throw new ValidationException("Tento mail je již registován na jiného uživatele");
+        }
         if(clubRelationService.hasRole(club, user.get(), UserRole.PROFESSIONAL_PLAYER)){
             throw new ValidationException("Uživatel již je propojen s CzTenis");
         }
-        return false;
     }
 
     public Optional<Club> findClub(int clubId){

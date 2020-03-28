@@ -59,6 +59,16 @@ public class MailService {
     }
 
     @Async
+    public void sendProfessionalPlayerInviteNonRegisteredPlayer(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ProfessionalPlayerInvitationNonRegisteredPlayer");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
     public void sendInvitationAccepted(Mail mail){
         try{
             MimeMessage mimeMessage = loadMessageTemplate(mail, "InvitationAccepted");

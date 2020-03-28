@@ -96,7 +96,7 @@ public class PlayerWsHandler extends TextWebSocketHandler {
             club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
             User user = WsUtil.extractUserFromSession(session);
             if(!playerWsService.isAuthorizedToRegisterPlayer(user, club.get())) throw new UnauthorizedException("Přístup odepřen");
-            playerWsService.isAlreadyRegistered(body.getPlayerEmail(), club.get());
+            playerWsService.checkInfoValidity(body, club.get());
 
             List<PlayerInfoCzTenis> players = playerWsService.findPlayerOnCzTenis(body, club.get());
             requests.put(session, players);
