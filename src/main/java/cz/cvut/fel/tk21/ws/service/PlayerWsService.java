@@ -80,8 +80,8 @@ public class PlayerWsService {
         if(!StringUtils.isValidEmail(info.getPlayerEmail())) throw new ValidationException("Nevalidní email");
         Optional<User> user = userService.findUserByEmail(info.getPlayerEmail());
         if(user.isEmpty()) return;
-        if(!user.get().getName().equals(info.getName()) || !user.get().getSurname().equals(info.getSurname())){
-            throw new ValidationException("Tento mail je již registován na jiného uživatele");
+        if(!user.get().getName().toLowerCase().equals(info.getName().toLowerCase()) || !user.get().getSurname().toLowerCase().equals(info.getSurname().toLowerCase())){
+            throw new ValidationException("Tento email je již registován na jiného uživatele");
         }
         if(clubRelationService.hasRole(club, user.get(), UserRole.PROFESSIONAL_PLAYER)){
             throw new ValidationException("Uživatel již je propojen s CzTenis");

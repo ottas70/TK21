@@ -36,6 +36,7 @@ public class InvitationService extends BaseService<InvitationDao, Invitation>{
         return dao.findByConfirmationToken(token);
     }
 
+    @Transactional
     public Invitation createInvitation(Club club, User user, long webId){
         Invitation invite = new Invitation();
         invite.setUser(user);

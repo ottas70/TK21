@@ -63,20 +63,22 @@ public class PlayerScraper {
         for(Element row : rows){
             Elements cells = row.select("td");
             String name = cells.get(0).select("a").html();
+            String firstName = name.split(" ")[1];
+            String lastName = name.split(" ")[0];
             LocalDate birthDate = LocalDate.parse(cells.get(1).html(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             String clubName = cells.get(2).html();
 
             String playersName = detail.getSurname() + " " + detail.getName();
             String playersClubName = club.getName();
 
-            if(name.equals(playersName) && clubName.equals(playersClubName)){
+            if(name.toLowerCase().equals(playersName.toLowerCase()) && clubName.equals(playersClubName)){
                 String href = cells.get(0).select("a").attr("href");
                 long id = Long.parseLong(href.split("/")[2]);
 
                 PlayerInfoCzTenis info = new PlayerInfoCzTenis();
                 info.setId(id);
-                info.setName(detail.getName());
-                info.setSurname(detail.getSurname());
+                info.setName(firstName);
+                info.setSurname(lastName);
                 info.setBirthDate(birthDate);
                 info.setClubId(club.getId());
                 info.setClubName(clubName);
