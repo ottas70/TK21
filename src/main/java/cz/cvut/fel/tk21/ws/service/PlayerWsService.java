@@ -62,14 +62,14 @@ public class PlayerWsService {
         Invitation invite = invitationService.createInvitation(club, user, playerInfo.getId());
 
         invitationService.sendProfessionalPlayerInviteMail(invite);
-        return "SUCCESS";
+        return "SUCCESS-REGISTERED_USER";
     }
 
     public String inviteNonRegisteredUser(PlayerInfoCzTenis player, Club club){
         User user = userService.createNonVerifiedUser(player.getName(), player.getSurname(), player.getPlayerEmail());
         Invitation invite = invitationService.createInvitation(club, user, player.getId());
         invitationService.sendProfessionalPlayerInviteMailNonRegisteredPlayer(invite);
-        return "SUCCESS";
+        return "SUCCESS-NONREGISTERED_USER";
     }
 
     public boolean isAuthorizedToRegisterPlayer(User user, Club club){
