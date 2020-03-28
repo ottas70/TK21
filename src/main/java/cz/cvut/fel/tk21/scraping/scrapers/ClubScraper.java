@@ -114,8 +114,17 @@ public class ClubScraper {
 
         Elements emailCells = rows.get(11).select("td");
         String emailString = emailCells.get(1).html();
-        if(emailString.equals("")) return null;
         Collection<String> emails = this.extractEmails(emailString);
+        if(id == 40095){
+            System.out.println("bagr");
+        }
+        if(emails.isEmpty()){
+            Element personTable = doc.select("table tbody").last();
+            Elements personRows = personTable.select("tr");
+            Elements personEmailCells = personRows.get(4).select("td");
+            String personEmailString = personEmailCells.get(1).html();
+            emails = this.extractEmails(personEmailString);
+        }
         if(emails.isEmpty()) return null;
 
         Club club = new Club();
@@ -162,6 +171,7 @@ public class ClubScraper {
 
     private Collection<String> extractEmails(String email){
         Collection<String> emails = new ArrayList<>();
+        if(email.equals("")) return emails;
         String[] split = email.split(",");
         for (String s : split){
             String trimmed = s.trim();
