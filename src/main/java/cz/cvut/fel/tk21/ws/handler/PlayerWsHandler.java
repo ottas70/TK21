@@ -104,7 +104,7 @@ public class PlayerWsHandler extends TextWebSocketHandler {
 
             sendMessageToSession(session, message);
         } catch (RuntimeException | IOException ex){
-            sendMessageToSession(session, ex.getMessage());
+            sendMessageToSession(session, new GeneralMessage("ERROR", new MessageDto(ex.getMessage())));
         }
     }
 
@@ -120,7 +120,7 @@ public class PlayerWsHandler extends TextWebSocketHandler {
 
             sendMessageToSession(session, new GeneralMessage("RESULT", new MessageDto(result)));
         } catch (RuntimeException ex) {
-            sendMessageToSession(session, ex.getMessage());
+            sendMessageToSession(session, new GeneralMessage("ERROR", new MessageDto(ex.getMessage())));
         }
     }
 
