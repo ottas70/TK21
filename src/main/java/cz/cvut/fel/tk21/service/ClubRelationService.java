@@ -122,9 +122,11 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     }
 
     @Transactional
-    public void deleteRole(Club club, User user, UserRole role){
+    public void deleteRole(Club club, User user, UserRole role, boolean isMyselfEditable){
         if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
-        if(userService.getCurrentUser().getId() == user.getId()) throw new ValidationException("Nemůžete odebírat svoje role");
+        if(!isMyselfEditable){
+            if(userService.getCurrentUser().getId() == user.getId()) throw new ValidationException("Nemůžete odebírat svoje role");
+        }
         if(role == null) throw new BadRequestException("Špatný dotaz");
 
         Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);

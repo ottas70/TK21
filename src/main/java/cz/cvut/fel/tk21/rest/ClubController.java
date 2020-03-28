@@ -322,7 +322,7 @@ public class ClubController {
         final Optional<User> user = userService.find(member_id);
         user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
 
-        clubRelationService.deleteRole(club.get(), user.get(), UserRole.getRoleFromString(role));
+        clubRelationService.deleteRole(club.get(), user.get(), UserRole.getRoleFromString(role), false);
 
         return ResponseEntity.noContent().build();
     }
@@ -393,10 +393,13 @@ public class ClubController {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        User user = userService.getCurrentUser();
-        if(user == null || !clubService.isUserAllowedToManageThisClub(user, club.get())) throw new UnauthorizedException("Přístup odepřen");
+        final Optional<User> user = userService.find(id);
+        user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
 
-        clubRelationService.deleteRole(club.get(), user, UserRole.PROFESSIONAL_PLAYER);
+        User currentUser = userService.getCurrentUser();
+        if(currentUser == null || !clubService.isUserAllowedToManageThisClub(currentUser, club.get())) throw new UnauthorizedException("Přístup odepřen");
+
+        clubRelationService.deleteRole(club.get(), user.get(), UserRole.PROFESSIONAL_PLAYER, true);
 
         return ResponseEntity.noContent().build();
     }
