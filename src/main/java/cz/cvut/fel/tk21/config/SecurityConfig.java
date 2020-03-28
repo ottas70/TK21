@@ -73,6 +73,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/download/**")
                 .permitAll();
 
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/invitation/professional/**")
+                .permitAll();
+
         http.authorizeRequests().anyRequest().authenticated();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
