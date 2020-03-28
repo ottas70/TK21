@@ -7,15 +7,15 @@
 <body>
 <div style="display: flex; flex-wrap: wrap; padding: 15px;">
     <div style="margin: 0 20px 20px 0;">
-        <img src="http://195.181.209.16/logoEmail.png" alt="Logo" style="width: 70px;">
+        <img th:src="@{${url} + '/logoEmail.png'}" alt="Logo" style="width: 70px;">
     </div>
     <div style="flex-grow: 1; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; font-family: sans-serif;">
         <p style="font-weight: bold;">Vážený/á pane/paní,</p>
-        <p>Z <a href="http://195.181.209.16/">aplikace TK21</a> byl založen účet s touto e-mailovou adresou. E-mail je potřeba ověřit. Pro ověření klikněte prosím <a th:href="@{http://195.181.209.16/#/overeni/} + ${token}">zde</a>.</p>
+        <p>Z <a th:href="${url}">aplikace TK21</a> byl založen účet s touto e-mailovou adresou. E-mail je potřeba ověřit. Pro ověření klikněte prosím <a th:href="@{${url} + '/#/overeni/' + ${token}}">zde</a>.</p>
         <p>Pokud jste nezakládali účet s touto adresou, e-mail ignorujte.</p>
         <p>
             S práním hezkého dne<br/>
-            <a href="http://195.181.209.16/">aplikace TK21 - tenisový klub 21. století</a>
+            <a th:href="${url}">aplikace TK21 - tenisový klub 21. století</a>
         </p>
     </div>
 </div>

@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.service.mail;
 
+import cz.cvut.fel.tk21.config.properties.AppProperties;
 import cz.cvut.fel.tk21.model.mail.Mail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,19 +15,22 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 @Service
 public class MailService {
 
     private static Logger log = LoggerFactory.getLogger(MailService.class);
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
+    private final SpringTemplateEngine templateEngine;
+    private final AppProperties appProperties;
 
     @Autowired
-    private SpringTemplateEngine templateEngine;
+    public MailService(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine, AppProperties appProperties) {
+        this.javaMailSender = javaMailSender;
+        this.templateEngine = templateEngine;
+        this.appProperties = appProperties;
+    }
 
     @Async
     public void sendEmailConfirmation(Mail mail){
@@ -82,6 +86,8 @@ public class MailService {
     private MimeMessage loadMessageTemplate(Mail mail, String template) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
+
+        mail.getModel().put("url", appProperties.getUrl());
 
         Context context = new Context();
         context.setVariables(mail.getModel());

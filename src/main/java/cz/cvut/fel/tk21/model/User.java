@@ -33,8 +33,8 @@ public class User extends AbstractEntity {
     private String email;
 
     @JsonIgnore
-    @Basic(optional = false)
-    @Column(nullable = false)
+    @Basic
+    @Column
     private String password;
 
     @JsonIgnore

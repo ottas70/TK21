@@ -1,12 +1,10 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.config.properties.AppProperties;
 import cz.cvut.fel.tk21.dao.ConfirmationTokenDao;
 import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.ValidationException;
-import cz.cvut.fel.tk21.model.Club;
-import cz.cvut.fel.tk21.model.ClubRelation;
 import cz.cvut.fel.tk21.model.User;
-import cz.cvut.fel.tk21.model.UserRole;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 import cz.cvut.fel.tk21.model.mail.Mail;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,13 +31,16 @@ public class UserService extends BaseService<UserDao, User> {
     private final MailService mailService;
     private final ConfirmationTokenDao confirmationTokenDao;
     private final AuthenticationManager authenticationManager;
+    private final AppProperties appProperties;
 
-    protected UserService(UserDao dao, PasswordEncoder passwordEncoder, MailService mailService, ConfirmationTokenDao confirmationTokenDao, AuthenticationManager authenticationManager) {
+    @Autowired
+    protected UserService(UserDao dao, PasswordEncoder passwordEncoder, MailService mailService, ConfirmationTokenDao confirmationTokenDao, AuthenticationManager authenticationManager, AppProperties appProperties) {
         super(dao);
         this.passwordEncoder = passwordEncoder;
         this.mailService = mailService;
         this.confirmationTokenDao = confirmationTokenDao;
         this.authenticationManager = authenticationManager;
+        this.appProperties = appProperties;
     }
 
     @Transactional
