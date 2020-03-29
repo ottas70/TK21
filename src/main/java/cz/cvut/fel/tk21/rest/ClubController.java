@@ -309,6 +309,8 @@ public class ClubController {
         final Optional<User> user = userService.find(member_id);
         user.orElseThrow(() -> new NotFoundException("Uživatel nebyl nalezen"));
 
+        UserRole userRole = UserRole.getRoleFromString(role);
+        if(userRole == UserRole.PROFESSIONAL_PLAYER) throw new BadRequestException("Roli závodního hráče nelze takto nastavit");
         clubRelationService.addRole(club.get(), user.get(), UserRole.getRoleFromString(role));
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -400,6 +402,7 @@ public class ClubController {
         if(currentUser == null || !clubService.isUserAllowedToManageThisClub(currentUser, club.get())) throw new UnauthorizedException("Přístup odepřen");
 
         clubRelationService.deleteRole(club.get(), user.get(), UserRole.PROFESSIONAL_PLAYER, true);
+        clubRelationService.addRole(club.get(), user.get(), UserRole.RECREATIONAL_PLAYER);
 
         return ResponseEntity.noContent().build();
     }

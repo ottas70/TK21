@@ -25,6 +25,8 @@ public class ClubSettingsDto {
 
     private PropertiesDto properties;
 
+    private boolean isScraped;
+
     public ClubSettingsDto(Club club, int year, boolean isYearSet){
         if(!club.getOpeningHours().getRegularHours().isEmpty()){
             this.openingHours = new HashMap<>();
@@ -47,7 +49,7 @@ public class ClubSettingsDto {
         }
 
         this.properties = new PropertiesDto(club);
-
+        this.isScraped = club.isWebScraped();
     }
 
     public Map<Integer, FromToTime> getOpeningHours() {
@@ -96,5 +98,13 @@ public class ClubSettingsDto {
 
     public void setProperties(PropertiesDto properties) {
         this.properties = properties;
+    }
+
+    public boolean isScraped() {
+        return isScraped;
+    }
+
+    public void setScraped(boolean scraped) {
+        isScraped = scraped;
     }
 }
