@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.scraping.scrapers.ClubScraper;
 import cz.cvut.fel.tk21.scraping.scrapers.PlayerScraper;
+import cz.cvut.fel.tk21.scraping.scrapers.TournamentScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
@@ -36,6 +37,8 @@ public class DataInitializer implements ApplicationRunner {
     private ClubScraper clubScraper;
     @Autowired
     private PlayerScraper playerScraper;
+    @Autowired
+    private TournamentScraper tournamentScraper;
 
     public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random) {
         this.userService = userService;
@@ -153,6 +156,7 @@ public class DataInitializer implements ApplicationRunner {
 
         try {
             clubScraper.findAllClubs();
+            tournamentScraper.findAllTournaments();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

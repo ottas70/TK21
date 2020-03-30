@@ -38,6 +38,19 @@ public class ClubDao extends BaseDao<Club>{
         }
     }
 
+    public Optional<Club> findClubByNameCaseInsensitive(String name){
+        try{
+            return Optional.ofNullable(
+                    em.createQuery("SELECT c from Club c " +
+                            "WHERE LOWER(c.name) = :name", Club.class)
+                            .setParameter("name", name.toLowerCase())
+                            .getSingleResult()
+            );
+        } catch (NoResultException ex){
+            return Optional.empty();
+        }
+    }
+
     public Optional<Club> findClubByAddress(Address address){
         try{
             return Optional.ofNullable(

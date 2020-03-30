@@ -34,8 +34,6 @@ public class ClubScraper {
     public void findAllClubs() throws IOException {
         logger.trace("Club scraping started");
 
-        List<Club> clubs = new ArrayList<>();
-
         Document doc = Jsoup.connect(url).get();
 
         for (int i = 0; i <= 7; i++) {
@@ -115,9 +113,6 @@ public class ClubScraper {
         Elements emailCells = rows.get(11).select("td");
         String emailString = emailCells.get(1).html();
         Collection<String> emails = this.extractEmails(emailString);
-        if(id == 40095){
-            System.out.println("bagr");
-        }
         if(emails.isEmpty()){
             Element personTable = doc.select("table tbody").last();
             Elements personRows = personTable.select("tr");

@@ -7,6 +7,7 @@ import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.club.*;
 import cz.cvut.fel.tk21.util.DateUtils;
+import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -154,6 +155,11 @@ public class ClubService extends BaseService<ClubDao, Club> {
     }
 
     @Transactional
+    public Optional<Club> findClubByNameCaseInsensitive(String name){
+        return dao.findClubByNameCaseInsensitive(name);
+    }
+
+    @Transactional
     public List<Club> findAllClubsByContactEmail(String email){
         return dao.findAllByContactEmail(email);
     }
@@ -224,7 +230,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
     public void updateName(Club club, String name){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(club.isWebScraped()) throw new ValidationException("U klubu převzatého z Cztenis nelze tato položka upravovat");
-        if(clubService.findClubByName(name).isPresent()) throw new ValidationException("Klub s tímto názvem již existuje");
+        if(clubService.findClubByNameCaseInsensitive(name).isPresent()) throw new ValidationException("Klub s tímto názvem již existuje");
         club.setName(name);
         this.update(club);
     }
@@ -248,6 +254,10 @@ public class ClubService extends BaseService<ClubDao, Club> {
     public void updateContact(Club club, ContactDto contactDto){
         if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(!club.isWebScraped()){
+            if(contactDto.getEmails() == null || contactDto.getEmails().isEmpty()) throw new ValidationException("Musíte mít alespoň jeden email");
+            for (String email : contactDto.getEmails()){
+                if(!StringUtils.isValidEmail(email)) throw new ValidationException("Nevalidní email");
+            }
             club.setEmails(contactDto.getEmails());
         }
         club.setWeb(contactDto.getWeb());
