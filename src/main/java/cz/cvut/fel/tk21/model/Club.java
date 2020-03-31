@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.model;
 
+import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.util.StringUtils;
 
 import javax.persistence.*;
@@ -70,6 +71,9 @@ public class Club extends AbstractEntity {
     @JoinTable(name = "CLUB_BLOCKED")
     @OneToMany
     private Set<User> blocked;
+
+    @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
+    private List<Tournament> tournaments;
 
     /*** For Web scraping ***/
 
@@ -238,6 +242,14 @@ public class Club extends AbstractEntity {
 
     public void setRegistered(boolean registered) {
         this.registered = registered;
+    }
+
+    public List<Tournament> getTournaments() {
+        return tournaments;
+    }
+
+    public void setTournaments(List<Tournament> tournaments) {
+        this.tournaments = tournaments;
     }
 
     public void addEmail(String email){

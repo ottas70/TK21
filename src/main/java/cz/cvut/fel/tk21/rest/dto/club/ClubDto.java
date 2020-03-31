@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToTime;
+import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
+import cz.cvut.fel.tk21.rest.dto.tournament.TournamentDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -45,6 +47,8 @@ public class ClubDto {
 
     private boolean isRegistered;
 
+    private List<TournamentDto> tournaments;
+
     public ClubDto() {
     }
 
@@ -69,6 +73,7 @@ public class ClubDto {
         this.numOfRequests = numOfRequests;
         this.isScraped = club.isWebScraped();
         this.isRegistered = club.isRegistered();
+        this.tournaments = club.getTournaments().stream().map(TournamentDto::new).collect(Collectors.toList());
     }
 
     public int getId() {
@@ -191,6 +196,14 @@ public class ClubDto {
 
     public void setRegistered(boolean registered) {
         isRegistered = registered;
+    }
+
+    public List<TournamentDto> getTournaments() {
+        return tournaments;
+    }
+
+    public void setTournaments(List<TournamentDto> tournaments) {
+        this.tournaments = tournaments;
     }
 
     @JsonIgnore

@@ -120,6 +120,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Reservation createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
+        if(!club.isRegistered()) throw new ValidationException("Tento klub není registrován");
         checkReservationPermission(club);
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
         if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
