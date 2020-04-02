@@ -73,7 +73,7 @@ public class ClubDto {
         this.numOfRequests = numOfRequests;
         this.isScraped = club.isWebScraped();
         this.isRegistered = club.isRegistered();
-        this.tournaments = club.getTournaments().stream().map(TournamentDto::new).collect(Collectors.toList());
+        this.tournaments = club.getTournaments().stream().sorted(Tournament.getComparator()).map(TournamentDto::new).collect(Collectors.toList());
     }
 
     public int getId() {

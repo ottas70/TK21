@@ -5,6 +5,8 @@ import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToDate;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.Comparator;
 
 @Entity
 public class Tournament extends AbstractEntity {
@@ -98,5 +100,19 @@ public class Tournament extends AbstractEntity {
 
     public void setClub(Club club) {
         this.club = club;
+    }
+
+    public boolean isCompleted(){
+        return date.getFrom().isBefore(LocalDate.now()) && linkResults != null;
+    }
+
+    public LocalDate getStartDate(){
+        return date.getFrom();
+    }
+
+    public static Comparator<Tournament> getComparator(){
+        Comparator<Tournament> compareByCompletition = Comparator.comparing(Tournament::isCompleted);
+        Comparator<Tournament> compareByStartDate = Comparator.comparing(Tournament::getStartDate);
+        return compareByCompletition.thenComparing(compareByStartDate);
     }
 }
