@@ -2,11 +2,13 @@ package cz.cvut.fel.tk21.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
+import cz.cvut.fel.tk21.model.teams.Team;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "Users",
@@ -74,6 +76,10 @@ public class User extends AbstractEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Collection<Post> posts;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
+    private List<Team> teams;
 
     public String getName() {
         return name;
@@ -169,6 +175,14 @@ public class User extends AbstractEntity {
 
     public void setPosts(Collection<Post> posts) {
         this.posts = posts;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 
     public long getWebId() {

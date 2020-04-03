@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.model;
 
+import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.util.StringUtils;
 
@@ -18,7 +19,7 @@ public class Club extends AbstractEntity {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @Column(name = "nameSearch", nullable = false)
+    @Column(name = "nameSearch", nullable = false, unique = true)
     private String nameSearch;
 
     @ElementCollection
@@ -74,6 +75,9 @@ public class Club extends AbstractEntity {
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)
     private List<Tournament> tournaments;
+
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    private List<Team> teams;
 
     /*** For Web scraping ***/
 
@@ -226,6 +230,14 @@ public class Club extends AbstractEntity {
 
     public void setBlocked(Set<User> blocked) {
         this.blocked = blocked;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 
     public int getWebId() {

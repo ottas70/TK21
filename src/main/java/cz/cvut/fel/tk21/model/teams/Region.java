@@ -1,0 +1,5 @@
+package cz.cvut.fel.tk21.model.teams;
+
+public enum Region {
+    CR, PRAHA, STREDOCESKY, JIHOCESKY, ZAPADOCESKY, SEVEROCESKY, VYCHODOCESKY, JIHOMORAVSKY, SEVEROMORAVSKY;
+}

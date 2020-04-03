@@ -168,6 +168,9 @@ public class ClubScraper {
         Collection<String> emails = new ArrayList<>();
         if(email.equals("")) return emails;
         String[] split = email.split(",");
+        if(split.length == 1 && email.contains(";")){
+            split = email.split(";");
+        }
         for (String s : split){
             String trimmed = s.trim();
             if(StringUtils.isValidEmail(trimmed)){

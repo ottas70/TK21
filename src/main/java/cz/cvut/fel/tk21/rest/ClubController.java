@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,8 +38,9 @@ public class ClubController {
     private final UserService userService;
     private final ClubRelationService clubRelationService;
     private final RequestBodyValidator validator;
+    private final TeamCompetitionService teamCompetitionService;
 
-    public ClubController(ClubService clubService, VerificationRequestService verificationRequestService, OpeningHoursService openingHoursService, ReservationService reservationService, UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator) {
+    public ClubController(ClubService clubService, VerificationRequestService verificationRequestService, OpeningHoursService openingHoursService, ReservationService reservationService, UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, TeamCompetitionService teamCompetitionService) {
         this.clubService = clubService;
         this.verificationRequestService = verificationRequestService;
         this.openingHoursService = openingHoursService;
@@ -48,6 +48,7 @@ public class ClubController {
         this.userService = userService;
         this.clubRelationService = clubRelationService;
         this.validator = validator;
+        this.teamCompetitionService = teamCompetitionService;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -71,7 +72,8 @@ public class ClubController {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
         return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()), reservationService.isCurrentUserAllowedToCreateReservation(club.get()),
-                clubRelationService.isCurrentUserMemberOf(club.get()), verificationRequestService.getNumOfVerificationRequests(club.get()));
+                clubRelationService.isCurrentUserMemberOf(club.get()), verificationRequestService.getNumOfVerificationRequests(club.get()),
+                teamCompetitionService.getAllTeamCompetitionsInCurrentYear(club.get()));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

@@ -33,4 +33,17 @@ public class UserDao extends BaseDao<User>{
         return true;
     }
 
+    public Optional<User> getUserByWebId(long webId) {
+        try{
+            return Optional.ofNullable(
+                    em.createQuery("SELECT u From User u " +
+                            "WHERE u.webId = :webId", User.class)
+                            .setParameter("webId", webId)
+                            .getSingleResult()
+            );
+        } catch (NoResultException ex){
+            return Optional.empty();
+        }
+    }
+
 }

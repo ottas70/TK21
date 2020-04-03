@@ -6,6 +6,7 @@ import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToTime;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.rest.dto.court.CourtDto;
+import cz.cvut.fel.tk21.rest.dto.teams.CompetitionDto;
 import cz.cvut.fel.tk21.rest.dto.tournament.TournamentDto;
 
 import java.time.LocalDate;
@@ -49,10 +50,12 @@ public class ClubDto {
 
     private List<TournamentDto> tournaments;
 
+    private List<CompetitionDto> competitions;
+
     public ClubDto() {
     }
 
-    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests) {
+    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests, List<CompetitionDto> competitions) {
         this.id = club.getId();
         this.name = club.getName();
         this.desc = club.getDescription();
@@ -74,6 +77,7 @@ public class ClubDto {
         this.isScraped = club.isWebScraped();
         this.isRegistered = club.isRegistered();
         this.tournaments = club.getTournaments().stream().sorted(Tournament.getComparator()).map(TournamentDto::new).collect(Collectors.toList());
+        this.competitions = competitions;
     }
 
     public int getId() {
@@ -204,6 +208,14 @@ public class ClubDto {
 
     public void setTournaments(List<TournamentDto> tournaments) {
         this.tournaments = tournaments;
+    }
+
+    public List<CompetitionDto> getCompetitions() {
+        return competitions;
+    }
+
+    public void setCompetitions(List<CompetitionDto> competitions) {
+        this.competitions = competitions;
     }
 
     @JsonIgnore

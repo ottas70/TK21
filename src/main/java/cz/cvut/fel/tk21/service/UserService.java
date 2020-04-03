@@ -105,6 +105,11 @@ public class UserService extends BaseService<UserDao, User> {
         return dao.getUserByEmail(email);
     }
 
+    @Transactional
+    public Optional<User> findUserByWebId(long webId){
+        return dao.getUserByWebId(webId);
+    }
+
     @Transactional(readOnly = true)
     public User getCurrentUser(){
         if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) return null;

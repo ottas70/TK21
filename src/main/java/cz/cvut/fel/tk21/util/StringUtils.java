@@ -37,4 +37,9 @@ public class StringUtils {
                 .toString();
     }
 
+    public static boolean isTeamLetter(String letter){
+        return letter.equals("A") || letter.equals("B") || letter.equals("C") || letter.equals("D")
+                || letter.equals("E") || letter.equals("F") || letter.equals("G") || letter.equals("H");
+    }
+
 }
