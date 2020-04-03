@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.rest.dto.teams;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import cz.cvut.fel.tk21.model.teams.Match;
 
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ public class MatchDto {
 
     private String opponent;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private LocalDate date;
 
     private int round;
@@ -43,6 +45,7 @@ public class MatchDto {
         this.opponent = opponent;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     public LocalDate getDate() {
         return date;
     }

@@ -86,14 +86,14 @@ public class TeamCompetitionScraper {
                 if(indexMapping.get(i) == Region.CR && ageCategory == AgeCategory.ADULTS
                         && !name.contains("2.liga") && !name.contains("2. liga")) continue;
 
-                String link = baseUrl + cell.select("a").attr("href");
+                String link = cell.select("a").attr("href");
                 int webId = Integer.parseInt(link.split("/")[link.split("/").length - 1]);
 
                 TeamCompetition competition = new TeamCompetition();
                 competition.setName(name);
                 competition.setYear(year);
                 competition.setAgeCategory(ageCategory);
-                competition.setLink(link);
+                competition.setLink(link.isBlank() ? null : baseUrl + link);
                 competition.setWebId(webId);
                 competition.setRegion(indexMapping.get(i));
 
@@ -116,7 +116,7 @@ public class TeamCompetitionScraper {
             Elements cells = row.select("td");
             int ranking = Integer.parseInt(cells.get(0).select("div").first().html());
             String name = cells.get(1).select("a").first().html();
-            String link = baseUrl + cells.get(1).select("a").first().attr("href");
+            String link = cells.get(1).select("a").first().attr("href");
             int wins = Integer.parseInt(cells.get(3).select("div").first().html());
             int losses = Integer.parseInt(cells.get(4).select("div").first().html());
             int points = Integer.parseInt(cells.get(8).select("strong").first().html());
@@ -124,7 +124,7 @@ public class TeamCompetitionScraper {
             Team team = new Team();
             team.setName(name);
             team.setCompetition(competition);
-            team.setLink(link);
+            team.setLink(link.isBlank() ? null : baseUrl + link);
             team.setLosses(losses);
             team.setPoints(points);
             team.setWins(wins);
@@ -172,7 +172,7 @@ public class TeamCompetitionScraper {
             }
             int homePoints = Integer.parseInt(cells.get(startIndex + 3).select("strong").html().split(":")[0]);
             int awayPoints = Integer.parseInt(cells.get(startIndex + 3).select("strong").html().split(":")[1]);
-            String link = baseUrl + cells.get(startIndex + 6).select("a").attr("href");
+            String link = cells.get(startIndex + 6).select("a").attr("href");
 
             Match match = new Match();
             match.setHomeTeam(findTeamByName(teams, homeName));
@@ -181,7 +181,7 @@ public class TeamCompetitionScraper {
             match.setAwayPoints(awayPoints);
             match.setRound(round);
             match.setDate(date);
-            match.setDetailLink(link);
+            match.setDetailLink(link.isBlank() ? null : baseUrl + link);
 
             matchService.persist(match);
         }
