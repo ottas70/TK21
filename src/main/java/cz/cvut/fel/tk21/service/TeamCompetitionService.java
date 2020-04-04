@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.TeamCompetitionDao;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.teams.Match;
 import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
 import cz.cvut.fel.tk21.rest.dto.teams.CompetitionDto;
@@ -18,11 +19,13 @@ import java.util.Map;
 public class TeamCompetitionService extends BaseService<TeamCompetitionDao, TeamCompetition> {
 
     private final TeamService teamService;
+    private final MatchService matchService;
 
     @Autowired
-    protected TeamCompetitionService(TeamCompetitionDao dao, TeamService teamService) {
+    protected TeamCompetitionService(TeamCompetitionDao dao, TeamService teamService, MatchService matchService) {
         super(dao);
         this.teamService = teamService;
+        this.matchService = matchService;
     }
 
     public List<CompetitionDto> getAllTeamCompetitionsInCurrentYear(Club club){
@@ -38,7 +41,13 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
 
         List<CompetitionDto> result = new ArrayList<>();
         for (Map.Entry<TeamCompetition, List<Team>> entry : map.entrySet()) {
-           result.add(new CompetitionDto(entry.getKey(), entry.getValue()));
+            Map<Team, List<Match>> homeMatches = new HashMap<>();
+            Map<Team, List<Match>> awayMatches = new HashMap<>();
+            for (Team team : entry.getValue()){
+                homeMatches.put(team, matchService.findHomeMatchesByTeam(team));
+                awayMatches.put(team, matchService.findAwayMatchesByTeam(team));
+            }
+            result.add(new CompetitionDto(entry.getKey(), entry.getValue(), homeMatches, awayMatches));
         }
 
         return result;

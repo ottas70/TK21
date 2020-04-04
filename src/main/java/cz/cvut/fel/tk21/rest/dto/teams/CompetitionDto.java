@@ -1,10 +1,12 @@
 package cz.cvut.fel.tk21.rest.dto.teams;
 
+import cz.cvut.fel.tk21.model.teams.Match;
 import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
 import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CompetitionDto {
@@ -22,12 +24,12 @@ public class CompetitionDto {
     public CompetitionDto() {
     }
 
-    public CompetitionDto(TeamCompetition competition, List<Team> teams) {
+    public CompetitionDto(TeamCompetition competition, List<Team> teams, Map<Team, List<Match>> homeMatches, Map<Team, List<Match>> awayMatches) {
         this.name = competition.getName();
         this.year = competition.getYear();
         this.ageCategory = competition.getAgeCategory();
         this.link = competition.getLink();
-        this.teams = teams.stream().map(TeamDto::new).collect(Collectors.toList());
+        this.teams = teams.stream().map(t -> new TeamDto(t, homeMatches.get(t), awayMatches.get(t))).collect(Collectors.toList());
     }
 
     public String getName() {

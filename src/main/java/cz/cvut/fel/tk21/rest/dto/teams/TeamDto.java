@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.rest.dto.teams;
 
+import cz.cvut.fel.tk21.model.teams.Match;
 import cz.cvut.fel.tk21.model.teams.Team;
 
 import java.util.List;
@@ -26,15 +27,15 @@ public class TeamDto {
     public TeamDto() {
     }
 
-    public TeamDto(Team team) {
+    public TeamDto(Team team, List<Match> homeMatches, List<Match> awayMatches) {
         this.name = team.getName();
         this.ranking = team.getRanking();
         this.points = team.getPoints();
         this.wins = team.getWins();
         this.losses = team.getLosses();
         this.link = team.getLink();
-        this.homeMatches = team.getHomeMatches().stream().map(m -> new MatchDto(m, true)).collect(Collectors.toList());
-        this.awayMatches = team.getAwayMatches().stream().map(m -> new MatchDto(m, false)).collect(Collectors.toList());
+        this.homeMatches = homeMatches.stream().map(m -> new MatchDto(m, true)).collect(Collectors.toList());
+        this.awayMatches = awayMatches.stream().map(m -> new MatchDto(m, false)).collect(Collectors.toList());
     }
 
     public String getName() {
