@@ -39,8 +39,9 @@ public class ClubController {
     private final ClubRelationService clubRelationService;
     private final RequestBodyValidator validator;
     private final TeamCompetitionService teamCompetitionService;
+    private final TournamentService tournamentService;
 
-    public ClubController(ClubService clubService, VerificationRequestService verificationRequestService, OpeningHoursService openingHoursService, ReservationService reservationService, UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, TeamCompetitionService teamCompetitionService) {
+    public ClubController(ClubService clubService, VerificationRequestService verificationRequestService, OpeningHoursService openingHoursService, ReservationService reservationService, UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, TeamCompetitionService teamCompetitionService, TournamentService tournamentService) {
         this.clubService = clubService;
         this.verificationRequestService = verificationRequestService;
         this.openingHoursService = openingHoursService;
@@ -49,6 +50,7 @@ public class ClubController {
         this.clubRelationService = clubRelationService;
         this.validator = validator;
         this.teamCompetitionService = teamCompetitionService;
+        this.tournamentService = tournamentService;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -71,9 +73,15 @@ public class ClubController {
     public ClubDto getClub(@PathVariable("id") Integer id) {
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-        return new ClubDto(club.get(), clubService.isCurrentUserAllowedToManageThisClub(club.get()), reservationService.isCurrentUserAllowedToCreateReservation(club.get()),
-                clubRelationService.isCurrentUserMemberOf(club.get()), verificationRequestService.getNumOfVerificationRequests(club.get()),
-                teamCompetitionService.getAllTeamCompetitionsInCurrentYear(club.get()));
+        return new ClubDto(
+                club.get(),
+                clubService.isCurrentUserAllowedToManageThisClub(club.get()),
+                reservationService.isCurrentUserAllowedToCreateReservation(club.get()),
+                clubRelationService.isCurrentUserMemberOf(club.get()),
+                verificationRequestService.getNumOfVerificationRequests(club.get()),
+                tournamentService.findAllTournamentsByClub(club.get()),
+                teamCompetitionService.getAllTeamCompetitionsInCurrentYear(club.get())
+        );
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

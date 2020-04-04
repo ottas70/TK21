@@ -61,7 +61,7 @@ public class TeamCompetitionScraper {
             Document doc = loadCorrectYearDocument(document);
             int year = extractYear(doc);
 
-            logger.trace("Scraping competitions in " + " year " + year + " category " + entry.getKey().toString());
+            logger.trace("Scraping competitions in " + "year " + year + " category " + entry.getKey().toString());
 
             findAllCompetitionsInDocument(doc, entry.getKey(), year);
 

@@ -55,7 +55,7 @@ public class ClubDto {
     public ClubDto() {
     }
 
-    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests, List<CompetitionDto> competitions) {
+    public ClubDto(Club club, boolean isAllowedMng, boolean isAllowedRes, boolean isMember, int numOfRequests, List<Tournament> tournaments, List<CompetitionDto> competitions) {
         this.id = club.getId();
         this.name = club.getName();
         this.desc = club.getDescription();
@@ -76,7 +76,7 @@ public class ClubDto {
         this.numOfRequests = numOfRequests;
         this.isScraped = club.isWebScraped();
         this.isRegistered = club.isRegistered();
-        this.tournaments = club.getTournaments().stream().sorted(Tournament.getComparator()).map(TournamentDto::new).collect(Collectors.toList());
+        this.tournaments = tournaments.stream().sorted(Tournament.getComparator()).map(TournamentDto::new).collect(Collectors.toList());
         this.competitions = competitions;
     }
 

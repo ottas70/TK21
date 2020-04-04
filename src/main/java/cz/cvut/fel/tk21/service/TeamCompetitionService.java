@@ -31,6 +31,8 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
         Map<TeamCompetition, List<Team>> map = new HashMap<>();
         for (Team t : teams){
             map.put(t.getCompetition(), new ArrayList<>());
+        }
+        for (Team t : teams){
             map.get(t.getCompetition()).add(t);
         }
 
