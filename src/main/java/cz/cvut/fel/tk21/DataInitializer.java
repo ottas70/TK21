@@ -158,9 +158,9 @@ public class DataInitializer implements ApplicationRunner {
         }
 
         try {
-            //clubScraper.findAllClubs();
-            //tournamentScraper.findAllTournaments();
-            //teamCompetitionScraper.findAllCompetitions();
+            clubScraper.findAllClubs();
+            tournamentScraper.findAllTournaments();
+            teamCompetitionScraper.findAllCompetitions();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
