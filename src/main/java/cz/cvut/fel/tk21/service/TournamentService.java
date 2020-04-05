@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.TournamentDao;
 import cz.cvut.fel.tk21.model.Club;
+import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,10 @@ public class TournamentService extends BaseService<TournamentDao, Tournament> {
 
     public List<Tournament> findAllTournamentsByClub(Club club){
         return dao.findTournamentsByClub(club);
+    }
+
+    public List<Tournament> findAllUpcomingTournamentsForUser(User user){
+        return dao.findAllUpcomingTournamentsForUser(user);
     }
 
 }

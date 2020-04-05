@@ -5,6 +5,7 @@ import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.model.tournament.Gender;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.model.tournament.TournamentType;
+import cz.cvut.fel.tk21.rest.dto.post.ClubPostDto;
 
 public class TournamentDto {
 
@@ -22,6 +23,8 @@ public class TournamentDto {
 
     private String linkResults;
 
+    private ClubPostDto club;
+
     public TournamentDto() {
     }
 
@@ -33,6 +36,9 @@ public class TournamentDto {
         this.gender = tournament.getGender();
         this.linkInfo = tournament.getLinkInfo();
         this.linkResults = tournament.getLinkResults();
+        if(tournament.getClub() != null){
+            this.club = new ClubPostDto(tournament.getClub());
+        }
     }
 
     public int getId() {
@@ -89,5 +95,13 @@ public class TournamentDto {
 
     public void setLinkResults(String linkResults) {
         this.linkResults = linkResults;
+    }
+
+    public ClubPostDto getClub() {
+        return club;
+    }
+
+    public void setClub(ClubPostDto club) {
+        this.club = club;
     }
 }

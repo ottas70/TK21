@@ -96,4 +96,37 @@ public class PostDao extends BaseDao<Post>{
         return typedQuery.getSingleResult();
     }
 
+    public List<Post> findPostsForUser(User user, int page, int size){
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Post> query = cb.createQuery(Post.class);
+        Root<Post> root = query.from(Post.class);
+
+        query.select(root);
+        ParameterExpression<User> param = cb.parameter(User.class);
+        query.where(cb.equal(root.get("club").get("users").get("user"), param));
+        query.orderBy(cb.desc(root.get("createdAt")));
+
+        TypedQuery<Post> typedQuery = em.createQuery(query);
+        typedQuery.setParameter(param, user);
+        typedQuery.setFirstResult((page-1) * size);
+        typedQuery.setMaxResults(size);
+
+        return typedQuery.getResultList();
+    }
+
+    public long countPostsForUser(User user){
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<Post> root = query.from(Post.class);
+
+        query.select(cb.count(root));
+        ParameterExpression<User> param = cb.parameter(User.class);
+        query.where(cb.equal(root.get("club").get("users").get("user"), param));
+
+        TypedQuery<Long> typedQuery = em.createQuery(query);
+        typedQuery.setParameter(param, user);
+
+        return typedQuery.getSingleResult();
+    }
+
 }

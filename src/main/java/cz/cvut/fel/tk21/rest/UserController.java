@@ -10,12 +10,14 @@ import cz.cvut.fel.tk21.model.security.UserDetails;
 import cz.cvut.fel.tk21.rest.dto.Info;
 import cz.cvut.fel.tk21.rest.dto.club.BasicClubInfoDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRelationshipDto;
+import cz.cvut.fel.tk21.rest.dto.post.PostsWithClubPaginatedDto;
+import cz.cvut.fel.tk21.rest.dto.teams.CompetitionDto;
+import cz.cvut.fel.tk21.rest.dto.tournament.TournamentDto;
 import cz.cvut.fel.tk21.rest.dto.user.PasswordChangeDto;
+import cz.cvut.fel.tk21.rest.dto.user.UserCompetitionsDto;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
-import cz.cvut.fel.tk21.service.ClubRelationService;
-import cz.cvut.fel.tk21.service.ClubService;
-import cz.cvut.fel.tk21.service.UserService;
+import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,17 +35,25 @@ import java.util.stream.Collectors;
 @RequestMapping("api/user")
 public class UserController {
 
+    private static final String DEFAULT_SIZE_OF_PAGE = "20";
+
     private final UserService userService;
     private final ClubRelationService clubRelationService;
     private final RequestBodyValidator validator;
     private final ClubService clubService;
+    private final PostService postService;
+    private final TeamCompetitionService teamCompetitionService;
+    private final TournamentService tournamentService;
 
     @Autowired
-    public UserController(UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, ClubService clubService) {
+    public UserController(UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, ClubService clubService, PostService postService, TeamCompetitionService teamCompetitionService, TournamentService tournamentService) {
         this.userService = userService;
         this.clubRelationService = clubRelationService;
         this.validator = validator;
         this.clubService = clubService;
+        this.postService = postService;
+        this.teamCompetitionService = teamCompetitionService;
+        this.tournamentService = tournamentService;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -133,6 +143,35 @@ public class UserController {
         clubRelationService.setRootClub(club.get());
 
         return ResponseEntity.noContent().build();
+    }
+
+    /* *********************************
+     * USER WALL
+     ********************************* */
+
+    @RequestMapping(value = "/wall/posts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PostsWithClubPaginatedDto findUsersPostsInWall(
+            @RequestParam(value="page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value="size", required = false, defaultValue = DEFAULT_SIZE_OF_PAGE) Integer size){
+        if(size < 1) throw new BadRequestException("Size cannot be less than one");
+        if(page < 1) page = 1;
+
+        User user = userService.getCurrentUser();
+        if(user == null) throw new UnauthorizedException("Přístup zamítnut");
+
+        return postService.findPostsPaginatedForUser(user, page, size);
+    }
+
+    @RequestMapping(value = "/wall/competitions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserCompetitionsDto findUsersUpcomingCompetitions(){
+        User user = userService.getCurrentUser();
+        if(user == null) throw new UnauthorizedException("Přístup zamítnut");
+
+        List<CompetitionDto> teamCompetitions = teamCompetitionService.getAllUpcomingTeamCompetitionsInCurrentYearForUser(user);
+        List<TournamentDto> tournaments = tournamentService.findAllUpcomingTournamentsForUser(user)
+                .stream().map(TournamentDto::new).collect(Collectors.toList());
+
+        return new UserCompetitionsDto(teamCompetitions, tournaments);
     }
 
 }

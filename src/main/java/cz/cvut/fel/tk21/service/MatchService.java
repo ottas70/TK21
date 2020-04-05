@@ -6,6 +6,7 @@ import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,6 +22,14 @@ public class MatchService extends BaseService<MatchDao, Match> {
 
     public List<Match> findAwayMatchesByTeam(Team team){
         return dao.findAwayMatchesByTeam(team);
+    }
+
+    public List<Match> findHomeMatchesByTeamAfterDate(Team team, LocalDate date){
+        return dao.findHomeMatchesByTeamAfterDate(team, date);
+    }
+
+    public List<Match> findAwayMatchesByTeamAfterDate(Team team, LocalDate date){
+        return dao.findAwayMatchesByTeamAfterDate(team, date);
     }
 
 }

@@ -105,6 +105,14 @@ public class PostService extends BaseService<PostDao, Post> {
         return new PostsWithClubPaginatedDto(posts, page, lastPage);
     }
 
+    @Transactional(readOnly = true)
+    public PostsWithClubPaginatedDto findPostsPaginatedForUser(User user, int page, int size){
+        List<PostWithClubDto> posts = dao.findPostsForUser(user, page, size)
+                .stream().map(PostWithClubDto::new).collect(Collectors.toList());
+        int lastPage = (int) Math.ceil(dao.countPostsForUser(user) / (double)size);
+        return new PostsWithClubPaginatedDto(posts, page, lastPage);
+    }
+
     @Transactional
     public List<ImageDetail> uploadPostImages(Post post, MultipartFile[] files){
         if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
