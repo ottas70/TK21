@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 import cz.cvut.fel.tk21.model.teams.Team;
+import cz.cvut.fel.tk21.model.tournament.Tournament;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -48,11 +49,6 @@ public class User extends AbstractEntity {
     @OneToOne
     private Club rootClub;
 
-    /*** For Web scraping ***/
-    @JsonIgnore
-    @Column
-    private long webId;
-
     @JsonIgnore
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private ConfirmationToken confirmationToken;
@@ -80,6 +76,15 @@ public class User extends AbstractEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
     private List<Team> teams;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "players")
+    private List<Tournament> tournaments;
+
+    /*** For Web scraping ***/
+    @JsonIgnore
+    @Column
+    private long webId;
 
     public String getName() {
         return name;
@@ -183,6 +188,14 @@ public class User extends AbstractEntity {
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
+    }
+
+    public List<Tournament> getTournaments() {
+        return tournaments;
+    }
+
+    public void setTournaments(List<Tournament> tournaments) {
+        this.tournaments = tournaments;
     }
 
     public long getWebId() {

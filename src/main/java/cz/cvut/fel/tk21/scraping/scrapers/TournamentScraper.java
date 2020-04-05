@@ -3,12 +3,14 @@ package cz.cvut.fel.tk21.scraping.scrapers;
 import cz.cvut.fel.tk21.exception.WebScrapingException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToDate;
+import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.model.tournament.Gender;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.model.tournament.TournamentType;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.TournamentService;
+import cz.cvut.fel.tk21.service.UserService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,9 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class TournamentScraper {
@@ -33,10 +33,12 @@ public class TournamentScraper {
 
     private final TournamentService tournamentService;
     private final ClubService clubService;
+    private final UserService userService;
 
-    public TournamentScraper(TournamentService tournamentService, ClubService clubService) {
+    public TournamentScraper(TournamentService tournamentService, ClubService clubService, UserService userService) {
         this.tournamentService = tournamentService;
         this.clubService = clubService;
+        this.userService = userService;
         this.createUrlMap();
     }
 
@@ -74,7 +76,7 @@ public class TournamentScraper {
         logger.trace("Tournament scraping finished");
     }
 
-    private void findAllTournamentsInDocument(Document doc, AgeCategory ageCategory, int year, boolean winter){
+    private void findAllTournamentsInDocument(Document doc, AgeCategory ageCategory, int year, boolean winter) throws IOException {
         Element tournamentTable = doc.select("table tbody").first();
         assertNonNullElement(tournamentTable, "Tournament Table");
         Elements rows = tournamentTable.select("tr");
@@ -110,7 +112,7 @@ public class TournamentScraper {
         }
     }
 
-    private Tournament createTournament(String date, String id, String clubName, String infoLink, String resultsLink, AgeCategory ageCategory, Gender gender, int year, boolean winter){
+    private Tournament createTournament(String date, String id, String clubName, String infoLink, String resultsLink, AgeCategory ageCategory, Gender gender, int year, boolean winter) throws IOException {
         Tournament tournament = new Tournament();
         tournament.setDate(extractDate(date, year, winter));
         tournament.setAgeCategory(ageCategory);
@@ -120,7 +122,36 @@ public class TournamentScraper {
         tournament.setLinkInfo(infoLink.isBlank() ? null : baseUrl + infoLink);
         tournament.setLinkResults(resultsLink.isBlank() ? null : baseUrl + resultsLink);
         tournament.setClub(extractClub(clubName));
+        tournament.setPlayers(findAllPlayers(tournament));
         return tournament;
+    }
+
+    private List<User> findAllPlayers(Tournament tournament) throws IOException {
+        List<User> players = new ArrayList<>();
+        String link = tournament.getLinkInfo();
+        if(link == null) return players;
+
+        Document doc = Jsoup.connect(link).get();
+
+        Elements tables = doc.select("table tbody");
+        if(tables.size() < 3) return players;
+        Element playerTable = tables.get(2);
+        assertNonNullElement(playerTable, "Tournament Table");
+        Elements rows = playerTable.select("tr");
+
+        for (Element row : rows) {
+            Elements cells = row.select("td");
+            if(cells.size() == 1) return players;
+
+            if(cells.get(1).select("a").isEmpty()) continue;
+            String playerLink = cells.get(1).select("a").first().attr("href");
+            long webId = Long.parseLong(playerLink.split("/")[playerLink.split("/").length - 1]);
+
+            Optional<User> user = userService.findUserByWebId(webId);
+            user.ifPresent(players::add);
+        }
+
+        return players;
     }
 
     private FromToDate extractDate(String dateString, int year, boolean winter){

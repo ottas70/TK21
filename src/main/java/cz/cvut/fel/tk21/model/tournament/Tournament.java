@@ -3,10 +3,12 @@ package cz.cvut.fel.tk21.model.tournament;
 import cz.cvut.fel.tk21.model.AbstractEntity;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.FromToDate;
+import cz.cvut.fel.tk21.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.List;
 
 @Entity
 public class Tournament extends AbstractEntity {
@@ -37,6 +39,9 @@ public class Tournament extends AbstractEntity {
 
     @ManyToOne
     private Club club;
+
+    @ManyToMany
+    private List<User> players;
 
     public FromToDate getDate() {
         return date;
@@ -100,6 +105,14 @@ public class Tournament extends AbstractEntity {
 
     public void setClub(Club club) {
         this.club = club;
+    }
+
+    public List<User> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<User> players) {
+        this.players = players;
     }
 
     public boolean isCompleted(){
