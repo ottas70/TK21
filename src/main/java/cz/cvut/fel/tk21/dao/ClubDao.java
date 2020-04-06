@@ -140,4 +140,10 @@ public class ClubDao extends BaseDao<Club>{
                 .getResultList();
     }
 
+    public List<Club> findAllScrapedClubs(){
+        return em.createQuery("SELECT c from Club c " +
+                "WHERE c.webId <> 0", Club.class)
+                .getResultList();
+    }
+
 }

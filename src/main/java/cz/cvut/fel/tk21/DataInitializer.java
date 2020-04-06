@@ -1,14 +1,10 @@
 package cz.cvut.fel.tk21;
 
 import cz.cvut.fel.tk21.model.*;
-import cz.cvut.fel.tk21.scraping.scrapers.ClubScraper;
-import cz.cvut.fel.tk21.scraping.scrapers.PlayerScraper;
-import cz.cvut.fel.tk21.scraping.scrapers.TeamCompetitionScraper;
-import cz.cvut.fel.tk21.scraping.scrapers.TournamentScraper;
+import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
-import cz.cvut.fel.tk21.ws.dto.PlayerInfoMessageBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +13,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,21 +27,15 @@ public class DataInitializer implements ApplicationRunner {
     private final ClubService clubService;
     private final ClubRelationService clubRelationService;
     private final Random random;
+    private final WebScraper webScraper;
 
     @Autowired
-    private ClubScraper clubScraper;
-    @Autowired
-    private PlayerScraper playerScraper;
-    @Autowired
-    private TournamentScraper tournamentScraper;
-    @Autowired
-    private TeamCompetitionScraper teamCompetitionScraper;
-
-    public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random) {
+    public DataInitializer(UserService userService, ClubService clubService, ClubRelationService clubRelationService, Random random, WebScraper webScraper) {
         this.userService = userService;
         this.clubService = clubService;
         this.clubRelationService = clubRelationService;
         this.random = random;
+        this.webScraper = webScraper;
     }
 
 
@@ -177,21 +165,8 @@ public class DataInitializer implements ApplicationRunner {
             addNumberedUserInClub(i, null);
         }
 
-        try {
-            clubScraper.findAllClubs();
-
-            var clubZasova = clubService.findClubByName("TK Zašová");
-            ClubRelation relation3 = new ClubRelation();
-            relation3.setClub(clubZasova.get());
-            relation3.setUser(userZasova);
-            relation3.addRole(UserRole.PROFESSIONAL_PLAYER);
-            clubRelationService.persist(relation3);
-
-            tournamentScraper.findAllTournaments();
-            teamCompetitionScraper.findAllCompetitions();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        //Initial web scraping
+        webScraper.scrapeCzTenis();
     }
 
     private OpeningHours getInitialOpeningHours(){

@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.exception.WebScrapingException;
 import cz.cvut.fel.tk21.model.Address;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.teams.Region;
+import cz.cvut.fel.tk21.scraping.service.ClubScrapingService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.util.StringUtils;
 import org.jsoup.Jsoup;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -28,13 +30,16 @@ public class ClubScraper {
     private final Region[] clubRegions = {Region.PRAHA, Region.STREDOCESKY, Region.JIHOCESKY,
             Region.ZAPADOCESKY, Region.SEVEROCESKY, Region.VYCHODOCESKY,
             Region.JIHOMORAVSKY, Region.SEVEROMORAVSKY};
-
-    @Autowired
-    private ClubService clubService;
-
     private static final String url = "http://cztenis.cz/adresar-klubu";
 
-    public void findAllClubs() throws IOException {
+    private final ClubScrapingService clubScrapingService;
+
+    @Autowired
+    public ClubScraper(ClubScrapingService clubScrapingService) {
+        this.clubScrapingService = clubScrapingService;
+    }
+
+    public void updateClubs(List<Club> toBeFound) throws IOException {
         logger.trace("Club scraping started");
 
         Document doc = Jsoup.connect(url).get();
@@ -48,26 +53,19 @@ public class ClubScraper {
 
             for (Element row : rows) {
                 Elements cells = row.select("td");
-                String webId = cells.get(0).select("a").html();
-                Club club = loadClubFromId(Integer.parseInt(webId));
-                Optional<Club> storedClubOptional = clubService.findClubByWebId(Integer.parseInt(webId));
-                if (club != null) {
-                    if (storedClubOptional.isEmpty()) {
-                        clubService.persist(club);
-                    } else {
-                        Club storedClub = storedClubOptional.get();
-                        club.setId(storedClub.getId());
-                        clubService.update(club);
-                    }
-                } else {
-                    if (storedClubOptional.isPresent()) {
-                        Club storedClub = storedClubOptional.get();
-                        storedClub.setWebId(0);
-                        clubService.update(storedClub);
-                    }
-                }
+                String webIdString = cells.get(0).select("a").html();
+                int webId = Integer.parseInt(webIdString);
+
+                Club found = loadClubFromId(webId);
+                Club stored = toBeFound.stream().filter(c -> c.getWebId() == webId).findFirst().orElse(null);
+
+                clubScrapingService.handleUpdate(found, stored);
+                if(stored != null) toBeFound.remove(stored);
             }
         }
+
+        clubScrapingService.handleNonFoundedClubs(toBeFound);
+
         logger.trace("Club scraping finished");
     }
 

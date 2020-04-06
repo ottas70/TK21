@@ -145,24 +145,29 @@ public class ClubService extends BaseService<ClubDao, Club> {
         return new ClubSearchDto(clubs, page, lastPage);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Club> findClubByWebId(int webId){
         return dao.findClubByWebId(webId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Club> findClubByName(String name){
         return dao.findClubByName(name);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Club> findClubByNameCaseInsensitive(String name){
         return dao.findClubByNameCaseInsensitive(name);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Club> findAllClubsByContactEmail(String email){
         return dao.findAllByContactEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Club> findAllScrapedClubs(){
+        return dao.findAllScrapedClubs();
     }
 
     @Transactional
