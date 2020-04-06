@@ -67,6 +67,7 @@ public class DataInitializer implements ApplicationRunner {
         user2.setEmail("ondramares@ondramares.com");
         user2.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
         user2.setVerifiedAccount(true);
+        user2.setWebId(1008755);
         userService.persist(user2);
 
         User user3 = new User();
@@ -84,6 +85,23 @@ public class DataInitializer implements ApplicationRunner {
         user4.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
         user4.setVerifiedAccount(true);
         userService.persist(user4);
+
+        User user5 = new User();
+        user5.setName("Tenis");
+        user5.setSurname("Zasova TEST");
+        user5.setEmail("tkzasova@valachnet.cz");
+        user5.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
+        user5.setVerifiedAccount(true);
+        userService.persist(user5);
+
+        User userZasova = new User();
+        userZasova.setName("Lukáš");
+        userZasova.setSurname("Korytár");
+        userZasova.setEmail("ondra.mares@email.cz");
+        userZasova.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
+        userZasova.setVerifiedAccount(true);
+        userZasova.setWebId(37927);
+        userService.persist(userZasova);
 
         Club club = new Club();
         club.setId(1);
@@ -161,6 +179,14 @@ public class DataInitializer implements ApplicationRunner {
 
         try {
             clubScraper.findAllClubs();
+
+            var clubZasova = clubService.findClubByName("TK Zašová");
+            ClubRelation relation3 = new ClubRelation();
+            relation3.setClub(clubZasova.get());
+            relation3.setUser(userZasova);
+            relation3.addRole(UserRole.PROFESSIONAL_PLAYER);
+            clubRelationService.persist(relation3);
+
             tournamentScraper.findAllTournaments();
             teamCompetitionScraper.findAllCompetitions();
         } catch (Exception e) {
