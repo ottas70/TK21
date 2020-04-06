@@ -7,6 +7,7 @@ import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.AuthenticationRequest;
 import cz.cvut.fel.tk21.rest.dto.Info;
 import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
+import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.service.security.UserDetailsService;
@@ -32,6 +33,9 @@ public class AuthenticationController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final ClubRelationService clubRelationService;
+
+    @Autowired
+    private WebScraper webScraper;
 
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, UserService userService, JwtUtil jwtUtil, ClubRelationService clubRelationService) {
@@ -92,6 +96,16 @@ public class AuthenticationController {
         return ResponseEntity.badRequest().build();
     }
 
+    //TODO remove
+    @RequestMapping(value="/scrape", method = RequestMethod.GET)
+    public ResponseEntity<?> scrape() {
+        Runnable runnable = () -> {
+          webScraper.scrapeCzTenis();
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
 
+        return ResponseEntity.ok().build();
+    }
 
 }
