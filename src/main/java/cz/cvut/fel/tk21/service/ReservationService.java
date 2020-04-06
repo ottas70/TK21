@@ -121,6 +121,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Reservation createReservationFromDTO(CreateReservationDto dto, Club club, LocalDate date){
         if(!club.isRegistered()) throw new ValidationException("Tento klub není registrován");
+        if(!club.isReservationsEnabled()) throw new ValidationException("Tento klub nepodporuje rezervace");
         checkReservationPermission(club);
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
         if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
@@ -169,6 +170,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public boolean isUserAllowedToCreateReservation(User user, Club club){
+        if(!club.isReservationsEnabled()) return false;
         if(club.getReservationPermission() == ReservationPermission.ANYONE) return true;
         if(user != null && club.getReservationPermission() == ReservationPermission.SIGNED) return true;
         if(club.getReservationPermission() ==  ReservationPermission.CLUB_MEMBERS){
@@ -203,6 +205,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
 
     @Transactional
     public boolean isUserAllowedToCreateCyclicReservation(Club club, User user){
+        if(!club.isReservationsEnabled()) return false;
         if(user == null) return false;
         return clubService.isUserAllowedToManageThisClub(user, club);
     }

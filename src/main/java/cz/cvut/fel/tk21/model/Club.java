@@ -42,6 +42,9 @@ public class Club extends AbstractEntity {
     private ReservationPermission reservationPermission;
 
     @Column
+    private boolean reservationsEnabled;
+
+    @Column
     private int minReservationTime;
 
     @Column
@@ -254,6 +257,14 @@ public class Club extends AbstractEntity {
 
     public void setRegistered(boolean registered) {
         this.registered = registered;
+    }
+
+    public boolean isReservationsEnabled() {
+        return reservationsEnabled;
+    }
+
+    public void setReservationsEnabled(boolean reservationsEnabled) {
+        this.reservationsEnabled = reservationsEnabled;
     }
 
     public List<Tournament> getTournaments() {

@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.*;
 import cz.cvut.fel.tk21.rest.dto.*;
 import cz.cvut.fel.tk21.rest.dto.club.*;
 import cz.cvut.fel.tk21.rest.dto.club.member.MemberDto;
+import cz.cvut.fel.tk21.rest.dto.club.settings.EnableReservationsDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MaxReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
@@ -284,6 +285,15 @@ public class ClubController {
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
         clubService.updateContact(club.get(), contactDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/properties/enableReservations", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> enableReservations(@PathVariable("id") Integer id, @RequestBody EnableReservationsDto dto){
+        final Optional<Club> club = clubService.find(id);
+        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
+
+        clubService.enableReservations(club.get(), dto.isEnable());
         return ResponseEntity.noContent().build();
     }
 

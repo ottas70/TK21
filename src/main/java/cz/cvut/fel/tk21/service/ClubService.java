@@ -64,6 +64,7 @@ public class ClubService extends BaseService<ClubDao, Club> {
         club.setMinReservationTime(15);
         club.setMaxReservationTime(180);
         club.setRegistered(true);
+        club.setReservationsEnabled(true);
 
         //links signed user with this club as admin
         User user = userService.getCurrentUser();
@@ -262,6 +263,13 @@ public class ClubService extends BaseService<ClubDao, Club> {
         }
         club.setWeb(contactDto.getWeb());
         club.setTelephone(contactDto.getTelephone());
+        this.update(club);
+    }
+
+    @Transactional
+    public void enableReservations(Club club, boolean enable){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+        club.setReservationsEnabled(enable);
         this.update(club);
     }
 

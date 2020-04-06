@@ -36,6 +36,8 @@ public class ClubDto {
 
     private ContactDto contact;
 
+    private boolean reservationsEnabled;
+
     private boolean isAllowedMng;
 
     private boolean isAllowedRes;
@@ -70,6 +72,7 @@ public class ClubDto {
         club.getOpeningHours().getSpecialDaysInNextDays(14)
                 .forEach((k,v) -> this.specialDays.add(new SpecialOpeningHoursDto(k, v.getFrom(), v.getTo())));
         this.contact = new ContactDto(club);
+        this.reservationsEnabled = club.isReservationsEnabled();
         this.isAllowedMng = isAllowedMng;
         this.isAllowedRes = isAllowedRes;
         this.isMember = isMember;
@@ -150,6 +153,14 @@ public class ClubDto {
 
     public void setContact(ContactDto contact) {
         this.contact = contact;
+    }
+
+    public boolean isReservationsEnabled() {
+        return reservationsEnabled;
+    }
+
+    public void setReservationsEnabled(boolean reservationsEnabled) {
+        this.reservationsEnabled = reservationsEnabled;
     }
 
     @JsonProperty(value="isAllowedMng")
