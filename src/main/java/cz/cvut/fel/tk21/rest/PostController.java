@@ -52,7 +52,7 @@ public class PostController {
         final Optional<Post> post = postService.find(post_id);
         post.orElseThrow(() -> new NotFoundException("Příspěvek nebyl nalezen"));
 
-        return new PostDto(post.get());
+        return new PostDto(post.get(), clubService.isCurrentUserAllowedToManageThisClub(post.get().getClub()));
     }
 
     @RequestMapping(value = "/club/{club_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -92,7 +92,7 @@ public class PostController {
 
         Post persistedPost = postService.createPostFromDto(postDto, club.get());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new PostDto(persistedPost));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new PostDto(persistedPost, true));
     }
 
     @RequestMapping(value = "/{post_id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -26,15 +26,18 @@ public class PostDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Collection<ImageDetail> images;
 
+    private boolean canEdit;
+
     public PostDto() {
     }
 
-    public PostDto(Post post){
+    public PostDto(Post post, boolean canEdit){
         this.id = post.getId();
         this.created_at = new CreatedAtDto(post.getCreatedAt());
         this.title = post.getTitle();
         this.description = post.getDescription();
         this.images = post.getImages();
+        this.canEdit = canEdit;
     }
 
     public int getId() {
@@ -75,6 +78,14 @@ public class PostDto {
 
     public void setImages(Collection<ImageDetail> images) {
         this.images = images;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
     }
 
     @JsonIgnore

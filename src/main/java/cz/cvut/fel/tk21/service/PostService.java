@@ -92,7 +92,9 @@ public class PostService extends BaseService<PostDao, Post> {
     @Transactional(readOnly = true)
     public PostsPaginatedDto findPostsPaginatedByClub(Club club, int page, int size) {
         List<PostDto> posts = dao.findPostsByClub(club, page, size)
-                .stream().map(PostDto::new).collect(Collectors.toList());
+                .stream()
+                .map(p -> new PostDto(p, clubService.isCurrentUserAllowedToManageThisClub(p.getClub())))
+                .collect(Collectors.toList());
         int lastPage = (int) Math.ceil(dao.countPostsByClub(club) / (double)size);
         return new PostsPaginatedDto(posts, page, lastPage);
     }
@@ -100,7 +102,9 @@ public class PostService extends BaseService<PostDao, Post> {
     @Transactional(readOnly = true)
     public PostsWithClubPaginatedDto findPostsPaginatedByUser(User user, int page, int size) {
         List<PostWithClubDto> posts = dao.findPostsByUser(user, page, size)
-                .stream().map(PostWithClubDto::new).collect(Collectors.toList());
+                .stream()
+                .map(p -> new PostWithClubDto(p, clubService.isCurrentUserAllowedToManageThisClub(p.getClub())))
+                .collect(Collectors.toList());
         int lastPage = (int) Math.ceil(dao.countPostsByUser(user) / (double)size);
         return new PostsWithClubPaginatedDto(posts, page, lastPage);
     }
@@ -108,7 +112,9 @@ public class PostService extends BaseService<PostDao, Post> {
     @Transactional(readOnly = true)
     public PostsWithClubPaginatedDto findPostsPaginatedForUser(User user, int page, int size){
         List<PostWithClubDto> posts = dao.findPostsForUser(user, page, size)
-                .stream().map(PostWithClubDto::new).collect(Collectors.toList());
+                .stream()
+                .map(p -> new PostWithClubDto(p, clubService.isCurrentUserAllowedToManageThisClub(p.getClub())))
+                .collect(Collectors.toList());
         int lastPage = (int) Math.ceil(dao.countPostsForUser(user) / (double)size);
         return new PostsWithClubPaginatedDto(posts, page, lastPage);
     }

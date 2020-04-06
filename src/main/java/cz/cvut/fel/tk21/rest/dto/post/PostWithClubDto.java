@@ -28,16 +28,19 @@ public class PostWithClubDto {
 
     private ClubPostDto club;
 
+    private boolean canEdit;
+
     public PostWithClubDto() {
     }
 
-    public PostWithClubDto(Post post){
+    public PostWithClubDto(Post post, boolean canEdit){
         this.id = post.getId();
         this.created_at = new CreatedAtDto(post.getCreatedAt());
         this.title = post.getTitle();
         this.description = post.getDescription();
         this.images = post.getImages();
         this.club = new ClubPostDto(post.getClub());
+        this.canEdit = canEdit;
     }
 
     public int getId() {
@@ -86,5 +89,13 @@ public class PostWithClubDto {
 
     public void setClub(ClubPostDto club) {
         this.club = club;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
     }
 }
