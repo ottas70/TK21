@@ -2,10 +2,12 @@ package cz.cvut.fel.tk21.rest.dto.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.cvut.fel.tk21.model.ImageDetail;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.rest.dto.CreatedAtDto;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 import java.util.Map;
 
 public class PostWithClubDto {
@@ -21,6 +23,9 @@ public class PostWithClubDto {
 
     private Map<String, Object> description;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Collection<ImageDetail> images;
+
     private ClubPostDto club;
 
     public PostWithClubDto() {
@@ -31,6 +36,7 @@ public class PostWithClubDto {
         this.created_at = new CreatedAtDto(post.getCreatedAt());
         this.title = post.getTitle();
         this.description = post.getDescription();
+        this.images = post.getImages();
         this.club = new ClubPostDto(post.getClub());
     }
 
@@ -64,6 +70,14 @@ public class PostWithClubDto {
 
     public void setDescription(Map<String, Object> description) {
         this.description = description;
+    }
+
+    public Collection<ImageDetail> getImages() {
+        return images;
+    }
+
+    public void setImages(Collection<ImageDetail> images) {
+        this.images = images;
     }
 
     public ClubPostDto getClub() {
