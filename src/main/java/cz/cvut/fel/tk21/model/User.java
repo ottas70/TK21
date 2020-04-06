@@ -205,4 +205,8 @@ public class User extends AbstractEntity {
     public void setWebId(long webId) {
         this.webId = webId;
     }
+
+    public boolean isScraped(){
+        return webId != 0;
+    }
 }

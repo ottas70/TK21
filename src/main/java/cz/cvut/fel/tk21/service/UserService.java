@@ -123,6 +123,7 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public void updateName(String name){
         User user = getCurrentUser();
+        if(user.isScraped()) throw new ValidationException("Při provázání s cztenis nelze jméno měnit");
         user.setName(name);
         this.update(user);
     }
