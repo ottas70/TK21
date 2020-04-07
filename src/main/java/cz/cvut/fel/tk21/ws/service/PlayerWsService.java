@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.ws.service;
 
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.exception.WebScrapingException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Invitation;
 import cz.cvut.fel.tk21.model.User;
@@ -92,7 +93,7 @@ public class PlayerWsService {
         return clubService.find(clubId);
     }
 
-    public List<PlayerInfoCzTenis> findPlayerOnCzTenis(PlayerInfoMessageBody dto, Club club) throws IOException {
+    public List<PlayerInfoCzTenis> findPlayerOnCzTenis(PlayerInfoMessageBody dto, Club club) throws IOException, WebScrapingException {
         return playerScraper.findPlayersOnCzTenis(dto, club);
     }
 

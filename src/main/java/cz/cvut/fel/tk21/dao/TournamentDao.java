@@ -51,7 +51,7 @@ public class TournamentDao extends BaseDao<Tournament>{
         LocalDate start = LocalDate.parse("01-01-" + year, DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         LocalDate end = LocalDate.parse("12-31-" + year, DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         return em.createQuery("SELECT t FROM Tournament t " +
-                "WHERE t.date >= :start AND t.date <= :end " +
+                "WHERE t.date.from >= :start AND t.date.from <= :end " +
                 "AND t.ageCategory = :category", Tournament.class)
                 .setParameter("start", start)
                 .setParameter("end", end)

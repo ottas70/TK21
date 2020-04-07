@@ -2,10 +2,7 @@ package cz.cvut.fel.tk21.ws.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import cz.cvut.fel.tk21.exception.BadRequestException;
-import cz.cvut.fel.tk21.exception.NotFoundException;
-import cz.cvut.fel.tk21.exception.UnauthorizedException;
-import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.exception.*;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.util.WsUtil;
@@ -103,7 +100,7 @@ public class PlayerWsHandler extends TextWebSocketHandler {
             GeneralMessage message = new GeneralMessage("PLAYER_RESULTS", players);
 
             sendMessageToSession(session, message);
-        } catch (RuntimeException | IOException ex){
+        } catch (RuntimeException | IOException | WebScrapingException ex){
             sendMessageToSession(session, new GeneralMessage("ERROR", new MessageDto(ex.getMessage())));
         }
     }

@@ -167,6 +167,7 @@ public class DataInitializer implements ApplicationRunner {
 
         //Initial web scraping
         webScraper.scrapeCzTenis();
+        webScraper.scrapeCzTenis();
     }
 
     private OpeningHours getInitialOpeningHours(){
