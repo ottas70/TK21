@@ -36,6 +36,10 @@ public class InvitationService extends BaseService<InvitationDao, Invitation>{
         return dao.findByConfirmationToken(token);
     }
 
+    public List<Invitation> findUnusedInvitationsAfterExpiration(){
+        return dao.findUnusedInvitationsAfterExpiration();
+    }
+
     @Transactional
     public Invitation createInvitation(Club club, User user, long webId){
         Invitation invite = new Invitation();

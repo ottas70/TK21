@@ -40,7 +40,7 @@ public class WebScraper {
     }
 
     //TODO configure this
-    //@Scheduled(cron = "0 25 12 * * *")
+    //@Scheduled(cron = "0 0 3 * * *")
     public void scrapeCzTenis(){
         try {
             scrapeClubs();
