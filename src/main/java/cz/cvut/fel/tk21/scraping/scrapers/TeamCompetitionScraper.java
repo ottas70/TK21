@@ -63,6 +63,7 @@ public class TeamCompetitionScraper {
 
             Document doc = loadCorrectYearDocument(document);
             int year = extractYear(doc);
+            teamCompetitionScrapingService.deleteCompetitionsInYear(year - 1, entry.getKey());
             List<TeamCompetition> toBeFound = teamCompetitionService.findAllCompetitionsInYearAndCategory(year, entry.getKey());
 
             logger.trace("Scraping competitions in " + "year " + year + " category " + entry.getKey().toString());

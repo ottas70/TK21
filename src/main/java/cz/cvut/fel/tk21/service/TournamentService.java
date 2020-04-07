@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.service;
 import cz.cvut.fel.tk21.dao.TournamentDao;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,11 @@ public class TournamentService extends BaseService<TournamentDao, Tournament> {
     @Transactional(readOnly = true)
     public Optional<Tournament> findTournamentByWebId(long webId){
         return dao.findTournamentByWebId(webId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tournament> findTournamentsByYearAndCategory(int year, AgeCategory ageCategory){
+        return dao.findTournamentsByYearAndCategory(year, ageCategory);
     }
 
 }

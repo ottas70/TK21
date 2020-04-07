@@ -1,8 +1,11 @@
 package cz.cvut.fel.tk21.scraping.service;
 
+import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.service.TournamentService;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class TournamentScrapingService {
@@ -35,6 +38,13 @@ public class TournamentScrapingService {
                 stored.setPlayers(found.getPlayers());
                 tournamentService.update(stored);
             }
+        }
+    }
+
+    public void deleteTournamentsInYear(int year, AgeCategory ageCategory){
+        List<Tournament> toBeDeleted = tournamentService.findTournamentsByYearAndCategory(year, ageCategory);
+        for (Tournament tournament : toBeDeleted){
+            tournamentService.remove(tournament);
         }
     }
 

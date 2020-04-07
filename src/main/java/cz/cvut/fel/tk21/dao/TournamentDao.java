@@ -3,10 +3,13 @@ package cz.cvut.fel.tk21.dao;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +45,18 @@ public class TournamentDao extends BaseDao<Tournament>{
         } catch (NoResultException ex){
             return Optional.empty();
         }
+    }
+
+    public List<Tournament> findTournamentsByYearAndCategory(int year, AgeCategory category){
+        LocalDate start = LocalDate.parse("01-01-" + year, DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        LocalDate end = LocalDate.parse("12-31-" + year, DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        return em.createQuery("SELECT t FROM Tournament t " +
+                "WHERE t.date >= :start AND t.date <= :end " +
+                "AND t.ageCategory = :category", Tournament.class)
+                .setParameter("start", start)
+                .setParameter("end", end)
+                .setParameter("category", category)
+                .getResultList();
     }
 
 }

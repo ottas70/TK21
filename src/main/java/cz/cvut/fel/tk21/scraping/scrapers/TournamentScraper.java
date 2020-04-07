@@ -62,6 +62,8 @@ public class TournamentScraper {
             boolean winter = this.extractIsWinter(seasonForm);
             int year = this.extractYear(seasonForm);
 
+            tournamentScrapingService.deleteTournamentsInYear(year - 3, entry.getKey());
+
             logger.trace("Scraping tournaments in " + (winter ? "winter" : "summer")  + " year " + year + " category " + entry.getKey().toString());
             findAllTournamentsInDocument(doc, entry.getKey(), year, winter);
 

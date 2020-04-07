@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.scraping.service;
 import cz.cvut.fel.tk21.model.teams.Match;
 import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
+import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.service.MatchService;
 import cz.cvut.fel.tk21.service.TeamCompetitionService;
 import cz.cvut.fel.tk21.service.TeamService;
@@ -57,6 +58,10 @@ public class TeamCompetitionScrapingService {
             }
             teamService.remove(team);
         }
+    }
+
+    public void deleteCompetitionsInYear(int year, AgeCategory category){
+        this.deleteCompetitions(teamCompetitionService.findAllCompetitionsInYearAndCategory(year, category));
     }
 
 }
