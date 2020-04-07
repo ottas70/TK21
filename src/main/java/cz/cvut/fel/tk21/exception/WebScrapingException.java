@@ -1,6 +1,6 @@
 package cz.cvut.fel.tk21.exception;
 
-public class WebScrapingException extends RuntimeException {
+public class WebScrapingException extends Exception {
 
     public WebScrapingException(String message) {
         super(message);

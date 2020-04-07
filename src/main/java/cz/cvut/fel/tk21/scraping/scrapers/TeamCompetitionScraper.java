@@ -55,7 +55,7 @@ public class TeamCompetitionScraper {
         createIndexMapping();
     }
 
-    public void updateAllCompetitions() throws IOException {
+    public void updateAllCompetitions() throws IOException, WebScrapingException {
         logger.trace("Team Competition scraping started");
 
         for (Map.Entry<AgeCategory, String> entry : urls.entrySet()) {
@@ -76,7 +76,7 @@ public class TeamCompetitionScraper {
         logger.trace("Team Competition scraping finished");
     }
 
-    private void findAllCompetitionsInDocument(Document doc, AgeCategory ageCategory, int year, List<TeamCompetition> toBeFound) throws IOException {
+    private void findAllCompetitionsInDocument(Document doc, AgeCategory ageCategory, int year, List<TeamCompetition> toBeFound) throws IOException, WebScrapingException {
         Element competitionTable = doc.select("table tbody").first();
         assertNonNullElement(competitionTable, "Competition Table");
         Elements rows = competitionTable.select("tr");
@@ -117,7 +117,7 @@ public class TeamCompetitionScraper {
 
     }
 
-    private void findAllTeamsInCompetition(TeamCompetition competition, int year) throws IOException {
+    private void findAllTeamsInCompetition(TeamCompetition competition, int year) throws IOException, WebScrapingException {
         Document doc = Jsoup.connect(competition.getLink()).get();
 
         Element teamTable = doc.select("table tbody").first();
@@ -153,7 +153,7 @@ public class TeamCompetitionScraper {
         findAllMatchesInCompetition(doc, teams, year);
     }
 
-    private void findAllMatchesInCompetition(Document doc, List<Team> teams, int year){
+    private void findAllMatchesInCompetition(Document doc, List<Team> teams, int year) throws WebScrapingException {
         Element teamTable = doc.select("table tbody").get(1);
         assertNonNullElement(teamTable, "Schedule Table");
         Elements rows = teamTable.select("tr");
@@ -200,7 +200,7 @@ public class TeamCompetitionScraper {
         }
     }
 
-    private Team addUsersToTeam(Team team) throws IOException {
+    private Team addUsersToTeam(Team team) throws IOException, WebScrapingException {
         Document doc = Jsoup.connect(team.getLink()).get();
 
         Element teamTable = doc.select("table tbody").get(2);
@@ -295,7 +295,7 @@ public class TeamCompetitionScraper {
         return null;
     }
 
-    private Document loadCorrectYearDocument(Document doc) throws IOException {
+    private Document loadCorrectYearDocument(Document doc) throws IOException, WebScrapingException {
         Element potentialForm = doc.select("form.well").first();
         assertNonNullElement(potentialForm, "Year selector");
         FormElement yearForm = (FormElement) potentialForm;
@@ -313,7 +313,7 @@ public class TeamCompetitionScraper {
         return yearForm.submit().post();
     }
 
-    private int extractYear(Document doc){
+    private int extractYear(Document doc) throws WebScrapingException {
         Element potentialForm = doc.select("form.well").first();
         assertNonNullElement(potentialForm, "Year selector");
         FormElement yearForm = (FormElement) potentialForm;
@@ -344,7 +344,7 @@ public class TeamCompetitionScraper {
         indexMapping.put(8, Region.SEVEROMORAVSKY);
     }
 
-    private void assertNonNullElement(Element element, String name){
+    private void assertNonNullElement(Element element, String name) throws WebScrapingException {
         if(element == null){
             throw new WebScrapingException("Unable to find element " + name);
         }

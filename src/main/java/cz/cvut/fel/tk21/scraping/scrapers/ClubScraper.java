@@ -39,7 +39,7 @@ public class ClubScraper {
         this.clubScrapingService = clubScrapingService;
     }
 
-    public void updateClubs(List<Club> toBeFound) throws IOException {
+    public void updateClubs(List<Club> toBeFound) throws IOException, WebScrapingException {
         logger.trace("Club scraping started");
 
         Document doc = Jsoup.connect(url).get();
@@ -69,7 +69,7 @@ public class ClubScraper {
         logger.trace("Club scraping finished");
     }
 
-    private Document docWithRegion(Document doc, int value) throws IOException {
+    private Document docWithRegion(Document doc, int value) throws IOException, WebScrapingException {
         logger.trace("Club scraping at region " + clubRegions[value].toString());
         Element potentialForm = doc.select("form.well").first();
         assertNonNullElement(potentialForm, "Region selector");
@@ -181,7 +181,7 @@ public class ClubScraper {
         return emails;
     }
 
-    private void assertNonNullElement(Element element, String name) {
+    private void assertNonNullElement(Element element, String name) throws WebScrapingException {
         if (element == null) {
             throw new WebScrapingException("Unable to find element " + name);
         }

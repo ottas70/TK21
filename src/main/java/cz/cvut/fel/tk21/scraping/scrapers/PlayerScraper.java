@@ -41,7 +41,7 @@ public class PlayerScraper {
         this.clubService = clubService;
     }
 
-    public List<PlayerInfoCzTenis> findPlayersOnCzTenis(PlayerInfoMessageBody details, Club club) throws IOException {
+    public List<PlayerInfoCzTenis> findPlayersOnCzTenis(PlayerInfoMessageBody details, Club club) throws IOException, WebScrapingException {
         String playerName = details.getSurname() + " " + details.getName();
         logger.trace(String.format("Looking for player %s on CzTenis", playerName));
 
@@ -52,7 +52,7 @@ public class PlayerScraper {
         return findPlayersInTable(playersDoc, details, club);
     }
 
-    private Document loadPlayersDocumentViaSearchBar(Document doc, String name) throws IOException {
+    private Document loadPlayersDocumentViaSearchBar(Document doc, String name) throws IOException, WebScrapingException {
         Element potentialForm = doc.select("form.navbar-search").first();
         assertNonNullElement(potentialForm, "Player search form");
         FormElement playerForm = (FormElement) potentialForm;
@@ -64,7 +64,7 @@ public class PlayerScraper {
         return playerForm.submit().post();
     }
 
-    private List<PlayerInfoCzTenis> findPlayersInTable(Document doc, PlayerInfoMessageBody detail, Club club){
+    private List<PlayerInfoCzTenis> findPlayersInTable(Document doc, PlayerInfoMessageBody detail, Club club) throws WebScrapingException {
         List<PlayerInfoCzTenis> results = new ArrayList<>();
 
         Element playersTable = doc.select("table tbody").first();
@@ -106,7 +106,7 @@ public class PlayerScraper {
         return results;
     }
 
-    public void updatePlayers(List<User> players) throws IOException {
+    public void updatePlayers(List<User> players) throws IOException, WebScrapingException {
         for (User player : players){
             long webId = player.getWebId();
             User stored = player;
@@ -115,7 +115,7 @@ public class PlayerScraper {
         }
     }
 
-    private User scrapePlayerDetail(long webId) throws IOException {
+    private User scrapePlayerDetail(long webId) throws IOException, WebScrapingException {
         Document doc = Jsoup.connect(player_url + webId).get();
 
         String name = doc.select("h2").first().html();
@@ -140,7 +140,7 @@ public class PlayerScraper {
         return found;
     }
 
-    private void assertNonNullElement(Element element, String name){
+    private void assertNonNullElement(Element element, String name) throws WebScrapingException {
         if(element == null){
             throw new WebScrapingException("Unable to find element " + name);
         }

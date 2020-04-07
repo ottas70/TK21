@@ -52,7 +52,7 @@ public class TournamentScraper {
         urls.put(AgeCategory.ADULTS, "http://cztenis.cz/dospeli/jednotlivci");
     }
 
-    public void updateCurrentTournaments() throws IOException {
+    public void updateCurrentTournaments() throws IOException, WebScrapingException {
         logger.trace("Tournament scraping started");
 
         for (Map.Entry<AgeCategory, String> entry : urls.entrySet()) {
@@ -81,7 +81,7 @@ public class TournamentScraper {
         logger.trace("Tournament scraping finished");
     }
 
-    private void findAllTournamentsInDocument(Document doc, AgeCategory ageCategory, int year, boolean winter) throws IOException {
+    private void findAllTournamentsInDocument(Document doc, AgeCategory ageCategory, int year, boolean winter) throws IOException, WebScrapingException {
         Element tournamentTable = doc.select("table tbody").first();
         assertNonNullElement(tournamentTable, "Tournament Table");
         Elements rows = tournamentTable.select("tr");
@@ -117,7 +117,7 @@ public class TournamentScraper {
         }
     }
 
-    private Tournament createTournament(String date, String id, String clubName, String infoLink, String resultsLink, AgeCategory ageCategory, Gender gender, int year, boolean winter) throws IOException {
+    private Tournament createTournament(String date, String id, String clubName, String infoLink, String resultsLink, AgeCategory ageCategory, Gender gender, int year, boolean winter) throws IOException, WebScrapingException {
         Tournament tournament = new Tournament();
         tournament.setDate(extractDate(date, year, winter));
         tournament.setAgeCategory(ageCategory);
@@ -131,7 +131,7 @@ public class TournamentScraper {
         return tournament;
     }
 
-    private List<User> findAllPlayers(Tournament tournament) throws IOException {
+    private List<User> findAllPlayers(Tournament tournament) throws IOException, WebScrapingException {
         List<User> players = new ArrayList<>();
         String link = tournament.getLinkInfo();
         if(link == null) return players;
@@ -204,31 +204,31 @@ public class TournamentScraper {
         return club.get();
     }
 
-    private FormElement getSeasonForm(Document doc){
+    private FormElement getSeasonForm(Document doc) throws WebScrapingException {
         Element potentialForm = doc.select("form.well").first();
         assertNonNullElement(potentialForm, "Season selector");
         return (FormElement) potentialForm;
     }
 
-    private boolean extractIsWinter(FormElement form){
+    private boolean extractIsWinter(FormElement form) throws WebScrapingException {
         String label = extractSelectedName(form);
         return label.substring(0, 4).equals("zima");
     }
 
-    private int extractYear(FormElement form){
+    private int extractYear(FormElement form) throws WebScrapingException {
         String label = extractSelectedName(form);
         String year = label.split(" ")[1].substring(0, 4);
         return Integer.parseInt(year);
     }
 
-    private String extractSelectedName(FormElement form){
+    private String extractSelectedName(FormElement form) throws WebScrapingException {
         Element selectSeason = form.select("select").first();
         assertNonNullElement(selectSeason, "Form select");
         Element selected = selectSeason.select("option[selected]").first();
         return selected.html();
     }
 
-    private Document getNextDocIfPossible(FormElement form) throws IOException {
+    private Document getNextDocIfPossible(FormElement form) throws IOException, WebScrapingException {
         Element selectSeason = form.select("select").first();
         assertNonNullElement(selectSeason, "Form select");
         Elements options = selectSeason.select("option");
@@ -243,7 +243,7 @@ public class TournamentScraper {
         return form.submit().post();
     }
 
-    private void assertNonNullElement(Element element, String name){
+    private void assertNonNullElement(Element element, String name) throws WebScrapingException {
         if(element == null){
             throw new WebScrapingException("Unable to find element " + name);
         }
