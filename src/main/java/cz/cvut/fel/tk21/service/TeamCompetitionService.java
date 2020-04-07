@@ -6,10 +6,12 @@ import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.teams.Match;
 import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
+import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.rest.dto.teams.CompetitionDto;
 import cz.cvut.fel.tk21.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,6 +30,16 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
         super(dao);
         this.teamService = teamService;
         this.matchService = matchService;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TeamCompetition> findAllCompetitionsInYear(int year){
+        return dao.findAllCompetitionsInYear(year);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TeamCompetition> findAllCompetitionsInYearAndCategory(int year, AgeCategory ageCategory){
+        return dao.findAllCompetitionsInYearAndCategory(year, ageCategory);
     }
 
     public List<CompetitionDto> getAllTeamCompetitionsInCurrentYear(Club club){

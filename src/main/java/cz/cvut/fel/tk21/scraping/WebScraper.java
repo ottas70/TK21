@@ -46,10 +46,7 @@ public class WebScraper {
             scrapeClubs();
             scrapePlayers();
             scrapeTournaments();
-
-            scrapeClubs();
-            scrapePlayers();
-            scrapeTournaments();
+            scrapeTeamCompetitions();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -67,6 +64,10 @@ public class WebScraper {
 
     private void scrapeTournaments() throws IOException {
         tournamentScraper.updateCurrentTournaments();
+    }
+
+    private void scrapeTeamCompetitions() throws IOException {
+        teamCompetitionScraper.updateAllCompetitions();
     }
 
 }

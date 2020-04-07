@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Post;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.teams.Team;
+import cz.cvut.fel.tk21.model.teams.TeamCompetition;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,6 +29,13 @@ public class TeamDao extends BaseDao<Team> {
                 "WHERE :user MEMBER OF t.users AND t.competition.year = :year", Team.class)
                 .setParameter("user", user)
                 .setParameter("year", year)
+                .getResultList();
+    }
+
+    public List<Team> findAllTeamsByCompetition(TeamCompetition teamCompetition){
+        return em.createQuery("SELECT t FROM Team t " +
+                "WHERE t.competition = :competition", Team.class)
+                .setParameter("competition", teamCompetition)
                 .getResultList();
     }
 

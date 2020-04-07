@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.teams.Region;
 import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
 import cz.cvut.fel.tk21.model.tournament.AgeCategory;
+import cz.cvut.fel.tk21.scraping.service.TeamCompetitionScrapingService;
 import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.StringUtils;
@@ -40,19 +41,21 @@ public class TeamCompetitionScraper {
     private final ClubService clubService;
     private final MatchService matchService;
     private final UserService userService;
+    private final TeamCompetitionScrapingService teamCompetitionScrapingService;
 
     @Autowired
-    public TeamCompetitionScraper(TeamCompetitionService teamCompetitionService, TeamService teamService, ClubService clubService, MatchService matchService, UserService userService) {
+    public TeamCompetitionScraper(TeamCompetitionService teamCompetitionService, TeamService teamService, ClubService clubService, MatchService matchService, UserService userService, TeamCompetitionScrapingService teamCompetitionScrapingService) {
         this.teamCompetitionService = teamCompetitionService;
         this.teamService = teamService;
         this.clubService = clubService;
         this.matchService = matchService;
         this.userService = userService;
+        this.teamCompetitionScrapingService = teamCompetitionScrapingService;
         createUrlMap();
         createIndexMapping();
     }
 
-    public void findAllCompetitions() throws IOException {
+    public void updateAllCompetitions() throws IOException {
         logger.trace("Team Competition scraping started");
 
         for (Map.Entry<AgeCategory, String> entry : urls.entrySet()) {
@@ -60,10 +63,11 @@ public class TeamCompetitionScraper {
 
             Document doc = loadCorrectYearDocument(document);
             int year = extractYear(doc);
+            List<TeamCompetition> toBeFound = teamCompetitionService.findAllCompetitionsInYearAndCategory(year, entry.getKey());
 
             logger.trace("Scraping competitions in " + "year " + year + " category " + entry.getKey().toString());
 
-            findAllCompetitionsInDocument(doc, entry.getKey(), year);
+            findAllCompetitionsInDocument(doc, entry.getKey(), year, toBeFound);
 
             logger.trace("Scraping competitions in " + "year " + year + " category " + entry.getKey().toString() + " finished");
         }
@@ -71,7 +75,7 @@ public class TeamCompetitionScraper {
         logger.trace("Team Competition scraping finished");
     }
 
-    private void findAllCompetitionsInDocument(Document doc, AgeCategory ageCategory, int year) throws IOException {
+    private void findAllCompetitionsInDocument(Document doc, AgeCategory ageCategory, int year, List<TeamCompetition> toBeFound) throws IOException {
         Element competitionTable = doc.select("table tbody").first();
         assertNonNullElement(competitionTable, "Competition Table");
         Elements rows = competitionTable.select("tr");
@@ -97,11 +101,19 @@ public class TeamCompetitionScraper {
                 competition.setWebId(webId);
                 competition.setRegion(indexMapping.get(i));
 
-                teamCompetitionService.persist(competition);
+                TeamCompetition stored = toBeFound.stream().filter(c -> c.getWebId() == webId).findFirst().orElse(null);
+                competition = teamCompetitionScrapingService.handleUpdate(competition, stored);
+                toBeFound.remove(competition);
 
-                findAllTeamsInCompetition(competition, year);
+                if(competition != null){
+                    teamCompetitionScrapingService.deleteAllTeamsAndMatchesInCompetition(competition);
+                    findAllTeamsInCompetition(competition, year);
+                }
             }
         }
+
+        teamCompetitionScrapingService.deleteCompetitions(toBeFound);
+
     }
 
     private void findAllTeamsInCompetition(TeamCompetition competition, int year) throws IOException {
@@ -287,9 +299,7 @@ public class TeamCompetitionScraper {
         assertNonNullElement(potentialForm, "Year selector");
         FormElement yearForm = (FormElement) potentialForm;
 
-        //TODO change
-        //int currentYear = DateUtils.getCurrentYear();
-        int currentYear = 2019;
+        int currentYear = DateUtils.getCurrentYear();
         Element selectYear = yearForm.select("select").first();
         assertNonNullElement(selectYear, "Form select");
         Elements options = selectYear.select("option");

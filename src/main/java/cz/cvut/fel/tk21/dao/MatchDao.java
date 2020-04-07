@@ -45,4 +45,11 @@ public class MatchDao extends BaseDao<Match> {
                 .getResultList();
     }
 
+    public List<Match> findMatchesByTeam(Team team){
+        return em.createQuery("SELECT m FROM Match m " +
+                "WHERE m.homeTeam = :team OR m.awayTeam = :team", Match.class)
+                .setParameter("team", team)
+                .getResultList();
+    }
+
 }
