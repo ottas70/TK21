@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -100,14 +101,19 @@ public class UserService extends BaseService<UserDao, User> {
         return false;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<User> findUserByEmail(String email){
         return dao.getUserByEmail(email);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<User> findUserByWebId(long webId){
         return dao.getUserByWebId(webId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> findAllScrapedPlayers(){
+        return dao.findAllScrapedPlayers();
     }
 
     @Transactional(readOnly = true)

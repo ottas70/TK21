@@ -28,7 +28,7 @@ public class Tournament extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column
+    @Column(unique = true)
     private long webId;
 
     @Column

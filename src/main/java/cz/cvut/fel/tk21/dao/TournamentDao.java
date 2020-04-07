@@ -6,7 +6,9 @@ import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TournamentDao extends BaseDao<Tournament>{
@@ -27,6 +29,19 @@ public class TournamentDao extends BaseDao<Tournament>{
                 "WHERE :user MEMBER OF t.players", Tournament.class)
                 .setParameter("user", user)
                 .getResultList();
+    }
+
+    public Optional<Tournament> findTournamentByWebId(long webId) {
+        try{
+            return Optional.ofNullable(
+                    em.createQuery("SELECT t From Tournament t " +
+                            "WHERE t.webId = :webId", Tournament.class)
+                            .setParameter("webId", webId)
+                            .getSingleResult()
+            );
+        } catch (NoResultException ex){
+            return Optional.empty();
+        }
     }
 
 }

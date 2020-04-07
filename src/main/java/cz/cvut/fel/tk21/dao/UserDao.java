@@ -1,9 +1,11 @@
 package cz.cvut.fel.tk21.dao;
 
+import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -44,6 +46,12 @@ public class UserDao extends BaseDao<User>{
         } catch (NoResultException ex){
             return Optional.empty();
         }
+    }
+
+    public List<User> findAllScrapedPlayers(){
+        return em.createQuery("SELECT u from User u " +
+                "WHERE u.webId <> 0", User.class)
+                .getResultList();
     }
 
 }

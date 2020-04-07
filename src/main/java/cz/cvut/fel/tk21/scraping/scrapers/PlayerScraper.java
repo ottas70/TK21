@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.scraping.scrapers;
 import cz.cvut.fel.tk21.exception.WebScrapingException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.User;
+import cz.cvut.fel.tk21.scraping.service.PlayerScrapingService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.ws.dto.PlayerInfoMessageBody;
@@ -31,12 +32,12 @@ public class PlayerScraper {
     private static final String base_url = "http://cztenis.cz/";
     private static final String player_url = "http://cztenis.cz/hrac/";
 
-    private final UserService userService;
+    private final PlayerScrapingService playerScrapingService;
     private final ClubService clubService;
 
     @Autowired
-    public PlayerScraper(UserService userService, ClubService clubService) {
-        this.userService = userService;
+    public PlayerScraper(PlayerScrapingService playerScrapingService, ClubService clubService) {
+        this.playerScrapingService = playerScrapingService;
         this.clubService = clubService;
     }
 
@@ -105,23 +106,38 @@ public class PlayerScraper {
         return results;
     }
 
-    private void scrapePlayerDetail(long webId) throws IOException {
-        Optional<User> userOptional = userService.findUserByWebId(webId);
-        if(userOptional.isEmpty()) return;
-        User user = userOptional.get();
+    public void updatePlayers(List<User> players) throws IOException {
+        for (User player : players){
+            long webId = player.getWebId();
+            User stored = player;
+            User found = scrapePlayerDetail(webId);
+            playerScrapingService.handleUpdate(found, stored);
+        }
+    }
 
+    private User scrapePlayerDetail(long webId) throws IOException {
         Document doc = Jsoup.connect(player_url + webId).get();
 
+        String name = doc.select("h2").first().html();
         Element playerTable = doc.select("table tbody").first();
         assertNonNullElement(playerTable, "Players Table");
         Elements rows = playerTable.select("tr");
 
+        String firstName = name.split(" ")[1];
+        String lastName = name.split(" ")[0];
         String birthDate = rows.get(0).select("td").get(1).select("strong").first().html();
         String certificateExpiration = rows.get(1).select("td").get(1).select("strong").first().html();
         String clubName = rows.get(2).select("td").get(1).select("strong").first().html();
 
-        Optional<Club> club = clubService.findClubByName(clubName);
-        //TODO
+        Optional<Club> clubOptional = clubService.findClubByName(clubName);
+        Club club = clubOptional.orElse(null);
+
+        User found = new User();
+        found.setName(firstName);
+        found.setSurname(lastName);
+        found.setRootClub(club);
+
+        return found;
     }
 
     private void assertNonNullElement(Element element, String name){

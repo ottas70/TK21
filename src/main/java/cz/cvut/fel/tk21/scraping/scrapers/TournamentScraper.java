@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.tournament.AgeCategory;
 import cz.cvut.fel.tk21.model.tournament.Gender;
 import cz.cvut.fel.tk21.model.tournament.Tournament;
 import cz.cvut.fel.tk21.model.tournament.TournamentType;
+import cz.cvut.fel.tk21.scraping.service.TournamentScrapingService;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.TournamentService;
 import cz.cvut.fel.tk21.service.UserService;
@@ -34,11 +35,13 @@ public class TournamentScraper {
     private final TournamentService tournamentService;
     private final ClubService clubService;
     private final UserService userService;
+    private final TournamentScrapingService tournamentScrapingService;
 
-    public TournamentScraper(TournamentService tournamentService, ClubService clubService, UserService userService) {
+    public TournamentScraper(TournamentService tournamentService, ClubService clubService, UserService userService, TournamentScrapingService tournamentScrapingService) {
         this.tournamentService = tournamentService;
         this.clubService = clubService;
         this.userService = userService;
+        this.tournamentScrapingService = tournamentScrapingService;
         this.createUrlMap();
     }
 
@@ -49,7 +52,7 @@ public class TournamentScraper {
         urls.put(AgeCategory.ADULTS, "http://cztenis.cz/dospeli/jednotlivci");
     }
 
-    public void findAllTournaments() throws IOException {
+    public void updateCurrentTournaments() throws IOException {
         logger.trace("Tournament scraping started");
 
         for (Map.Entry<AgeCategory, String> entry : urls.entrySet()) {
@@ -92,9 +95,9 @@ public class TournamentScraper {
             String resultsLinkMen = cells.get(4).select("a").attr("href");
             if(!clubMen.equals("&nbsp;") && !menIsCanceled){
                 Tournament tournamentMen = createTournament(dateMen, idMen, clubMen, infoLinkMen, resultsLinkMen, ageCategory, Gender.MALE, year, winter);
-                if(tournamentMen.getClub() != null){
-                    tournamentService.persist(tournamentMen);
-                }
+                Optional<Tournament> storedOptional = tournamentService.findTournamentByWebId(Long.parseLong(idMen));
+                Tournament stored = storedOptional.orElse(null);
+                tournamentScrapingService.handleUpdate(tournamentMen, stored);
             }
 
             String dateWomen = cells.get(6).html();
@@ -105,9 +108,9 @@ public class TournamentScraper {
             String resultsLinkWomen  = cells.get(10).select("a").attr("href");
             if(!clubWomen.equals("&nbsp;") && !womenIsCanceled){
                 Tournament tournamentWomen = createTournament(dateWomen, idWomen, clubWomen, infoLinkWomen, resultsLinkWomen, ageCategory, Gender.FEMALE, year, winter);
-                if(tournamentWomen.getClub() != null){
-                    tournamentService.persist(tournamentWomen);
-                }
+                Optional<Tournament> storedOptional = tournamentService.findTournamentByWebId(Long.parseLong(idWomen));
+                Tournament stored = storedOptional.orElse(null);
+                tournamentScrapingService.handleUpdate(tournamentWomen, stored);
             }
         }
     }

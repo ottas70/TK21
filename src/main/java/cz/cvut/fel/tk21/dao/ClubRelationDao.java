@@ -73,4 +73,12 @@ public class ClubRelationDao extends BaseDao<ClubRelation> {
                 .getResultList().isEmpty();
     }
 
+    public List<ClubRelation> findAllRelationsWithRole(User user, UserRole role){
+        return em.createQuery("SELECT c from ClubRelation c " +
+                "WHERE c.user = :user AND :role MEMBER OF c.roles", ClubRelation.class)
+                .setParameter("user", user)
+                .setParameter("role", role)
+                .getResultList();
+    }
+
 }
