@@ -55,7 +55,6 @@ public class DataInitializer implements ApplicationRunner {
         user2.setEmail("ondramares@ondramares.com");
         user2.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
         user2.setVerifiedAccount(true);
-        user2.setWebId(1008755);
         userService.persist(user2);
 
         User user3 = new User();
@@ -81,15 +80,6 @@ public class DataInitializer implements ApplicationRunner {
         user5.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
         user5.setVerifiedAccount(true);
         userService.persist(user5);
-
-        User userZasova = new User();
-        userZasova.setName("Lukáš");
-        userZasova.setSurname("Korytár");
-        userZasova.setEmail("ondra.mares@email.cz");
-        userZasova.setPassword("$2a$10$IElljSAqagcee0twmltgxOenM5m45VL7fu.kuWCXadl5XVBVVO7Qu"); //abcd
-        userZasova.setVerifiedAccount(true);
-        userZasova.setWebId(37927);
-        userService.persist(userZasova);
 
         Club club = new Club();
         club.setId(1);
