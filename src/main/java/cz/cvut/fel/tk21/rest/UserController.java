@@ -174,4 +174,25 @@ public class UserController {
         return new UserCompetitionsDto(teamCompetitions, tournaments);
     }
 
+    /* *********************************
+     * Competitions
+     ********************************* */
+
+    @RequestMapping(value = "/tournaments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<TournamentDto> findUsersTournaments(){
+        User user = userService.getCurrentUser();
+        if(user == null) throw new UnauthorizedException("Přístup zamítnut");
+
+        return tournamentService.findAllTournamentsByUser(user)
+                .stream().map(TournamentDto::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/teamCompetitions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CompetitionDto> findUsersTeamCompetitions(){
+        User user = userService.getCurrentUser();
+        if(user == null) throw new UnauthorizedException("Přístup zamítnut");
+
+        return teamCompetitionService.getAllTeamCompetitionsInCurrentYearByUser(user);
+    }
+
 }

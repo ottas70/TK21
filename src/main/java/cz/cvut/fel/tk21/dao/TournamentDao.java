@@ -27,10 +27,19 @@ public class TournamentDao extends BaseDao<Tournament>{
                 .getResultList();
     }
 
-    public List<Tournament> findAllUpcomingTournamentsForUser(User user){
+    public List<Tournament> findTournamentsByUser(User user){
         return em.createQuery("SELECT t FROM Tournament t " +
                 "WHERE :user MEMBER OF t.players", Tournament.class)
                 .setParameter("user", user)
+                .getResultList();
+    }
+
+    public List<Tournament> findAllUpcomingTournamentsForUser(User user){
+        LocalDate now = LocalDate.now();
+        return em.createQuery("SELECT t FROM Tournament t " +
+                "WHERE :user MEMBER OF t.players AND t.date.from >= :now", Tournament.class)
+                .setParameter("user", user)
+                .setParameter("now", now)
                 .getResultList();
     }
 

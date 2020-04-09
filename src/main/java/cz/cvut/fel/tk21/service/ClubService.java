@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.service;
 
 import cz.cvut.fel.tk21.dao.ClubDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
+import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
@@ -206,6 +207,24 @@ public class ClubService extends BaseService<ClubDao, Club> {
         if(season.getSummer().getFrom().getYear() != year || season.getWinter().getFrom().getYear() != year)
             throw new BadRequestException("Datumy nesedí");
         club.addSeasonInYear(year, season);
+        this.update(club);
+    }
+
+    @Transactional
+    public void updateReservationSeasonSettings(Club club, ReservationSeasonSettingsDto dto){
+        if(!this.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
+
+        Season season = club.getSeasonInYear(dto.getYear());
+        if(season == null){
+            throw new NotFoundException("Sezóna nebyla nalezena");
+        }
+
+        if(dto.isWinter()){
+            season.setWinterResEnabled(dto.isEnable());
+        } else {
+            season.setSummerResEnabled(dto.isEnable());
+        }
+
         this.update(club);
     }
 

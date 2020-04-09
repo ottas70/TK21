@@ -13,6 +13,7 @@ public class Season {
             @AttributeOverride(name = "to", column = @Column(name = "SUMMER_TO_DATE"))
     })
     private FromToDate summer;
+    private boolean summerResEnabled = true;
 
     @Embedded
     @AttributeOverrides({
@@ -20,6 +21,7 @@ public class Season {
             @AttributeOverride(name = "to", column = @Column(name = "WINTER_TO_DATE"))
     })
     private FromToDate winter;
+    private boolean winterResEnabled = true;
 
     public Season() {
     }
@@ -45,6 +47,22 @@ public class Season {
         this.winter = winter;
     }
 
+    public boolean isSummerResEnabled() {
+        return summerResEnabled;
+    }
+
+    public void setSummerResEnabled(boolean summerResEnabled) {
+        this.summerResEnabled = summerResEnabled;
+    }
+
+    public boolean isWinterResEnabled() {
+        return winterResEnabled;
+    }
+
+    public void setWinterResEnabled(boolean winterResEnabled) {
+        this.winterResEnabled = winterResEnabled;
+    }
+
     /**
      *
      * @return String "winter" or "summer", @null if date is not from season
@@ -62,5 +80,13 @@ public class Season {
         if(name.equals("summer")) return summer;
         if(name.equals("winter")) return winter;
         return null;
+    }
+
+    public boolean isResEnabled(LocalDate date){
+        String name = getSeasonName(date);
+        if(name == null) return false;
+        if(name.equals("summer")) return summerResEnabled;
+        if(name.equals("winter")) return winterResEnabled;
+        return false;
     }
 }

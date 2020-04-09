@@ -67,8 +67,37 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
         return result;
     }
 
+    public List<CompetitionDto> getAllTeamCompetitionsInCurrentYearByUser(User user){
+        //TODO change this
+        int year = 2019;
+        //int year = DateUtils.getCurrentYear();
+        List<Team> teams = teamService.findAllTeamsInYearByUser(user, year);
+        Map<TeamCompetition, List<Team>> map = new HashMap<>();
+        for (Team t : teams){
+            map.put(t.getCompetition(), new ArrayList<>());
+        }
+        for (Team t : teams){
+            map.get(t.getCompetition()).add(t);
+        }
+
+        List<CompetitionDto> result = new ArrayList<>();
+        for (Map.Entry<TeamCompetition, List<Team>> entry : map.entrySet()) {
+            Map<Team, List<Match>> homeMatches = new HashMap<>();
+            Map<Team, List<Match>> awayMatches = new HashMap<>();
+            for (Team team : entry.getValue()){
+                homeMatches.put(team, matchService.findHomeMatchesByTeam(team));
+                awayMatches.put(team, matchService.findAwayMatchesByTeam(team));
+            }
+            result.add(new CompetitionDto(entry.getKey(), entry.getValue(), homeMatches, awayMatches));
+        }
+
+        return result;
+    }
+
     public List<CompetitionDto> getAllUpcomingTeamCompetitionsInCurrentYearForUser(User user){
-        int year = DateUtils.getCurrentYear();
+        //TODO change this
+        int year = 2019;
+        //int year = DateUtils.getCurrentYear();
         LocalDate now = LocalDate.now();
         List<Team> teams = teamService.findAllTeamsInYearByUser(user, year);
         Map<TeamCompetition, List<Team>> map = new HashMap<>();

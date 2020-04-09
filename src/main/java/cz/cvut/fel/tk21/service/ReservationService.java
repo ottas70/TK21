@@ -123,6 +123,8 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(!club.isRegistered()) throw new ValidationException("Tento klub není registrován");
         if(!club.isReservationsEnabled()) throw new ValidationException("Tento klub nepodporuje rezervace");
         checkReservationPermission(club);
+        if(club.getSeasonByDate(date) == null) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
+        if(!club.getSeasonByDate(date).isResEnabled(date) && !clubService.isCurrentUserAllowedToManageThisClub(club)) throw new ValidationException("V této sezóně nelze vytvářet rezervace");
         if(!dto.getTime().isValidReservationTime()) throw new ValidationException("Neplatný čas rezervace.");
         if(date.isBefore(LocalDate.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");
         if(date.equals(LocalDate.now()) && dto.getTime().getFrom().isBefore(LocalTime.now())) throw new ValidationException("Na tento termín nelze kurt rezervovat.");

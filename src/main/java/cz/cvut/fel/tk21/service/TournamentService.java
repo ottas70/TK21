@@ -22,6 +22,10 @@ public class TournamentService extends BaseService<TournamentDao, Tournament> {
         return dao.findTournamentsByClub(club);
     }
 
+    public List<Tournament> findAllTournamentsByUser(User user){
+        return dao.findTournamentsByUser(user);
+    }
+
     @Transactional(readOnly = true)
     public List<Tournament> findAllUpcomingTournamentsForUser(User user){
         return dao.findAllUpcomingTournamentsForUser(user);
