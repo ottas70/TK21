@@ -300,7 +300,9 @@ public class TeamCompetitionScraper {
         assertNonNullElement(potentialForm, "Year selector");
         FormElement yearForm = (FormElement) potentialForm;
 
-        int currentYear = DateUtils.getCurrentYear();
+        //TODO change this
+        int currentYear = 2019;
+        //int currentYear = DateUtils.getCurrentYear();
         Element selectYear = yearForm.select("select").first();
         assertNonNullElement(selectYear, "Form select");
         Elements options = selectYear.select("option");

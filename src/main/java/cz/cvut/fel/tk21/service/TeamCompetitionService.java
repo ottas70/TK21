@@ -84,8 +84,11 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
             Map<Team, List<Match>> homeMatches = new HashMap<>();
             Map<Team, List<Match>> awayMatches = new HashMap<>();
             for (Team team : entry.getValue()){
-                homeMatches.put(team, matchService.findHomeMatchesByTeamAfterDate(team, now));
-                awayMatches.put(team, matchService.findAwayMatchesByTeamAfterDate(team, now));
+                //TODO change this
+                homeMatches.put(team, matchService.findHomeMatchesByTeam(team));
+                awayMatches.put(team, matchService.findAwayMatchesByTeam(team));
+                //homeMatches.put(team, matchService.findHomeMatchesByTeamAfterDate(team, now));
+                //awayMatches.put(team, matchService.findAwayMatchesByTeamAfterDate(team, now));
             }
             result.add(new CompetitionDto(entry.getKey(), entry.getValue(), homeMatches, awayMatches));
         }
