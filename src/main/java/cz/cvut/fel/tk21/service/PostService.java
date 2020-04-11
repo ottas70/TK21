@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.annotation.ClubManagementOnly;
 import cz.cvut.fel.tk21.config.properties.FileStorageProperties;
 import cz.cvut.fel.tk21.dao.PostDao;
 import cz.cvut.fel.tk21.exception.NotFoundException;
@@ -44,9 +45,8 @@ public class PostService extends BaseService<PostDao, Post> {
     }
 
     @Transactional
+    @ClubManagementOnly
     public Post createPostFromDto(PostDto dto, Club club){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
-
         User user = userService.getCurrentUser();
 
         Post post = dto.getEntity();
@@ -120,8 +120,8 @@ public class PostService extends BaseService<PostDao, Post> {
     }
 
     @Transactional
+    @ClubManagementOnly
     public List<ImageDetail> uploadPostImages(Post post, MultipartFile[] files){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(post.getClub())) throw  new UnauthorizedException("Přístup odepřen");
         List<ImageDetail> details = new ArrayList<>();
         for (MultipartFile file : files){
             imageService.checkImageSize(file);

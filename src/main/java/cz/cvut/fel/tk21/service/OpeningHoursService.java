@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.annotation.ClubManagementOnly;
 import cz.cvut.fel.tk21.dao.OpeningHoursDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
@@ -30,9 +31,8 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
     }
 
     @Transactional
+    @ClubManagementOnly
     public void updateRegularOpeningHours(Map<Integer, FromToTime> openingHours, Club club){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Tento klub nemáte právo editovat");
-
         Map<Day, FromToTime> regular = new HashMap<>();
         openingHours.forEach((k,v) -> {
             if(!v.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
@@ -57,9 +57,8 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
     }
 
     @Transactional
+    @ClubManagementOnly
     public void updateSpecialOpeningHour(Club club, LocalDate date, LocalTime from, LocalTime to){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
-
         FromToTime fromToTime = new FromToTime(from, to);
         if(!fromToTime.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
 
@@ -68,9 +67,8 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
     }
 
     @Transactional
+    @ClubManagementOnly
     public void addSpecialOpeningHour(Club club, LocalDate date, LocalTime from, LocalTime to){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
-
         int currentYear = DateUtils.getCurrentYear();
         if(currentYear != date.getYear() && currentYear != date.getYear() + 1){
             throw new ValidationException("U tohoto roku nelze přidávat speciální otevírací dobu");
@@ -84,8 +82,8 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
     }
 
     @Transactional
+    @ClubManagementOnly
     public void removeSpecialOpeningHour(Club club, LocalDate date){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw  new UnauthorizedException("Přístup odepřen");
         club.getOpeningHours().removeSpecialDate(date);
         clubService.update(club);
     }

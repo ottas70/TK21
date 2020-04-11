@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.annotation.ClubManagementOnly;
 import cz.cvut.fel.tk21.dao.ClubRelationDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
@@ -92,8 +93,8 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     }
 
     @Transactional
+    @ClubManagementOnly
     public void addRole(Club club, User user, UserRole role){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(role == null) throw new BadRequestException("Špatný dotaz");
 
         Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);
@@ -126,8 +127,8 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     }
 
     @Transactional
+    @ClubManagementOnly
     public void deleteRole(Club club, User user, UserRole role, boolean isMyselfEditable){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(!isMyselfEditable){
             if(userService.getCurrentUser().getId() == user.getId()) throw new ValidationException("Nemůžete odebírat svoje role");
         }
@@ -160,8 +161,8 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     }
 
     @Transactional
+    @ClubManagementOnly
     public void removeMemberFromClub(Club club, User user){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         if(userService.getCurrentUser().getId() == user.getId()) throw new ValidationException("Nemůžete odebrát sám sebe");
 
         Optional<ClubRelation> relationOptional = dao.findRelationByUserAndClub(user, club);

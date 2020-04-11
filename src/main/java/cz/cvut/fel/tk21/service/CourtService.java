@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.annotation.ClubManagementOnly;
 import cz.cvut.fel.tk21.dao.CourtDao;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
@@ -45,9 +46,8 @@ public class CourtService extends BaseService<CourtDao, TennisCourt> {
     }
 
     @Transactional
+    @ClubManagementOnly
     public void update(Integer id, TennisCourt entity, Club club) {
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
-
         Optional<TennisCourt> court = find(id);
         court.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen"));
 

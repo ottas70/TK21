@@ -1,5 +1,6 @@
 package cz.cvut.fel.tk21.service;
 
+import cz.cvut.fel.tk21.annotation.ClubManagementOnly;
 import cz.cvut.fel.tk21.dao.VerificationRequestDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
@@ -52,8 +53,8 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
     }
 
     @Transactional
+    @ClubManagementOnly
     public List<VerificationRequest> findUnresolvedVerificationRequestsByClub(Club club){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
         return dao.findUnresolvedVerificationRequestsByClub(club);
     }
 
@@ -63,9 +64,8 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
     }
 
     @Transactional
+    @ClubManagementOnly
     public boolean processVerification(Club club, User user, String message){
-        if(!clubService.isCurrentUserAllowedToManageThisClub(club)) throw new UnauthorizedException("Přístup odepřen");
-
         Optional<VerificationRequest> verificationRequest = dao.findOpenVerificationRequestByClubAndUser(club, user);
         verificationRequest.orElseThrow(() -> new ValidationException("Požadavek nebyl nalezen"));
 
