@@ -221,16 +221,6 @@ public class ClubController {
 
     }
 
-    @RequestMapping(value = "/{id}/season/reservation", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateSeasonResSettings(@PathVariable("id") Integer id, @RequestBody ReservationSeasonSettingsDto dto){
-        final Optional<Club> club = clubService.find(id);
-        club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
-
-        clubService.updateReservationSeasonSettings(club.get(), dto);
-        return ResponseEntity.noContent().build();
-
-    }
-
     /* *********************************
      * PROPERTIES
      ********************************* */

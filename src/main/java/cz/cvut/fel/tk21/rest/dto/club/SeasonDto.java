@@ -68,7 +68,9 @@ public class SeasonDto {
     public Season getEntity(){
         Season season = new Season();
         season.setSummer(summer);
+        season.setSummerResEnabled(summerEnabled);
         season.setWinter(winter);
+        season.setWinterResEnabled(winterEnabled);
         return season;
     }
 }
