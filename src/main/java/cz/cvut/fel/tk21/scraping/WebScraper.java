@@ -83,7 +83,7 @@ public class WebScraper {
     private void sendErrorEmail(Exception ex){
         Mail mail = new Mail();
         mail.setFrom("noreply@tk21.cz");
-        mail.setTo("ottas70@gmail.com");
+        mail.setTo("otto.vodvarka@tk21.cz");
         mail.setSubject("TK21 - Chyba při scrapování dne " + LocalDate.now().toString());
 
         String stacktrace = ExceptionUtils.getStackTrace(ex);
