@@ -68,9 +68,7 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
     }
 
     public List<CompetitionDto> getAllTeamCompetitionsInCurrentYearByUser(User user){
-        //TODO change this
-        int year = 2019;
-        //int year = DateUtils.getCurrentYear();
+        int year = DateUtils.getCurrentYear();
         List<Team> teams = teamService.findAllTeamsInYearByUser(user, year);
         Map<TeamCompetition, List<Team>> map = new HashMap<>();
         for (Team t : teams){
@@ -95,9 +93,7 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
     }
 
     public List<CompetitionDto> getAllUpcomingTeamCompetitionsInCurrentYearForUser(User user){
-        //TODO change this
-        int year = 2019;
-        //int year = DateUtils.getCurrentYear();
+        int year = DateUtils.getCurrentYear();
         LocalDate now = LocalDate.now();
         List<Team> teams = teamService.findAllTeamsInYearByUser(user, year);
         Map<TeamCompetition, List<Team>> map = new HashMap<>();
@@ -113,11 +109,8 @@ public class TeamCompetitionService extends BaseService<TeamCompetitionDao, Team
             Map<Team, List<Match>> homeMatches = new HashMap<>();
             Map<Team, List<Match>> awayMatches = new HashMap<>();
             for (Team team : entry.getValue()){
-                //TODO change this
-                homeMatches.put(team, matchService.findHomeMatchesByTeam(team));
-                awayMatches.put(team, matchService.findAwayMatchesByTeam(team));
-                //homeMatches.put(team, matchService.findHomeMatchesByTeamAfterDate(team, now));
-                //awayMatches.put(team, matchService.findAwayMatchesByTeamAfterDate(team, now));
+                homeMatches.put(team, matchService.findHomeMatchesByTeamAfterDate(team, now));
+                awayMatches.put(team, matchService.findAwayMatchesByTeamAfterDate(team, now));
             }
             result.add(new CompetitionDto(entry.getKey(), entry.getValue(), homeMatches, awayMatches));
         }
