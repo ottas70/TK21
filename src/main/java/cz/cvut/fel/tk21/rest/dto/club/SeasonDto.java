@@ -9,7 +9,11 @@ public class SeasonDto {
 
     private FromToDate winter;
 
+    private boolean winterEnabled;
+
     private FromToDate summer;
+
+    private boolean summerEnabled;
 
     public SeasonDto() {
     }
@@ -18,6 +22,8 @@ public class SeasonDto {
         if(season != null){
             this.winter = season.getWinter();
             this.summer = season.getSummer();
+            this.winterEnabled = season.isWinterResEnabled();
+            this.summerEnabled = season.isWinterResEnabled();
         }
     }
 
@@ -34,12 +40,28 @@ public class SeasonDto {
         this.winter = winter;
     }
 
+    public boolean isWinterEnabled() {
+        return winterEnabled;
+    }
+
+    public void setWinterEnabled(boolean winterEnabled) {
+        this.winterEnabled = winterEnabled;
+    }
+
     public FromToDate getSummer() {
         return summer;
     }
 
     public void setSummer(FromToDate summer) {
         this.summer = summer;
+    }
+
+    public boolean isSummerEnabled() {
+        return summerEnabled;
+    }
+
+    public void setSummerEnabled(boolean summerEnabled) {
+        this.summerEnabled = summerEnabled;
     }
 
     @JsonIgnore

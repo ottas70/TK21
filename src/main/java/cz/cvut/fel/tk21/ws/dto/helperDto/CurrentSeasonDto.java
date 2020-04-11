@@ -10,12 +10,15 @@ public class CurrentSeasonDto {
 
     private FromToDate dates;
 
+    private boolean reservationsEnabled;
+
     public CurrentSeasonDto() {
     }
 
-    public CurrentSeasonDto(String name, FromToDate dates) {
+    public CurrentSeasonDto(String name, FromToDate dates, boolean reservationsEnabled) {
         this.name = name;
         this.dates = dates;
+        this.reservationsEnabled = reservationsEnabled;
     }
 
     public String getName() {
@@ -32,5 +35,13 @@ public class CurrentSeasonDto {
 
     public void setDates(FromToDate dates) {
         this.dates = dates;
+    }
+
+    public boolean isReservationsEnabled() {
+        return reservationsEnabled;
+    }
+
+    public void setReservationsEnabled(boolean reservationsEnabled) {
+        this.reservationsEnabled = reservationsEnabled;
     }
 }

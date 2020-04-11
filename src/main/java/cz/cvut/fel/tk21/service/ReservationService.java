@@ -62,7 +62,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
             if(seasonDates == null){
                 message.setSeason(null);
             } else {
-                message.setSeason(new CurrentSeasonDto(seasonName, seasonDates));
+                message.setSeason(new CurrentSeasonDto(seasonName, seasonDates, this.isUserEnabledToCreateReservations(user, club, season, date)));
             }
         }
 
@@ -191,6 +191,12 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         if(user == null) return false;
         if(reservation.getUser() == null) return clubService.isUserAllowedToManageThisClub(user, reservation.getClub());
         return reservation.getUser().getId() == user.getId() || clubService.isUserAllowedToManageThisClub(user, reservation.getClub());
+    }
+
+    @Transactional
+    public boolean isUserEnabledToCreateReservations(User user, Club club, Season season, LocalDate date){
+        if(clubService.isUserAllowedToManageThisClub(user, club)) return true;
+        return season.isResEnabled(date);
     }
 
     @Transactional
