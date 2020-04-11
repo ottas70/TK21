@@ -142,7 +142,7 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         }
 
         if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje.");
-        if(reservation.getDuration() < club.getMinReservationTime() || (reservation.getDuration() > club.getMaxReservationTime()) && club.getMaxReservationTime() != 0) throw new ValidationException("Trvání rezervace nevyhovuje požadavkům klubu.");
+        if(reservation.getDuration() < club.getMinReservationTime() || (reservation.getDuration() > club.getMaxReservationTime()) && club.getMaxReservationTime() != 0 && !clubService.isUserAllowedToManageThisClub(currentUser, club)) throw new ValidationException("Trvání rezervace nevyhovuje požadavkům klubu.");
 
         Optional<TennisCourt> courtOptional = courtService.findCourtInClub(club, dto.getCourtId());
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen."));
