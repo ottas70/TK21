@@ -120,9 +120,8 @@ public class UserController {
 
         //logout user
         HttpHeaders responseHeaders = new HttpHeaders();
-        //TODO add secure flag when using HTTPS
         responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
-                "Max-Age=0;HttpOnly=True;Path=/");
+                "Max-Age=0;HttpOnly=True;Path=/;Secure=True");
 
         return ResponseEntity.noContent().headers(responseHeaders).build();
     }

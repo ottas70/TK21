@@ -70,10 +70,9 @@ public class AuthenticationController {
             if(relationOptional.isPresent()) rootRelation = relationOptional.get();
         }
 
-        //TODO add secure flag when using HTTPS
                 HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Set-Cookie","Credentials=" + token + ";" +
-                "HttpOnly=True;Path=/");
+                "HttpOnly=True;Path=/;Secure=True");
 
         return new ResponseEntity<>(new UserResponseDto(user, rootRelation), responseHeaders, HttpStatus.OK);
     }
@@ -81,9 +80,8 @@ public class AuthenticationController {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ResponseEntity<?> logout() {
         HttpHeaders responseHeaders = new HttpHeaders();
-        //TODO add secure flag when using HTTPS
         responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
-                "Max-Age=0;HttpOnly=True;Path=/");
+                "Max-Age=0;HttpOnly=True;Path=/;Secure=True");
 
         return ResponseEntity.noContent().headers(responseHeaders).build();
     }
