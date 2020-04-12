@@ -20,15 +20,16 @@ public class InvitationService extends BaseService<InvitationDao, Invitation>{
 
     private final MailService mailService;
     private final ClubRelationService clubRelationService;
-    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    protected InvitationService(InvitationDao dao, MailService mailService, ClubRelationService clubRelationService, UserService userService, PasswordEncoder passwordEncoder) {
+    private UserService userService;
+
+    @Autowired
+    protected InvitationService(InvitationDao dao, MailService mailService, ClubRelationService clubRelationService, PasswordEncoder passwordEncoder) {
         super(dao);
         this.mailService = mailService;
         this.clubRelationService = clubRelationService;
-        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,6 +48,23 @@ public class InvitationService extends BaseService<InvitationDao, Invitation>{
         invite.setClub(club);
         invite.setCreatedAt(new Date());
         invite.setWebId(webId);
+        String token = UUID.randomUUID().toString();
+        while(this.findByConfirmationToken(token).isPresent()){
+            token = UUID.randomUUID().toString();
+        }
+        invite.setConfirmationToken(token);
+
+        this.persist(invite);
+        return invite;
+    }
+
+    @Transactional
+    public Invitation createPasswordForgotInvitation(User user){
+        Invitation invite = new Invitation();
+        invite.setUser(user);
+        invite.setClub(null);
+        invite.setCreatedAt(new Date());
+        invite.setWebId(0);
         String token = UUID.randomUUID().toString();
         while(this.findByConfirmationToken(token).isPresent()){
             token = UUID.randomUUID().toString();

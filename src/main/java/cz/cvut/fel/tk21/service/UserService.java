@@ -4,6 +4,7 @@ import cz.cvut.fel.tk21.config.properties.AppProperties;
 import cz.cvut.fel.tk21.dao.ConfirmationTokenDao;
 import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.ValidationException;
+import cz.cvut.fel.tk21.model.Invitation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 import cz.cvut.fel.tk21.model.mail.Mail;
@@ -32,16 +33,17 @@ public class UserService extends BaseService<UserDao, User> {
     private final MailService mailService;
     private final ConfirmationTokenDao confirmationTokenDao;
     private final AuthenticationManager authenticationManager;
-    private final AppProperties appProperties;
 
     @Autowired
-    protected UserService(UserDao dao, PasswordEncoder passwordEncoder, MailService mailService, ConfirmationTokenDao confirmationTokenDao, AuthenticationManager authenticationManager, AppProperties appProperties) {
+    private InvitationService invitationService;
+
+    @Autowired
+    protected UserService(UserDao dao, PasswordEncoder passwordEncoder, MailService mailService, ConfirmationTokenDao confirmationTokenDao, AuthenticationManager authenticationManager) {
         super(dao);
         this.passwordEncoder = passwordEncoder;
         this.mailService = mailService;
         this.confirmationTokenDao = confirmationTokenDao;
         this.authenticationManager = authenticationManager;
-        this.appProperties = appProperties;
     }
 
     @Transactional
@@ -174,6 +176,22 @@ public class UserService extends BaseService<UserDao, User> {
         this.update(user);
     }
 
+    @Transactional
+    public void forgottenPassword(User user){
+        if(!user.isVerifiedAccount()) throw new ValidationException("Uživatel není ověřen");
+        Invitation invite = invitationService.createPasswordForgotInvitation(user);
+        this.sendForgottenPasswordEmail(user.getEmail(), invite.getConfirmationToken());
+    }
+
+    @Transactional
+    public void resetPassword(Invitation invitation, String password){
+        User user = invitation.getUser();
+
+        user.setPassword(passwordEncoder.encode(password));
+        this.update(user);
+        invitationService.remove(invitation);
+    }
+
     private void sendEmailConfirmationEmail(String email, String token){
         Mail mail = new Mail();
         mail.setFrom("noreply@tk21.cz");
@@ -186,4 +204,18 @@ public class UserService extends BaseService<UserDao, User> {
 
         mailService.sendEmailConfirmation(mail);
     }
+
+    private void sendForgottenPasswordEmail(String email, String token){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(email);
+        mail.setSubject("Zapomenuté heslo");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("token", token);
+        mail.setModel(model);
+
+        mailService.sendForgottenPassword(mail);
+    }
+
 }

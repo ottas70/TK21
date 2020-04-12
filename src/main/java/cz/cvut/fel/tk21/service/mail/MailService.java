@@ -43,6 +43,16 @@ public class MailService {
     }
 
     @Async
+    public void sendForgottenPassword(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ForgottenPassword");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
     public void sendReservationSummary(Mail mail){
         try{
             MimeMessage mimeMessage = loadMessageTemplate(mail, "ReservationSummary");

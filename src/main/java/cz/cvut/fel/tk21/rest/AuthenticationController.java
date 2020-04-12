@@ -1,17 +1,24 @@
 package cz.cvut.fel.tk21.rest;
 
+import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.InvalidCredentialsException;
+import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.ClubRelation;
+import cz.cvut.fel.tk21.model.Invitation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.security.AuthenticationRequest;
 import cz.cvut.fel.tk21.rest.dto.Info;
+import cz.cvut.fel.tk21.rest.dto.user.EmailDto;
+import cz.cvut.fel.tk21.rest.dto.user.NewPasswordDto;
 import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
 import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
+import cz.cvut.fel.tk21.service.InvitationService;
 import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.service.security.UserDetailsService;
 import cz.cvut.fel.tk21.util.JwtUtil;
+import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,17 +40,19 @@ public class AuthenticationController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final ClubRelationService clubRelationService;
+    private final InvitationService invitationService;
 
     @Autowired
     private WebScraper webScraper;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, UserService userService, JwtUtil jwtUtil, ClubRelationService clubRelationService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, UserService userService, JwtUtil jwtUtil, ClubRelationService clubRelationService, InvitationService invitationService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.clubRelationService = clubRelationService;
+        this.invitationService = invitationService;
     }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
@@ -92,6 +101,29 @@ public class AuthenticationController {
             return ResponseEntity.ok(new Info("Email byl úspěšně ověřen"));
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @RequestMapping(value = "/password/forget", method = RequestMethod.POST)
+    public ResponseEntity<?> forgottenPassword(@RequestBody EmailDto dto){
+        String email = dto.getEmail();
+        if(!StringUtils.isValidEmail(email)) throw new BadRequestException("Nevalidní email");
+        if(userService.getCurrentUser() != null) throw new ValidationException("Již přihlášen");
+
+        Optional<User> user = userService.findUserByEmail(email);
+        user.orElseThrow(() -> new ValidationException("Uživatel nenalezen"));
+
+        userService.forgottenPassword(user.get());
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/passwordChange/{token}", method = RequestMethod.POST)
+    public ResponseEntity<?> confirmToken(@PathVariable("token") String token, @RequestBody NewPasswordDto newPasswordDto){
+        Optional<Invitation> invitation = invitationService.findByConfirmationToken(token);
+        invitation.orElseThrow(() -> new BadRequestException("Chybný dotaz"));
+
+        userService.resetPassword(invitation.get(), newPasswordDto.getPassword());
+
+        return ResponseEntity.ok().build();
     }
 
     //TODO remove
