@@ -344,7 +344,10 @@ public class ClubService extends BaseService<ClubDao, Club> {
     }
 
     private Season getDefaultSeason(int year){
-        return new Season(new FromToDate("04-01-" + year, "09-30-" + year), new FromToDate("10-01-" + year, "03-30-" + (year+1)));
+        Season season = new Season(new FromToDate("04-01-" + year, "09-30-" + year), new FromToDate("10-01-" + year, "03-30-" + (year+1)));
+        season.setSummerResEnabled(true);
+        season.setWinterResEnabled(true);
+        return season;
     }
 
     @Autowired

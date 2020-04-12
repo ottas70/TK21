@@ -23,7 +23,7 @@ public class SeasonDto {
             this.winter = season.getWinter();
             this.summer = season.getSummer();
             this.winterEnabled = season.isWinterResEnabled();
-            this.summerEnabled = season.isWinterResEnabled();
+            this.summerEnabled = season.isSummerResEnabled();
         }
     }
 

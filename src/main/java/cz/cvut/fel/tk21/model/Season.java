@@ -13,7 +13,7 @@ public class Season {
             @AttributeOverride(name = "to", column = @Column(name = "SUMMER_TO_DATE"))
     })
     private FromToDate summer;
-    private boolean summerResEnabled = true;
+    private boolean summerResEnabled;
 
     @Embedded
     @AttributeOverrides({
@@ -21,7 +21,7 @@ public class Season {
             @AttributeOverride(name = "to", column = @Column(name = "WINTER_TO_DATE"))
     })
     private FromToDate winter;
-    private boolean winterResEnabled = true;
+    private boolean winterResEnabled;
 
     public Season() {
     }
