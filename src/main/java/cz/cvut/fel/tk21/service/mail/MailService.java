@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.service.mail;
 
 import cz.cvut.fel.tk21.config.properties.AppProperties;
 import cz.cvut.fel.tk21.model.mail.Mail;
+import cz.cvut.fel.tk21.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,7 @@ public class MailService {
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
 
         mail.getModel().put("url", appProperties.getUrl());
+        mail.getModel().put("year", DateUtils.getCurrentYear());
 
         Context context = new Context();
         context.setVariables(mail.getModel());
