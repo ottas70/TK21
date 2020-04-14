@@ -5,17 +5,19 @@
 	<title>Rekapitulace rezervace</title>
 </head>
 <body>
-	<div style="display: flex; flex-wrap: wrap; padding: 15px; font-family: sans-serif;">
-		<div style="margin: 0 20px 20px 0;">
+	<div style="display: block; padding: 15px; font-family: sans-serif;">
+		<div style="margin: 0 20px 20px 0; display: block;">
 			<img th:src="@{${url} + '/logoEmail.png'}" alt="Logo" style="width: 70px;">
 		</div>
-		<div style="flex-grow: 1; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; border-right: 20px solid #CE6B27;">
+		<div style="display: block; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; border-right: 20px solid #CE6B27;">
 			<p style="font-weight: bold;">Vážený/á pane/paní,</p>
 			<p style="margin-top: 15px;">na Vaše jméno ([[${name}]] [[${surname}]]) byla vytvořena rezervace v <a th:href="@{${url} + '/#/klub/' + ${clubID}}" style="color: #CE6B27;">[[${clubName}]]</a>:</p>
 			<div style="margin-top: 15px; background: #f9f1eb; max-width: 500px; padding: 20px; border-radius: 10px;">
 				<div>Kurt: [[${courtName}]]</div>
 				<div style="font-size: 20px; font-weight: bold;">[[${day}]].&nbsp;[[${month}]].&nbsp;[[${reservationYear}]] [[${timeFrom}]]&nbsp;-&nbsp;[[${timeTo}]]</div>
-				<a th:href="@{${url} + '/#/smazat-rezervaci/' + ${token}}" style="display: block; margin-top: 10px;"><div style="text-decoration: none; background: #CE6B27; color: white; text-decoration: none; padding: 10px; border-radius: 10px; text-align: center;">Zrušit rezervaci</div></a>
+				<a th:href="@{${url} + '/#/smazat-rezervaci/' + ${token}}" style="margin-top: 15px; color: white; text-decoration: none; cursor: pointer; background-color: #CE6B27; padding: 15px 25px; border-radius: 5px; display: block;">
+					Zrušit rezervaci
+				</a>
 			</div>
 			<p style="margin-top: 15px;">
 				Pokud jste si žádnou rezervaci nedělali, zrušte ji prosím kliknutím na tlačítko výše, nebo napište na kontaktní e-mail klubu <a th:href="@{'mailto:' + ${clubEmail}}" style="color: #CE6B27;">[[${clubEmail}]]</a>.
@@ -25,7 +27,7 @@
 				<a th:href="${url}" style="color: #CE6B27;">TK21 - tenisový klub 21. století</a>
 			</p>
 		</div>
-		<div style="flex: 100%; padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
+		<div style="display: block; padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
 			&copy; [[${year}]] Ondřej Mareš a Otto Vodvářka | <a th:href="${url}" style="color: #CE6B27;">www.tk21.cz</a> | <a href="mailto:info@tk21.cz" style="color: #CE6B27;">info@tk21.cz</a>
 		</div>
 	</div>
