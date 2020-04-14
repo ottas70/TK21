@@ -15,7 +15,7 @@
 			<p style="margin-top: 15px;">Váš účet je propojený s <a th:href="${cztenisUserPage}" style="color: #CE6B27;">touto stránkou na cztenis.cz</a>. Jedná-li se o Vás, dokončete vytvoření účtu tím, že kliknete na tlačítko níže
 			a nastavíte si heslo.</p>
 			<p style="margin-top: 15px;">
-				<a th:href="@{${url} + '/#/zmena-hesla/' + ${token}" style="color: white;"><div style="font-size: 1.2em; cursor: pointer; background-color: #CE6B27; padding: 15px 25px; text-transform: uppercase; border-radius: 50px; display: inline-block;">
+				<a th:href="@{${url} + '/#/zmena-hesla/' + ${token}" style="color: white;"><div style="text-decoration: none; font-size: 1.2em; cursor: pointer; background-color: #CE6B27; padding: 15px 25px; text-transform: uppercase; border-radius: 50px; display: inline-block;">
 					NASTAVIT HESLO
 				</div></a>
 			</p>
@@ -27,7 +27,7 @@
 				<a th:href="${url}" style="color: #CE6B27;">TK21 - tenisový klub 21. století</a>
 			</p>
 		</div>
-		<div style="flex: 100%; margin-top: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
+		<div style="flex: 100%; padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
 			&copy; [[${year}]] Ondřej Mareš a Otto Vodvářka | <a th:href="${url}" style="color: #CE6B27;">www.tk21.cz</a> | <a href="mailto:info@tk21.cz" style="color: #CE6B27;">info@tk21.cz</a>
 		</div>
 	</div>

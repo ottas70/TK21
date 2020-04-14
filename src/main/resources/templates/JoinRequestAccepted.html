@@ -12,15 +12,15 @@
 	<div style="flex-grow: 1; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; border-right: 20px solid #CE6B27;">
 		<p style="font-weight: bold;">Vážený/á pane/paní,</p>
 		<p style="margin-top: 15px;">administrátor klubu <strong>přijal</strong> Vaši žádost o členství v klubu <a th:href="@{${url} + '/#/klub/' + ${clubID}}" style="color: #CE6B27;">[[${clubName}]]</a>.</p>
-		<h3>Jste závodní hráč?</h3>
-		<p>Pokud jste závodní hráč tohoto klubu, kontaktujte administrátora klubu (<a th:href="@{'mailto:' + ${clubEmail}}" style="color: #CE6B27;">[[${clubEmail}]]</a>), který
+		<h3 style="margin-top: 15px;">Jste závodní hráč?</h3>
+		<p style="margin-top: 15px;">Pokud jste závodní hráč tohoto klubu, kontaktujte administrátora klubu (<a th:href="@{'mailto:' + ${clubEmail}}" style="color: #CE6B27;">[[${clubEmail}]]</a>), který
 		Vás může spojit se záznamy o Vás na <a th:href="${url}" style="color: #CE6B27;">www.cztenis.cz</a>.</p>
 		<p style="margin-top: 15px; font-weight: bold;">
 			S práním hezkého dne<br/>
 			<a th:href="${url}" style="color: #CE6B27;">TK21 - tenisový klub 21. století</a>
 		</p>
 	</div>
-	<div style="flex: 100%; margin-top: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
+	<div style="flex: 100%; padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
 		&copy; [[${year}]] Ondřej Mareš a Otto Vodvářka | <a th:href="${url}" style="color: #CE6B27;">www.tk21.cz</a> | <a href="mailto:info@tk21.cz" style="color: #CE6B27;">info@tk21.cz</a>
 	</div>
 </div>

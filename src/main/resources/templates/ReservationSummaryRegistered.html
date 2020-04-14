@@ -14,14 +14,14 @@
 			<p style="margin-top: 15px;">na Vaše jméno ([[${name}]] [[${surname}]]) byla vytvořena rezervace v <a th:href="@{${url} + '/#/klub/' + ${clubID}}" style="color: #CE6B27;">[[${clubName}]]</a>:</p>
 			<div style="margin-top: 15px; background: #f9f1eb; max-width: 500px; padding: 20px; border-radius: 10px;">
 				<div>Kurt: [[${courtName}]]</div>
-				<div style="font-size: 1.2em; font-weight: bold;">[[${day}]].&nbsp;[[${month}]].&nbsp;[[${reservationYear}]] [[${timeFrom}]]&nbsp;-&nbsp;[[${timeTo}]]</div>
+				<div style="font-size: 20px; font-weight: bold;">[[${day}]].&nbsp;[[${month}]].&nbsp;[[${reservationYear}]] [[${timeFrom}]]&nbsp;-&nbsp;[[${timeTo}]]</div>
 			</div>
 			<p style="margin-top: 15px; font-weight: bold;">
 				S práním hezkého dne<br/>
 				<a th:href="${url}" style="color: #CE6B27;">TK21 - tenisový klub 21. století</a>
 			</p>
 		</div>
-		<div style="flex: 100%; margin-top: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
+		<div style="flex: 100%; padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
 			&copy; [[${year}]] Ondřej Mareš a Otto Vodvářka | <a th:href="${url}" style="color: #CE6B27;">www.tk21.cz</a> | <a href="mailto:info@tk21.cz" style="color: #CE6B27;">info@tk21.cz</a>
 		</div>
 	</div>
