@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -139,6 +140,12 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         } else {
             Optional<User> userOptional = userService.findUserByEmail(reservation.getEmail());
             if(userOptional.isPresent()) throw new UnauthorizedException("USER EXISTS");
+
+            String token = UUID.randomUUID().toString();
+            while(dao.findReservationsByToken(token).isPresent()){
+                token = UUID.randomUUID().toString();
+            }
+            reservation.setToken(token);
         }
 
         if(reservation.getEmail() == null || reservation.getName() == null || reservation.getSurname() == null) throw new ValidationException("Špatně vyplněné údaje.");
@@ -148,15 +155,9 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         courtOptional.orElseThrow(() -> new NotFoundException("Tenisový kurt nebyl nalezen."));
         TennisCourt court = courtOptional.get();
 
-        String token = UUID.randomUUID().toString();
-        while(dao.findReservationsByToken(token).isPresent()){
-            token = UUID.randomUUID().toString();
-        }
-
         reservation.setClub(club);
         reservation.setTennisCourt(court);
         reservation.setDate(date);
-        reservation.setToken(token);
         reservation.setCyclicReservationId(-1);
 
         if(!courtService.isCourtAvailable(club, court, date, dto.getTime())) throw new ValidationException("Kurt není v tento čas k dispozici.");
@@ -303,17 +304,52 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         return reservation;
     }
 
-    public void sendReservationSummaryEmail(Reservation reservation){
+    public void sendReservationSummaryRegisteredPlayerEmail(Reservation reservation, User user, Club club){
         Mail mail = new Mail();
         mail.setFrom("noreply@tk21.cz");
-        mail.setTo(reservation.getUser() == null ? reservation.getEmail() : reservation.getUser().getEmail());
-        mail.setSubject("Shrnutí rezervace");
+        mail.setTo(user.getEmail());
+        mail.setSubject("Rekapitulace rezervace");
 
         Map<String, Object> model = new HashMap<>();
-        model.put("deleteToken", reservation.getToken());
+        model.put("name", user.getName());
+        model.put("surname", user.getSurname());
+        model.put("clubID", club.getId());
+        model.put("clubName", club.getName());
+        model.put("courtName", reservation.getTennisCourt().getName());
+        model.put("day", String.format("%02d", reservation.getDate().getDayOfMonth()));
+        model.put("month", String.format("%02d", reservation.getDate().getMonthValue()));
+        model.put("reservationYear", reservation.getDate().getYear());
+        model.put("timeFrom", reservation.getFromToTime().getFrom().format(DateTimeFormatter.ofPattern("HH:mm")));
+        model.put("timeTo", reservation.getFromToTime().getTo().format(DateTimeFormatter.ofPattern("HH:mm")));
+
         mail.setModel(model);
 
-        mailService.sendReservationSummary(mail);
+        mailService.sendReservationSummaryRegistered(mail);
+    }
+
+    public void sendReservationSummaryNonRegisteredPlayerEmail(Reservation reservation, Club club){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(reservation.getEmail());
+        mail.setSubject("Rekapitulace rezervace");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", reservation.getName());
+        model.put("surname", reservation.getSurname());
+        model.put("clubID", club.getId());
+        model.put("clubName", club.getName());
+        model.put("courtName", reservation.getTennisCourt().getName());
+        model.put("day", String.format("%02d", reservation.getDate().getDayOfMonth()));
+        model.put("month", String.format("%02d", reservation.getDate().getMonthValue()));
+        model.put("reservationYear", reservation.getDate().getYear());
+        model.put("timeFrom", reservation.getFromToTime().getFrom().format(DateTimeFormatter.ofPattern("HH:mm")));
+        model.put("timeTo", reservation.getFromToTime().getTo().format(DateTimeFormatter.ofPattern("HH:mm")));
+        model.put("token", reservation.getToken());
+        model.put("clubEmail", club.getEmails().isEmpty() ? "Email nenalezen" : club.getEmails().stream().findFirst().get());
+
+        mail.setModel(model);
+
+        mailService.sendReservationSummaryNonRegistered(mail);
     }
 
 

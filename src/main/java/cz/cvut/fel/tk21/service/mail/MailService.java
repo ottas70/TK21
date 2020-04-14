@@ -44,6 +44,16 @@ public class MailService {
     }
 
     @Async
+    public void sendClubRegisteredInfo(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ClubRegisteredInfo");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
     public void sendForgottenPassword(Mail mail){
         try{
             MimeMessage mimeMessage = loadMessageTemplate(mail, "ForgottenPassword");
@@ -54,9 +64,59 @@ public class MailService {
     }
 
     @Async
-    public void sendReservationSummary(Mail mail){
+    public void sendReservationSummaryRegistered(Mail mail){
         try{
-            MimeMessage mimeMessage = loadMessageTemplate(mail, "ReservationSummary");
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ReservationSummaryRegistered");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
+    public void sendReservationSummaryNonRegistered(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ReservationSummaryNonRegistered");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
+    public void sendJoinRequestSummary(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "JoinRequestSummary");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
+    public void sendJoinRequestSummaryAdmin(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "JoinRequestSummaryAdmin");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
+    public void sendJoinRequestAccepted(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "JoinRequestAccepted");
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            log.error("Error while sending an email: " + ex.getMessage());
+        }
+    }
+
+    @Async
+    public void sendJoinRequestDenied(Mail mail){
+        try{
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "JoinRequestDenied");
             javaMailSender.send(mimeMessage);
         } catch (MessagingException ex) {
             log.error("Error while sending an email: " + ex.getMessage());
@@ -76,7 +136,7 @@ public class MailService {
     @Async
     public void sendProfessionalPlayerInviteNonRegisteredPlayer(Mail mail){
         try{
-            MimeMessage mimeMessage = loadMessageTemplate(mail, "ProfessionalPlayerInvitationNonRegisteredPlayer");
+            MimeMessage mimeMessage = loadMessageTemplate(mail, "ProfessionalPlayerInvitationNonRegistered");
             javaMailSender.send(mimeMessage);
         } catch (MessagingException ex) {
             log.error("Error while sending an email: " + ex.getMessage());

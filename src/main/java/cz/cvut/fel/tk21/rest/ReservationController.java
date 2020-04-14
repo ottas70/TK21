@@ -3,11 +3,13 @@ package cz.cvut.fel.tk21.rest;
 import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.Reservation;
+import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.rest.dto.reservation.CreateReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.reservation.UpdateReservationDto;
 import cz.cvut.fel.tk21.service.ClubService;
 import cz.cvut.fel.tk21.service.ReservationService;
+import cz.cvut.fel.tk21.service.UserService;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import cz.cvut.fel.tk21.ws.service.ReservationWsService;
 import cz.cvut.fel.tk21.ws.dto.helperDto.UpdateType;
@@ -31,13 +33,15 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final ClubService clubService;
     private final ReservationWsService reservationWsService;
+    private final UserService userService;
 
     @Autowired
-    public ReservationController(RequestBodyValidator validator, ReservationService reservationService, ClubService clubService, ReservationWsService reservationWsService) {
+    public ReservationController(RequestBodyValidator validator, ReservationService reservationService, ClubService clubService, ReservationWsService reservationWsService, UserService userService) {
         this.validator = validator;
         this.reservationService = reservationService;
         this.clubService = clubService;
         this.reservationWsService = reservationWsService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +76,12 @@ public class ReservationController {
         //Websocket message for subscribers
         reservationWsService.sendUpdateMessageToSubscribers(id, reservationDto.getDate(), reservation, UpdateType.CREATE);
 
-        reservationService.sendReservationSummaryEmail(reservation);
+        User currentUser = userService.getCurrentUser();
+        if(currentUser != null){
+            reservationService.sendReservationSummaryRegisteredPlayerEmail(reservation, currentUser, club.get());
+        } else {
+            reservationService.sendReservationSummaryNonRegisteredPlayerEmail(reservation, club.get());
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ReservationDto(reservation, reservationService.isCurrentUserAllowedToEditReservation(reservation), reservationService.isMine(reservation)));
     }

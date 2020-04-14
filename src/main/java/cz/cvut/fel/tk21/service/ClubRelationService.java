@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelation> {
@@ -90,6 +91,11 @@ public class ClubRelationService extends BaseService<ClubRelationDao, ClubRelati
     @Transactional(readOnly = true)
     public List<ClubRelation> findAllRelationsWithRole(User user, UserRole role){
         return dao.findAllRelationsWithRole(user, role);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> findAllUsersWithRelation(Club club, UserRole role){
+        return this.findAllRelationsByClubAndRole(club, UserRole.ADMIN).stream().map(ClubRelation::getUser).collect(Collectors.toList());
     }
 
     @Transactional

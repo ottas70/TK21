@@ -58,8 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/*", "/static/**",
-                "/api/authenticate", "/api/user", "/api/logout", "/api/confirm",
-                        "/api/password/forget", "/api/passwordChange/*", "/api/reservation/**")
+                "/api/authenticate", "/api/user", "/api/logout", "/api/confirm", "/api/reservation/**")
+                .permitAll();
+
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/password/forget", "/api/passwordChange/*")
                 .permitAll();
 
         http.authorizeRequests()

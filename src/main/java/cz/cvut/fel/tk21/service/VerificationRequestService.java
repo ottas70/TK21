@@ -5,17 +5,19 @@ import cz.cvut.fel.tk21.dao.VerificationRequestDao;
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
-import cz.cvut.fel.tk21.model.Club;
-import cz.cvut.fel.tk21.model.User;
-import cz.cvut.fel.tk21.model.UserRole;
-import cz.cvut.fel.tk21.model.VerificationRequest;
+import cz.cvut.fel.tk21.model.*;
+import cz.cvut.fel.tk21.model.mail.Mail;
+import cz.cvut.fel.tk21.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class VerificationRequestService extends BaseService<VerificationRequestDao, VerificationRequest>{
@@ -28,6 +30,9 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
 
     @Autowired
     private ClubService clubService;
+
+    @Autowired
+    private MailService mailService;
 
     protected VerificationRequestService(VerificationRequestDao dao) {
         super(dao);
@@ -50,6 +55,12 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         verificationRequest.setDenied(false);
 
         this.persist(verificationRequest);
+
+        this.sendVerificationRequestSummaryEmail(user.getEmail(), club, verificationRequest);
+
+        for (User admin : clubRelationService.findAllUsersWithRelation(club, UserRole.ADMIN)){
+            this.sendVerificationRequestSummaryAdminEmail(admin.getEmail(), club, verificationRequest);
+        }
     }
 
     @Transactional
@@ -86,8 +97,8 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         verificationRequest.setAccepted(true);
 
         this.update(verificationRequest);
-
         clubRelationService.addUserToClub(verificationRequest.getClub(), verificationRequest.getUser(), UserRole.RECREATIONAL_PLAYER);
+        this.sendVerificationRequestAcceptedEmail(verificationRequest);
     }
 
     @Transactional
@@ -96,6 +107,7 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         verificationRequest.setDenied(true);
 
         this.update(verificationRequest);
+        this.sendVerificationRequestDeniedEmail(verificationRequest);
     }
 
     @Transactional
@@ -109,4 +121,84 @@ public class VerificationRequestService extends BaseService<VerificationRequestD
         return dao.existsUnresolvedRequest(club, user);
     }
 
+    private void sendVerificationRequestSummaryEmail(String email, Club club, VerificationRequest request){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(email);
+        mail.setSubject("Rekapitulace žádosti o členství");
+
+        LocalDateTime localDateTime = request.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDate localDate = localDateTime.toLocalDate();
+        LocalTime localTime = localDateTime.toLocalTime();
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("clubName", club.getName());
+        model.put("day", String.format("%02d", localDate.getDayOfMonth()));
+        model.put("month", String.format("%02d", localDate.getMonthValue()));
+        model.put("reservationYear", localDate.getYear());
+        model.put("time", localTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+
+        mail.setModel(model);
+
+        mailService.sendJoinRequestSummary(mail);
+    }
+
+    private void sendVerificationRequestSummaryAdminEmail(String email, Club club, VerificationRequest request){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(email);
+        mail.setSubject("Rekapitulace žádosti o členství");
+
+        LocalDateTime localDateTime = request.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDate localDate = localDateTime.toLocalDate();
+        LocalTime localTime = localDateTime.toLocalTime();
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("clubName", club.getName());
+        model.put("day", String.format("%02d", localDate.getDayOfMonth()));
+        model.put("month", String.format("%02d", localDate.getMonthValue()));
+        model.put("reservationYear", localDate.getYear());
+        model.put("time", localTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+
+        mail.setModel(model);
+
+        mailService.sendJoinRequestSummaryAdmin(mail);
+    }
+
+    private void sendVerificationRequestAcceptedEmail(VerificationRequest request){
+        Club club = request.getClub();
+
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(request.getUser().getEmail());
+        mail.setSubject("Rozhodnutí žádosti o členství");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("clubName", club.getName());
+        model.put("clubEmail", club.getEmails().isEmpty() ? "Email nenalezen" : club.getEmails().stream().findFirst().get());
+
+        mail.setModel(model);
+
+        mailService.sendJoinRequestAccepted(mail);
+    }
+
+    private void sendVerificationRequestDeniedEmail(VerificationRequest request){
+        Club club = request.getClub();
+
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(request.getUser().getEmail());
+        mail.setSubject("Rozhodnutí žádosti o členství");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("clubName", club.getName());
+
+        mail.setModel(model);
+
+        mailService.sendJoinRequestDenied(mail);
+    }
 }

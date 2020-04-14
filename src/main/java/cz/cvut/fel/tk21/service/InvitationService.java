@@ -85,8 +85,7 @@ public class InvitationService extends BaseService<InvitationDao, Invitation>{
         if(clubRelationService.isMemberOf(club, user)){
             clubRelationService.deleteRoleWithoutPermissionCheck(club, user, UserRole.RECREATIONAL_PLAYER);
             clubRelationService.addRoleWithoutPermissionCheck(club, user, UserRole.PROFESSIONAL_PLAYER);
-            //TODO uncomment
-            //sendInvitationAcceptedMail(invitation);
+            sendInvitationAcceptedMails(invitation);
         } else {
             clubRelationService.addUserToClub(club, user, UserRole.PROFESSIONAL_PLAYER);
         }
@@ -111,45 +110,58 @@ public class InvitationService extends BaseService<InvitationDao, Invitation>{
 
         clubRelationService.addUserToClub(club, user, UserRole.PROFESSIONAL_PLAYER);
 
-        //TODO uncomment
-        //sendInvitationAcceptedMail(invitation);
+        sendInvitationAcceptedMails(invitation);
     }
 
-    public void sendProfessionalPlayerInviteMail(Invitation invitation){
+    public void sendProfessionalPlayerInviteMail(Invitation invitation, long webId){
+        Club club = invitation.getClub();
+
         Mail mail = new Mail();
         mail.setFrom("noreply@tk21.cz");
         mail.setTo(invitation.getUser().getEmail());
-        mail.setSubject("Potvrzení jako závodní hráč");
+        mail.setSubject("Potvrďte zda jste závodní hráč");
 
         Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("name", club.getName());
+        model.put("cztenisUserPage", "http://www.cztenis.cz/hrac/" + webId);
         model.put("token", invitation.getConfirmationToken());
         mail.setModel(model);
 
         mailService.sendProfessionalPlayerInvite(mail);
     }
 
-    public void sendProfessionalPlayerInviteMailNonRegisteredPlayer(Invitation invitation){
+    public void sendProfessionalPlayerInviteMailNonRegisteredPlayer(Invitation invitation, long webId){
+        Club club = invitation.getClub();
+
         Mail mail = new Mail();
         mail.setFrom("noreply@tk21.cz");
         mail.setTo(invitation.getUser().getEmail());
         mail.setSubject("Pozvání do aplikace TK21");
 
         Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("name", club.getName());
+        model.put("cztenisUserPage", "http://www.cztenis.cz/hrac/" + webId);
         model.put("token", invitation.getConfirmationToken());
         mail.setModel(model);
 
         mailService.sendProfessionalPlayerInviteNonRegisteredPlayer(mail);
     }
 
-    public void sendInvitationAcceptedMail(Invitation invitation){
-        for(String email : invitation.getClub().getEmails()){
+    public void sendInvitationAcceptedMails(Invitation invitation){
+        for(User user : clubRelationService.findAllUsersWithRelation(invitation.getClub(), UserRole.ADMIN)){
             Mail mail = new Mail();
             mail.setFrom("noreply@tk21.cz");
-            mail.setTo(email);
-            mail.setSubject("Hráč potvrdil účast ve vašem klubu");
+            mail.setTo(user.getEmail());
+            mail.setSubject("Máte nového závodního hráče");
 
             Map<String, Object> model = new HashMap<>();
-            model.put("name", invitation.getUser().getName() + " " + invitation.getUser().getSurname());
+            model.put("name", invitation.getUser().getName());
+            model.put("surname", invitation.getUser().getSurname());
+            model.put("email", invitation.getUser().getEmail());
+            model.put("cztenisUserPage", "http://www.cztenis.cz/hrac/" + invitation.getUser().getWebId());
+            model.put("clubId", invitation.getClub().getId());
             mail.setModel(model);
 
             mailService.sendInvitationAccepted(mail);

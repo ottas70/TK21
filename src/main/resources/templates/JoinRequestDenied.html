@@ -2,7 +2,7 @@
 <html lang="cs" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Máte nového závodního hráče</title>
+	<title>Rozhodnutí žádosti o členství</title>
 </head>
 <body>
 	<div style="display: flex; flex-wrap: wrap; padding: 15px; font-family: sans-serif;">
@@ -11,10 +11,7 @@
 		</div>
 		<div style="flex-grow: 1; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; border-right: 20px solid #CE6B27;">
 			<p style="font-weight: bold;">Vážený/á pane/paní,</p>
-			<p style="margin-top: 15px;">hráč [[${name}]] [[${surname}]] s e-mailem <a th:href="@{'mailto:'+${email}}" style="color: #CE6B27;">[[${email}]]</a>, potvrdil, že je závodní hráč s <a th:href="${cztenisUserPage}" style="color: #CE6B27;">touto stránkou na cztenis.cz</a>.</p>
-			<p style="margin-top: 15px;">
-				Pokud jste nechtěl/a tohoto hráče označit jako závodního, přejděte přihlášen/a v aplikaci na <a th:href="@{${url}+'/#/klub/'+${clubId}}" style="color: #CE6B27;">stránku Vašeho klubu</a>, poté běžte do sekce závodní hráči a hráče degradujte na rekreačního.
-			</p>
+			<p style="margin-top: 15px;">administrátor klubu <strong>zamítl</strong> Vaši žádost o členství v klubu <a th:href="@{${url} + '/#/klub/' + ${clubID}}" style="color: #CE6B27;">[[${clubName}]]</a>, nesouhlasíte-li s tímto rozhodnutím, kontaktujte klub a zažádejte o členství znovu.</p>
 			<p style="margin-top: 15px; font-weight: bold;">
 				S práním hezkého dne<br/>
 				<a th:href="${url}" style="color: #CE6B27;">TK21 - tenisový klub 21. století</a>

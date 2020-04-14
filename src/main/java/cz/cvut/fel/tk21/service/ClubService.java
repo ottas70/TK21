@@ -7,7 +7,9 @@ import cz.cvut.fel.tk21.exception.NotFoundException;
 import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.*;
+import cz.cvut.fel.tk21.model.mail.Mail;
 import cz.cvut.fel.tk21.rest.dto.club.*;
+import cz.cvut.fel.tk21.service.mail.MailService;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private MailService mailService;
 
     protected ClubService(ClubDao dao) {
         super(dao);
@@ -75,6 +80,8 @@ public class ClubService extends BaseService<ClubDao, Club> {
         dao.persist(club);
         clubRelationService.addUserToClub(club, user, UserRole.ADMIN);
 
+        this.sendClubRegisteredInfoEmail(user.getEmail(), club);
+
         return club.getId();
     }
 
@@ -100,6 +107,8 @@ public class ClubService extends BaseService<ClubDao, Club> {
 
         dao.update(club);
         clubRelationService.addUserToClub(club, user, UserRole.ADMIN);
+
+        this.sendClubRegisteredInfoEmail(user.getEmail(), club);
     }
 
     @Transactional
@@ -353,5 +362,19 @@ public class ClubService extends BaseService<ClubDao, Club> {
     @Autowired
     public void setClubRelationService(ClubRelationService clubRelationService) {
         this.clubRelationService = clubRelationService;
+    }
+
+    private void sendClubRegisteredInfoEmail(String email, Club club){
+        Mail mail = new Mail();
+        mail.setFrom("noreply@tk21.cz");
+        mail.setTo(email);
+        mail.setSubject("Registrace klubu");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("clubID", club.getId());
+        model.put("name", club.getName());
+        mail.setModel(model);
+
+        mailService.sendClubRegisteredInfo(mail);
     }
 }
