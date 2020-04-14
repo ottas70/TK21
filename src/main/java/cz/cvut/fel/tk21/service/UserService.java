@@ -10,6 +10,7 @@ import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 import cz.cvut.fel.tk21.model.mail.Mail;
 import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.service.mail.MailService;
+import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,17 +49,19 @@ public class UserService extends BaseService<UserDao, User> {
 
     @Transactional
     public int createUser(UserDto userDto) {
-        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
         if (!dao.isEmailUnique(userDto.getEmail())) {
             throw new ValidationException("Účet s tímto emailem již existuje");
+        }
+
+        if(!StringUtils.isValidPassword(userDto.getPassword())){
+            throw new ValidationException("Nevalidní heslo");
         }
 
         User user = new User();
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());
         user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setVerifiedAccount(false);
 
         ConfirmationToken token = new ConfirmationToken(user);
@@ -164,6 +167,7 @@ public class UserService extends BaseService<UserDao, User> {
 
     @Transactional
     public void updatePassword(String oldPass, String newPass){
+        if(!StringUtils.isValidPassword(newPass)) throw new ValidationException("Nevalidní heslo");
         User user = getCurrentUser();
 
         try{
@@ -186,6 +190,8 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public void resetPassword(Invitation invitation, String password){
         User user = invitation.getUser();
+
+        if(!StringUtils.isValidPassword(password)) throw new ValidationException("Nevalidní heslo");
 
         user.setPassword(passwordEncoder.encode(password));
         this.update(user);

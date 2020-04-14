@@ -42,4 +42,8 @@ public class StringUtils {
                 || letter.equals("E") || letter.equals("F") || letter.equals("G") || letter.equals("H");
     }
 
+    public static boolean isValidPassword(String password){
+        return password.length() > 6;
+    }
+
 }

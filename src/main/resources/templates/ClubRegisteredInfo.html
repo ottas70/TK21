@@ -5,26 +5,26 @@
 	<title>Vítejte mezi kluby 21. století</title>
 </head>
 <body>
-	<div style="display: flex; flex-wrap: wrap; padding: 15px; font-family: sans-serif;">
-		<div style="margin: 0 20px 20px 0;">
+	<div style="padding: 15px; font-family: sans-serif;">
+		<div style="margin: 0 20px 20px 0; display: block;">
 			<img th:src="@{${url} + '/logoEmail.png'}" alt="Logo" style="width: 70px;">
 		</div>
-		<div style="flex-grow: 1; color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; border-right: 20px solid #CE6B27;">
+		<div style="color: #CE6B27; background-color: #F2DCCA; padding: 15px; border-radius: 10px; border-right: 20px solid #CE6B27; display: block;">
 			<p style="font-weight: bold;">Vážený/á pane/paní,</p>
 			<p style="margin-top: 15px;">úspěšně jste zaregistrovali klub <a th:href="@{${url} + '/#/klub/' + ${clubID}}" style="color: #CE6B27;">[[${name}]]</a>. Děkujeme, že hodláte využívat naši aplikaci, která z Vašeho klubu dělá klub 21. století.</p>
 			<p style="margin-top: 15px;">Pokud jste klub neregistrovali, kontaktujte Nás prosím na <a href="mailto:info@tk21.cz" style="color: #CE6B27;">info@tk21.cz</a>.</p>
-			<h3 style="margin-top: 15px;">Co dále?</h3>
+			<p style="margin-top: 15px; font-family: sans-serif; color: #CE6B27; font-size: 20px; font-weight: bold;">Co dále?</p>
 			<p style="margin-top: 15px;">První Vaše kroky by nyní měly vést do sekce <i>nastavení klubu</i>. Přihlášen běžte na hlavní stránku klubu, poté v horním panelu uvidíte položku <i>nastavení klubu</i>. Nezapomeňte nastavit základní informace:</p>
-			<div style="margin-top: 15px; display: flex; align-items: center;"><div style="height: 30px; width: 30px; border: 2px solid #CE6B27; display: flex; align-items: center; justify-content: center; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px;">1.</div> Kurty</div>
-			<div style="margin-top: 15px; display: flex; align-items: center;"><div style="height: 30px; width: 30px; border: 2px solid #CE6B27; display: flex; align-items: center; justify-content: center; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px;">2.</div> Běžnou otevírací dobu</div>
-			<div style="margin-top: 15px; display: flex; align-items: center;"><div style="height: 30px; width: 30px; border: 2px solid #CE6B27; display: flex; align-items: center; justify-content: center; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px;">3.</div> Sezóny</div>
-			<div style="margin-top: 15px; display: flex; align-items: center;"><div style="height: 30px; width: 30px; border: 2px solid #CE6B27; display: flex; align-items: center; justify-content: center; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px;">4.</div> Vlastnosti Vašeho klubu</div>
-			<p style="margin-top: 15px; font-weight: bold;">
+			<p style="margin-top: 30px; vertical-align: middle;"><span style="border: 2px solid #CE6B27; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px; padding: 10px 12px;">1.</span> Kurty</p>
+			<p style="margin-top: 30px; vertical-align: middle;"><span style="border: 2px solid #CE6B27; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px; padding: 10px 12px;">2.</span> Běžnou otevírací dobu</p>
+			<p style="margin-top: 30px; vertical-align: middle;"><span style="border: 2px solid #CE6B27; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px; padding: 10px 12px;">3.</span> Sezóny</p>
+			<p style="margin-top: 30px; vertical-align: middle;"><span style="border: 2px solid #CE6B27; border-radius: 100%; font-weight: bold; background: #F7F176; margin-right: 10px; padding: 10px 12px;">4.</span> Vlastnosti Vašeho klubu</p>
+			<p style="margin-top: 30px; font-weight: bold;">
 				S práním hezkého dne<br/>
 				<a th:href="${url}" style="color: #CE6B27;">TK21 - tenisový klub 21. století</a>
 			</p>
 		</div>
-		<div style="flex: 100%; padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27;">
+		<div style="padding: 20px; text-align: center; font-size: 0.8em; color: #CE6B27; display: block;">
 			&copy; [[${year}]] Ondřej Mareš a Otto Vodvářka | <a th:href="${url}" style="color: #CE6B27;">www.tk21.cz</a> | <a href="mailto:info@tk21.cz" style="color: #CE6B27;">info@tk21.cz</a>
 		</div>
 	</div>
