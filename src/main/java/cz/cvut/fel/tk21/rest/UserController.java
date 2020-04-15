@@ -11,12 +11,10 @@ import cz.cvut.fel.tk21.rest.dto.Info;
 import cz.cvut.fel.tk21.rest.dto.club.BasicClubInfoDto;
 import cz.cvut.fel.tk21.rest.dto.club.ClubRelationshipDto;
 import cz.cvut.fel.tk21.rest.dto.post.PostsWithClubPaginatedDto;
+import cz.cvut.fel.tk21.rest.dto.reservation.ReservationDto;
 import cz.cvut.fel.tk21.rest.dto.teams.CompetitionDto;
 import cz.cvut.fel.tk21.rest.dto.tournament.TournamentDto;
-import cz.cvut.fel.tk21.rest.dto.user.PasswordChangeDto;
-import cz.cvut.fel.tk21.rest.dto.user.UserCompetitionsDto;
-import cz.cvut.fel.tk21.rest.dto.user.UserDto;
-import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
+import cz.cvut.fel.tk21.rest.dto.user.*;
 import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +42,10 @@ public class UserController {
     private final PostService postService;
     private final TeamCompetitionService teamCompetitionService;
     private final TournamentService tournamentService;
+    private final ReservationService reservationService;
 
     @Autowired
-    public UserController(UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, ClubService clubService, PostService postService, TeamCompetitionService teamCompetitionService, TournamentService tournamentService) {
+    public UserController(UserService userService, ClubRelationService clubRelationService, RequestBodyValidator validator, ClubService clubService, PostService postService, TeamCompetitionService teamCompetitionService, TournamentService tournamentService, ReservationService reservationService) {
         this.userService = userService;
         this.clubRelationService = clubRelationService;
         this.validator = validator;
@@ -54,10 +53,11 @@ public class UserController {
         this.postService = postService;
         this.teamCompetitionService = teamCompetitionService;
         this.tournamentService = tournamentService;
+        this.reservationService = reservationService;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createUser(@RequestBody UserDto user) {
+    public ResponseEntity<?> createUser(@RequestBody CreateUserDto user) {
         validator.validate(user);
         final int userId = this.userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new Info("Účet byl úspěšně vytvořen. Na uvedený email byl odeslán ověřovací link"));
@@ -161,16 +161,21 @@ public class UserController {
         return postService.findPostsPaginatedForUser(user, page, size);
     }
 
-    @RequestMapping(value = "/wall/competitions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserCompetitionsDto findUsersUpcomingCompetitions(){
+    @RequestMapping(value = "/wall", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public WallDto findUsersUpcomingCompetitions(){
         User user = userService.getCurrentUser();
         if(user == null) throw new UnauthorizedException("Přístup zamítnut");
 
         List<CompetitionDto> teamCompetitions = teamCompetitionService.getAllUpcomingTeamCompetitionsInCurrentYearForUser(user);
+
         List<TournamentDto> tournaments = tournamentService.findAllUpcomingTournamentsForUser(user)
                 .stream().map(TournamentDto::new).collect(Collectors.toList());
+        List<ClubRelationshipDto> clubs = clubRelationService.findAllRelationsByUser(user).
+                stream().map(ClubRelationshipDto::new).collect(Collectors.toList());
+        List<ReservationDto> reservations = reservationService.findAllUpcomingUserReservations(user)
+                .stream().map(r -> new ReservationDto(r, true, true)).collect(Collectors.toList());
 
-        return new UserCompetitionsDto(teamCompetitions, tournaments);
+        return new WallDto(teamCompetitions, tournaments, clubs, reservations);
     }
 
     /* *********************************

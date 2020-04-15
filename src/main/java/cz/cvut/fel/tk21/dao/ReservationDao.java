@@ -1,9 +1,7 @@
 package cz.cvut.fel.tk21.dao;
 
-import cz.cvut.fel.tk21.model.Club;
-import cz.cvut.fel.tk21.model.FromToTime;
-import cz.cvut.fel.tk21.model.Reservation;
-import cz.cvut.fel.tk21.model.TennisCourt;
+import cz.cvut.fel.tk21.model.*;
+import cz.cvut.fel.tk21.model.tournament.Tournament;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
@@ -78,6 +76,15 @@ public class ReservationDao extends BaseDao<Reservation> {
         } catch (NoResultException e){
             return Optional.empty();
         }
+    }
+
+    public List<Reservation> findAllUpcomingReservationsForUser(User user){
+        LocalDate now = LocalDate.now();
+        return em.createQuery("SELECT r FROM Reservation r " +
+                "WHERE r.user = :user AND r.date >= :now", Reservation.class)
+                .setParameter("user", user)
+                .setParameter("now", now)
+                .getResultList();
     }
 
 }

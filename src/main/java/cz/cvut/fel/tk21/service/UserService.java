@@ -1,6 +1,5 @@
 package cz.cvut.fel.tk21.service;
 
-import cz.cvut.fel.tk21.config.properties.AppProperties;
 import cz.cvut.fel.tk21.dao.ConfirmationTokenDao;
 import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.exception.ValidationException;
@@ -8,7 +7,7 @@ import cz.cvut.fel.tk21.model.Invitation;
 import cz.cvut.fel.tk21.model.User;
 import cz.cvut.fel.tk21.model.mail.ConfirmationToken;
 import cz.cvut.fel.tk21.model.mail.Mail;
-import cz.cvut.fel.tk21.rest.dto.user.UserDto;
+import cz.cvut.fel.tk21.rest.dto.user.CreateUserDto;
 import cz.cvut.fel.tk21.service.mail.MailService;
 import cz.cvut.fel.tk21.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class UserService extends BaseService<UserDao, User> {
     }
 
     @Transactional
-    public int createUser(UserDto userDto) {
+    public int createUser(CreateUserDto userDto) {
         if (!dao.isEmailUnique(userDto.getEmail())) {
             throw new ValidationException("Účet s tímto emailem již existuje");
         }

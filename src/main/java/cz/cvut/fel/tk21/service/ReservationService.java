@@ -268,6 +268,11 @@ public class ReservationService extends BaseService<ReservationDao, Reservation>
         return dao.findAllReservationsByCyclicId(cyclidId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Reservation> findAllUpcomingUserReservations(User user){
+        return dao.findAllUpcomingReservationsForUser(user);
+    }
+
     @Transactional
     public void deleteReservation(Reservation reservation){
         if(reservation.getUser() == null || reservation.getUser().getId() != userService.getCurrentUser().getId()) throw new UnauthorizedException("Přístup zamítnut");

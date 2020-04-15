@@ -1,26 +1,23 @@
 package cz.cvut.fel.tk21.rest.dto.user;
 
-import cz.cvut.fel.tk21.model.UserRole;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
+import cz.cvut.fel.tk21.model.User;
 
 public class UserDto {
 
-    @NotBlank(message = "Jméno je povinné")
     private String name;
 
-    @NotBlank(message = "Příjmení je povinné")
     private String surname;
 
-    @NotBlank(message = "Email je povinný")
-    @Email
     private String email;
 
-    @NotBlank(message = "Heslo je povinné")
-    private String password;
+    private boolean isScraped;
+
+    public UserDto(User user) {
+        this.name = user.getName();
+        this.surname = user.getSurname();
+        this.email = user.getEmail();
+        this.isScraped = user.isScraped();
+    }
 
     public String getName() {
         return name;
@@ -46,11 +43,11 @@ public class UserDto {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public boolean isScraped() {
+        return isScraped;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setScraped(boolean scraped) {
+        isScraped = scraped;
     }
 }

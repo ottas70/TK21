@@ -14,6 +14,8 @@ public class UserResponseDto {
 
     private String email;
 
+    private boolean isScraped;
+
     private ClubRelationshipDto pinnedClub;
 
     public UserResponseDto(User user, ClubRelation clubRelation) {
@@ -21,6 +23,7 @@ public class UserResponseDto {
         this.name = user.getName();
         this.surname = user.getSurname();
         this.email = user.getEmail();
+        this.isScraped = user.isScraped();
         if(clubRelation != null) this.pinnedClub = new ClubRelationshipDto(clubRelation);
     }
 
@@ -54,6 +57,14 @@ public class UserResponseDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isScraped() {
+        return isScraped;
+    }
+
+    public void setScraped(boolean scraped) {
+        isScraped = scraped;
     }
 
     public ClubRelationshipDto getPinnedClub() {

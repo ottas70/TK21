@@ -19,6 +19,8 @@ public class ReservationDto {
 
     private int clubId;
 
+    private String clubName;
+
     private boolean editable;
 
     private boolean mine;
@@ -39,6 +41,7 @@ public class ReservationDto {
         this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
+        this.clubName = reservation.getClub().getName();
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
         this.mine = mine;
@@ -95,6 +98,14 @@ public class ReservationDto {
 
     public void setClubId(int clubId) {
         this.clubId = clubId;
+    }
+
+    public String getClubName() {
+        return clubName;
+    }
+
+    public void setClubName(String clubName) {
+        this.clubName = clubName;
     }
 
     public boolean isEditable() {
