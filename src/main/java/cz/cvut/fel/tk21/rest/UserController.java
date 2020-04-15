@@ -25,6 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -113,17 +115,20 @@ public class UserController {
     }
 
     @RequestMapping(value = "/properties/email", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<?> updateEmail(@RequestBody String email){
+    public ResponseEntity<?> updateEmail(@RequestBody String email, HttpServletResponse response){
         if(email == null) throw new BadRequestException("Chybný požadavek");
         if(!validator.isEmailValid(email)) throw new BadRequestException("Email není validní");
         userService.updateEmail(email);
 
-        //logout user
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
-                "Max-Age=0;HttpOnly=True;Path=/;Secure=True");
+        //Logout user
+        Cookie cookie = new Cookie("Credentials", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
 
-        return ResponseEntity.noContent().headers(responseHeaders).build();
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/properties/password", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)

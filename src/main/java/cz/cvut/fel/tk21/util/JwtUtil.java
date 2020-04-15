@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    private static final long JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * 5; //5 hours
+    private static final long JWT_TOKEN_VALIDITY_5_HOURS = 1000 * 60 * 60 * 5; //5 hours
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -30,17 +31,25 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails, boolean signOut){
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getUsername(), signOut);
     }
 
-    private String createToken(Map<String, Object> claims, String subject){
+    private String createToken(Map<String, Object> claims, String subject, boolean signOut){
+        Date expiryDate = new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY_5_HOURS);
+        if(!signOut){
+            Calendar c = Calendar.getInstance();
+            c.setTime(expiryDate);
+            c.add(Calendar.YEAR, 1);
+            expiryDate = c.getTime();
+        }
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
+                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }

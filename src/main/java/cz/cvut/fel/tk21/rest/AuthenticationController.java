@@ -29,6 +29,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 @RestController
@@ -56,7 +58,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) {
         try{
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -68,7 +70,7 @@ public class AuthenticationController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtUtil.generateToken(userDetails);
+        final String token = jwtUtil.generateToken(userDetails, authenticationRequest.isSignOut());
 
         final User user = userService.findUserByEmail(userDetails.getUsername()).get();
 
@@ -79,20 +81,27 @@ public class AuthenticationController {
             if(relationOptional.isPresent()) rootRelation = relationOptional.get();
         }
 
-                HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("Set-Cookie","Credentials=" + token + ";" +
-                "HttpOnly=True;Path=/;Secure=True");
+        //Set cookie
+        Cookie cookie = new Cookie("Credentials", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        if(!authenticationRequest.isSignOut()) cookie.setMaxAge(60 * 60 * 24 * 365);
+        response.addCookie(cookie);
 
-        return new ResponseEntity<>(new UserResponseDto(user, rootRelation), responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponseDto(user, rootRelation), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ResponseEntity<?> logout() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("Set-Cookie","Credentials=" + "" + ";" +
-                "Max-Age=0;HttpOnly=True;Path=/;Secure=True");
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("Credentials", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
 
-        return ResponseEntity.noContent().headers(responseHeaders).build();
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/confirm", method = RequestMethod.GET)

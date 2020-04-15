@@ -4,13 +4,15 @@ public class AuthenticationRequest {
 
     private String username;
     private String password;
+    private boolean signOut;
 
     public AuthenticationRequest() {
     }
 
-    public AuthenticationRequest(String username, String password) {
+    public AuthenticationRequest(String username, String password, boolean signOut) {
         this.username = username;
         this.password = password;
+        this.signOut = signOut;
     }
 
     public String getUsername() {
@@ -27,5 +29,13 @@ public class AuthenticationRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isSignOut() {
+        return signOut;
+    }
+
+    public void setSignOut(boolean signOut) {
+        this.signOut = signOut;
     }
 }
