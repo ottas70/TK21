@@ -17,6 +17,8 @@ public class ReservationDto {
 
     private int courtId;
 
+    private String courtName;
+
     private int clubId;
 
     private String clubName;
@@ -41,6 +43,7 @@ public class ReservationDto {
         this.date = reservation.getDate();
         this.time = reservation.getFromToTime();
         this.courtId = reservation.getTennisCourt().getId();
+        this.courtName = reservation.getTennisCourt().getName();
         this.clubName = reservation.getClub().getName();
         this.clubId = reservation.getClub().getId();
         this.editable = editable;
@@ -90,6 +93,14 @@ public class ReservationDto {
 
     public void setCourtId(int courtId) {
         this.courtId = courtId;
+    }
+
+    public String getCourtName() {
+        return courtName;
+    }
+
+    public void setCourtName(String courtName) {
+        this.courtName = courtName;
     }
 
     public int getClubId() {

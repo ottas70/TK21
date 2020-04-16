@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -178,7 +179,10 @@ public class UserController {
         List<ClubRelationshipDto> clubs = clubRelationService.findAllRelationsByUser(user).
                 stream().map(ClubRelationshipDto::new).collect(Collectors.toList());
         List<ReservationDto> reservations = reservationService.findAllUpcomingUserReservations(user)
-                .stream().map(r -> new ReservationDto(r, true, true)).collect(Collectors.toList());
+                .stream()
+                .map(r -> new ReservationDto(r, true, true))
+                .sorted(Comparator.comparing(ReservationDto::getDate))
+                .collect(Collectors.toList());
 
         return new WallDto(teamCompetitions, tournaments, clubs, reservations);
     }
