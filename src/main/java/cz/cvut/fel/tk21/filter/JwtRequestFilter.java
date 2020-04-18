@@ -1,7 +1,10 @@
 package cz.cvut.fel.tk21.filter;
 
 import cz.cvut.fel.tk21.rest.handler.RestAccessDeniedHandler;
+import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.util.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,13 +25,13 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtRequestFilter.class);
+
     private final JwtUtil jwtUtil;
-    private final RestAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    public JwtRequestFilter(JwtUtil jwtUtil, RestAccessDeniedHandler accessDeniedHandler, RestAccessDeniedHandler accessDeniedHandler1) {
+    public JwtRequestFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.accessDeniedHandler = accessDeniedHandler1;
     }
 
     @Override
@@ -43,18 +46,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         UserDetails userDetails = jwtUtil.retrieveUserDetails(jwt);
 
         if(userDetails != null){
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
             if(isCsrfTokenRequired(httpServletRequest)){
                 String xsrfTokenClaim = jwtUtil.extractXsrfToken(jwt);
                 String xsrfTokenHeader = httpServletRequest.getHeader("CSRF_TOKEN");
 
                 if(xsrfTokenHeader == null || !xsrfTokenHeader.equals(xsrfTokenClaim)){
-                    throwAccessDenied(httpServletRequest, httpServletResponse);
-                    return;
+                    log.trace("Invalid CSRF token for user " + userDetails.getUsername());
+                } else {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
+            } else {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
 
@@ -63,9 +70,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private boolean isCsrfTokenRequired(HttpServletRequest request){
         return request.getRequestURI().startsWith("/api");
-    }
-
-    private void throwAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        accessDeniedHandler.handle(request, response, new AccessDeniedException("Přístup odepřen"));
     }
 }
