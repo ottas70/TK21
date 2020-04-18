@@ -24,13 +24,12 @@ public class CorsFilter extends OncePerRequestFilter {
         if (this.allowsCors()) {
             final var origin = request.getHeader("origin");
             response.setHeader("Access-Control-Allow-Origin", origin != null ? origin : "*");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Max-Age", "3600");
+            response.setHeader("Access-Control-Allow-Headers", "authorization, Credentials, content-type, xsrf-token, Set-Cookie, CSRF_TOKEN");
+            response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
         }
-
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "authorization, Credentials, content-type, xsrf-token, Set-Cookie, CSRF_TOKEN");
-        response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
 
         if ("OPTIONS".equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);

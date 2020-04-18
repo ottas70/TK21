@@ -47,16 +47,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
-            String xsrfTokenClaim = jwtUtil.extractXsrfToken(jwt);
-            String xsrfTokenHeader = httpServletRequest.getHeader("CSRF_TOKEN");
+            if(isCsrfTokenRequired(httpServletRequest)){
+                String xsrfTokenClaim = jwtUtil.extractXsrfToken(jwt);
+                String xsrfTokenHeader = httpServletRequest.getHeader("CSRF_TOKEN");
 
-            if(xsrfTokenHeader == null || !xsrfTokenHeader.equals(xsrfTokenClaim)){
-                throwAccessDenied(httpServletRequest, httpServletResponse);
-                return;
+                if(xsrfTokenHeader == null || !xsrfTokenHeader.equals(xsrfTokenClaim)){
+                    throwAccessDenied(httpServletRequest, httpServletResponse);
+                    return;
+                }
             }
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    private boolean isCsrfTokenRequired(HttpServletRequest request){
+        return !request.getRequestURI().startsWith("/websocket");
     }
 
     private void throwAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
