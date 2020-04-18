@@ -138,8 +138,8 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    //TODO remove
-    @RequestMapping(value="/scrape", method = RequestMethod.GET)
+    //Development only
+    /*@RequestMapping(value="/scrape", method = RequestMethod.GET)
     public ResponseEntity<?> scrape() {
         Runnable runnable = () -> {
           webScraper.scrapeCzTenis();
@@ -148,6 +148,6 @@ public class AuthenticationController {
         thread.start();
 
         return ResponseEntity.ok().build();
-    }
+    }*/
 
 }

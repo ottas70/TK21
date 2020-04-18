@@ -23,11 +23,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        //TODO remove origin
-        webSocketHandlerRegistry.addHandler(reservationWsHandler, "/websocket/reservation")
-                .setAllowedOrigins("*");
-        webSocketHandlerRegistry.addHandler(playerWsHandler, "/websocket/player")
-                .setAllowedOrigins("*");
+        webSocketHandlerRegistry.addHandler(reservationWsHandler, "/websocket/reservation");
+        webSocketHandlerRegistry.addHandler(playerWsHandler, "/websocket/player");
     }
 
 }

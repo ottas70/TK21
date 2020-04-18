@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,24 +19,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Random;
 
 @Service
 public class FileStorageService {
 
     private static final Logger log = LoggerFactory.getLogger(FileStorageService.class);
 
-    private Path imagePath;
+    private final Path imagePath;
+    private final ImageService imageService;
 
     @Autowired
-    public FileStorageService(FileStorageProperties properties){
+    public FileStorageService(FileStorageProperties properties, ImageService imageService){
         this.imagePath = Paths.get(properties.getImagesPath()).toAbsolutePath().normalize();
+        this.imageService = imageService;
     }
 
     public String storeImage(byte[] image, String contentType, boolean compress){
-        //TODO uncomment for production
         if (compress && FileUtil.isPngOrJpg(contentType)) {
-            //image = imageService.compressImage(image);
+            image = imageService.compressImage(image);
         }
 
         String fileName = generateFilename(contentType);
