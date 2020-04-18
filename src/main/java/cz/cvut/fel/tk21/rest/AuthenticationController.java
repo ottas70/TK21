@@ -11,6 +11,7 @@ import cz.cvut.fel.tk21.model.security.AuthenticationRequest;
 import cz.cvut.fel.tk21.rest.dto.Info;
 import cz.cvut.fel.tk21.rest.dto.user.EmailDto;
 import cz.cvut.fel.tk21.rest.dto.user.NewPasswordDto;
+import cz.cvut.fel.tk21.rest.dto.user.UserAuthResponse;
 import cz.cvut.fel.tk21.rest.dto.user.UserResponseDto;
 import cz.cvut.fel.tk21.scraping.WebScraper;
 import cz.cvut.fel.tk21.service.ClubRelationService;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -70,7 +72,8 @@ public class AuthenticationController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtUtil.generateToken(userDetails, authenticationRequest.isSignOut());
+        final String xsrfToken = UUID.randomUUID().toString();
+        final String token = jwtUtil.generateToken(userDetails, authenticationRequest.isSignOut(), xsrfToken);
 
         final User user = userService.findUserByEmail(userDetails.getUsername()).get();
 
@@ -89,7 +92,7 @@ public class AuthenticationController {
         if(!authenticationRequest.isSignOut()) cookie.setMaxAge(60 * 60 * 24 * 365);
         response.addCookie(cookie);
 
-        return new ResponseEntity<>(new UserResponseDto(user, rootRelation), HttpStatus.OK);
+        return new ResponseEntity<>(new UserAuthResponse(user, rootRelation, xsrfToken), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)

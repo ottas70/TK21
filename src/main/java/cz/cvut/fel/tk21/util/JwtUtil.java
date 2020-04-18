@@ -31,8 +31,9 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(UserDetails userDetails, boolean signOut){
+    public String generateToken(UserDetails userDetails, boolean signOut, String xsrfToken){
         Map<String, Object> claims = new HashMap<>();
+        claims.put("xsrfToken", xsrfToken);
         return createToken(claims, userDetails.getUsername(), signOut);
     }
 
@@ -60,6 +61,10 @@ public class JwtUtil {
 
     public Date extractExpiration(String token){
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractXsrfToken(String token){
+        return extractClaim(token, claims -> claims.get("xsrfToken", String.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
