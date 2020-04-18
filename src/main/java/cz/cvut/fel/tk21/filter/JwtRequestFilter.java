@@ -62,7 +62,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean isCsrfTokenRequired(HttpServletRequest request){
-        return !request.getRequestURI().startsWith("/websocket");
+        return !request.getRequestURI().startsWith("/api");
     }
 
     private void throwAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

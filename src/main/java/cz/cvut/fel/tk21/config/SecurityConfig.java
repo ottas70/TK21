@@ -49,16 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/*")
                 .permitAll();*/
 
-        http.antMatcher("/api/**")
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests();
-
         http.authorizeRequests()
                 .antMatchers("/websocket/**")
                 .permitAll();
-        http.antMatcher("/websocket/**")
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests();
 
         http.authorizeRequests()
                 .antMatchers("/*", "/static/**",
@@ -90,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.exceptionHandling().accessDeniedHandler(restAccessDeniedHandler).authenticationEntryPoint(restAuthenticationEntryPoint);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
