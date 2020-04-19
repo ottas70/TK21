@@ -49,8 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             if(isCsrfTokenRequired(httpServletRequest)){
                 String xsrfTokenClaim = jwtUtil.extractXsrfToken(jwt);
-                //String xsrfTokenHeader = httpServletRequest.getHeader("CSRF_TOKEN");
-                String xsrfTokenHeader = httpServletRequest.getHeader("abcd");
+                String xsrfTokenHeader = httpServletRequest.getHeader("csrf-token");
 
                 if(xsrfTokenHeader == null || !xsrfTokenHeader.equals(xsrfTokenClaim)){
                     log.trace("Invalid CSRF token for user " + userDetails.getUsername());
