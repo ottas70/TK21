@@ -4,6 +4,8 @@ import cz.cvut.fel.tk21.model.User;
 
 public class UserDto {
 
+    private int id;
+
     private String name;
 
     private String surname;
@@ -13,10 +15,19 @@ public class UserDto {
     private boolean isScraped;
 
     public UserDto(User user) {
+        this.id = user.getId();
         this.name = user.getName();
         this.surname = user.getSurname();
         this.email = user.getEmail();
         this.isScraped = user.isScraped();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

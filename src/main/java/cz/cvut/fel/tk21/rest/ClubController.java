@@ -14,6 +14,7 @@ import cz.cvut.fel.tk21.rest.dto.club.settings.MinReservationDto;
 import cz.cvut.fel.tk21.rest.dto.club.settings.ReservationPermissionDto;
 import cz.cvut.fel.tk21.rest.dto.club.verification.UserVerificationDto;
 import cz.cvut.fel.tk21.rest.dto.club.verification.VerificationRequestDto;
+import cz.cvut.fel.tk21.rest.dto.user.UserDto;
 import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.DateUtils;
 import cz.cvut.fel.tk21.util.RequestBodyValidator;
@@ -314,11 +315,11 @@ public class ClubController {
     }
 
     @RequestMapping(value = "/{id}/block", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<User> getBlockedUsers(@PathVariable("id") Integer id){
+    public Set<UserDto> getBlockedUsers(@PathVariable("id") Integer id){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
-        return club.get().getBlocked();
+        return club.get().getBlocked().stream().map(UserDto::new).collect(Collectors.toSet());
     }
 
     @RequestMapping(value = "/{id}/member/role/{member_id}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
@@ -399,7 +400,7 @@ public class ClubController {
     }
 
     @RequestMapping(value = "{id}/competitive-members", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<User> getAllCompetitiveMembers(@PathVariable("id") Integer id){
+    public List<UserDto> getAllCompetitiveMembers(@PathVariable("id") Integer id){
         final Optional<Club> club = clubService.find(id);
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
 
@@ -407,7 +408,7 @@ public class ClubController {
         if(user == null || !clubService.isUserAllowedToManageThisClub(user, club.get())) throw new UnauthorizedException("Přístup odepřen");
 
         List<ClubRelation> relations = clubRelationService.findAllRelationsByClubAndRole(club.get(), UserRole.PROFESSIONAL_PLAYER);
-        return relations.stream().map(ClubRelation::getUser).collect(Collectors.toList());
+        return relations.stream().map(ClubRelation::getUser).map(UserDto::new).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "{id}/competitive-members/{userId}", method = RequestMethod.DELETE)
