@@ -60,7 +60,7 @@ public class Club extends AbstractEntity {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
     private List<TennisCourt> courts = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private OpeningHours openingHours = new OpeningHours();
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.PERSIST)

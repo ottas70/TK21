@@ -33,14 +33,13 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
     @Transactional
     @ClubManagementOnly
     public void updateRegularOpeningHours(Map<Integer, FromToTime> openingHours, Club club){
-        Map<Day, FromToTime> regular = new HashMap<>();
+        OpeningHours clubOpeningHours = club.getOpeningHours();
         openingHours.forEach((k,v) -> {
             if(!v.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
-            regular.put(Day.getDayFromCode(k), v);
+            clubOpeningHours.updateRegularHours(Day.getDayFromCode(k), v);
         });
 
-        club.getOpeningHours().setRegularHours(regular);
-        clubService.update(club);
+        this.update(clubOpeningHours);
     }
 
     public SpecialOpeningHoursDto getSpecialOpeningHourByDate(Club club, LocalDate date){
@@ -62,8 +61,9 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
         FromToTime fromToTime = new FromToTime(from, to);
         if(!fromToTime.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
 
-        club.getOpeningHours().updateSpecialDate(date, fromToTime);
-        clubService.update(club);
+        OpeningHours openingHours = club.getOpeningHours();
+        openingHours.updateSpecialDate(date, fromToTime);
+        this.update(openingHours);
     }
 
     @Transactional
@@ -77,15 +77,17 @@ public class OpeningHoursService extends BaseService<OpeningHoursDao, OpeningHou
         FromToTime fromToTime = new FromToTime(from, to);
         if(!fromToTime.isValidOpeningHour()) throw new BadRequestException("Otevírací doba je ve špatném formátu");
 
-        club.getOpeningHours().addSpecialDate(date, fromToTime);
-        clubService.update(club);
+        OpeningHours openingHours = club.getOpeningHours();
+        openingHours.addSpecialDate(date, fromToTime);
+        this.update(openingHours);
     }
 
     @Transactional
     @ClubManagementOnly
     public void removeSpecialOpeningHour(Club club, LocalDate date){
-        club.getOpeningHours().removeSpecialDate(date);
-        clubService.update(club);
+        OpeningHours openingHours = club.getOpeningHours();
+        openingHours.removeSpecialDate(date);
+        this.update(openingHours);
     }
 
 }

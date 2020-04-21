@@ -64,6 +64,10 @@ public class OpeningHours extends AbstractEntity {
         specialDays.put(date, fromToTime);
     }
 
+    public void updateRegularHours(Day day, FromToTime time){
+        this.regularHours.put(day, time);
+    }
+
     public Map<LocalDate, FromToTime> getSpecialDaysInYear(int year){
         return specialDays.entrySet().stream()
                 .filter(x -> x.getKey().getYear() == year)
