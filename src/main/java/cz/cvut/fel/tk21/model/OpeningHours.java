@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,12 +66,8 @@ public class OpeningHours extends AbstractEntity {
     }
 
     public void updateRegularHours(Day day, FromToTime time){
-        for (Map.Entry<Day, FromToTime> entry : regularHours.entrySet()) {
-            if(entry.getKey().toString().equals(day.toString())){
-                regularHours.remove(entry.getKey());
-            }
-        }
-        this.regularHours.put(day, time);
+        regularHours.keySet().removeIf(key -> key.toString().equals(day.toString()));
+        regularHours.put(day, time);
     }
 
     public Map<LocalDate, FromToTime> getSpecialDaysInYear(int year){
