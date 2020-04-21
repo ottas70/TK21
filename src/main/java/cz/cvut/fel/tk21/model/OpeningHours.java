@@ -65,6 +65,11 @@ public class OpeningHours extends AbstractEntity {
     }
 
     public void updateRegularHours(Day day, FromToTime time){
+        for (Map.Entry<Day, FromToTime> entry : regularHours.entrySet()) {
+            if(entry.getKey().toString().equals(day.toString())){
+                regularHours.remove(entry.getKey());
+            }
+        }
         this.regularHours.put(day, time);
     }
 
