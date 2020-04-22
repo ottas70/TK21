@@ -180,7 +180,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
@@ -190,6 +189,7 @@
                         <nonFilteredFileExtension>svg</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>copy-resources</id>

@@ -8,6 +8,7 @@ import cz.cvut.fel.tk21.model.teams.Region;
 import cz.cvut.fel.tk21.model.teams.Team;
 import cz.cvut.fel.tk21.model.teams.TeamCompetition;
 import cz.cvut.fel.tk21.model.tournament.AgeCategory;
+import cz.cvut.fel.tk21.scraping.ScrapingUtils;
 import cz.cvut.fel.tk21.scraping.service.TeamCompetitionScrapingService;
 import cz.cvut.fel.tk21.service.*;
 import cz.cvut.fel.tk21.util.DateUtils;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -201,7 +203,8 @@ public class TeamCompetitionScraper {
     }
 
     private Team addUsersToTeam(Team team) throws IOException, WebScrapingException {
-        Document doc = Jsoup.connect(team.getLink()).get();
+        Document doc = ScrapingUtils.connectGETWithRetries(team.getLink());
+        if(doc == null) return team;
 
         Element teamTable = doc.select("table tbody").get(2);
         assertNonNullElement(teamTable, "Team Members Table");
@@ -230,9 +233,13 @@ public class TeamCompetitionScraper {
                 dateOnly += "." + year;
             }
         }
+
+        if(dateOnly.isEmpty()) return null;
         while(!Character.isDigit(dateOnly.charAt(dateOnly.length()-1))){
             dateOnly = dateOnly.substring(0, dateOnly.length() - 1);
+            if(dateOnly.isEmpty()) return null;
         }
+
         LocalDate myDate = null;
         try{
             myDate = LocalDate.parse(dateOnly, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -243,7 +250,11 @@ public class TeamCompetitionScraper {
                 try{
                     myDate = LocalDate.parse(dateOnly, DateTimeFormatter.ofPattern("dd.M.yyyy"));
                 } catch (DateTimeParseException exe) {
-                    myDate = LocalDate.parse(dateOnly, DateTimeFormatter.ofPattern("d.M.yyyy"));
+                    try{
+                        myDate = LocalDate.parse(dateOnly, DateTimeFormatter.ofPattern("d.M.yyyy"));
+                    } catch (DateTimeParseException exce) {
+                        logger.trace(dateOnly + " could not be parsed");
+                    }
                 }
             }
         }
