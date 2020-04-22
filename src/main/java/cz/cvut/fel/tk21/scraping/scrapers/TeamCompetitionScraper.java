@@ -275,7 +275,7 @@ public class TeamCompetitionScraper {
         String[] splitted = name.split(" ");
         String last = splitted[splitted.length-1];
         String clubName = "";
-        if(StringUtils.isTeamLetter(last)){
+        if(StringUtils.isTeamLetter(last) || StringUtils.isTeamNumber(last)){
             splitted[splitted.length-1] = "";
             clubName = String.join(" ", splitted);
             clubName = clubName.trim();

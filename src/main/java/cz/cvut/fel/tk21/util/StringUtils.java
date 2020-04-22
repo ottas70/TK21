@@ -42,6 +42,10 @@ public class StringUtils {
                 || letter.equals("E") || letter.equals("F") || letter.equals("G") || letter.equals("H");
     }
 
+    public static boolean isTeamNumber(String s){
+        return s.length() == 3 && s.charAt(0) == '(' && s.charAt(2) == ')' && Character.isDigit(s.charAt(1));
+    }
+
     public static boolean isValidPassword(String password){
         return password.length() > 6;
     }

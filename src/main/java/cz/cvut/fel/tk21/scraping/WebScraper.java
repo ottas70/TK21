@@ -52,9 +52,9 @@ public class WebScraper {
     @Scheduled(cron = "0 0 3 * * *")
     public void scrapeCzTenis(){
         try {
-            //scrapeClubs();
-            //scrapePlayers();
-            //scrapeTournaments();
+            scrapeClubs();
+            scrapePlayers();
+            scrapeTournaments();
             scrapeTeamCompetitions();
         } catch (IOException | WebScrapingException | RuntimeException ex) {
             log.error(ex.getMessage());
