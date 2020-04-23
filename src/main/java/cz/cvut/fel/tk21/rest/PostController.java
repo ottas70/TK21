@@ -2,6 +2,7 @@ package cz.cvut.fel.tk21.rest;
 
 import cz.cvut.fel.tk21.exception.BadRequestException;
 import cz.cvut.fel.tk21.exception.NotFoundException;
+import cz.cvut.fel.tk21.exception.UnauthorizedException;
 import cz.cvut.fel.tk21.exception.ValidationException;
 import cz.cvut.fel.tk21.model.Club;
 import cz.cvut.fel.tk21.model.ImageDetail;
@@ -125,6 +126,8 @@ public class PostController {
     public ResponseEntity<?> uploadPostImages(@PathVariable("postId") Integer post_id, @RequestParam MultipartFile[] files){
         final Optional<Post> post = postService.find(post_id);
         post.orElseThrow(() -> new NotFoundException("Příspěvek nebyl nalezen"));
+
+        if(!clubService.isCurrentUserAllowedToManageThisClub(post.get().getClub())) throw new UnauthorizedException("Přístup zamítnut");
 
         for (MultipartFile file : files){
             if(!FileUtil.isImage(file)) throw new ValidationException("Tento formát není podporován");
