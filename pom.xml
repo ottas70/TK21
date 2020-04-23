@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>13</java.version>
-        <org.eclipse.persistence.version>2.7.5</org.eclipse.persistence.version>
+        <org.eclipse.persistence.version>2.7.6</org.eclipse.persistence.version>
     </properties>
 
     <dependencies>

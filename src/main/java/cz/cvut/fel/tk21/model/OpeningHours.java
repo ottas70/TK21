@@ -66,7 +66,6 @@ public class OpeningHours extends AbstractEntity {
     }
 
     public void updateRegularHours(Day day, FromToTime time){
-        regularHours.keySet().removeIf(key -> key.toString().equals(day.toString()));
         regularHours.put(day, time);
     }
 
