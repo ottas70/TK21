@@ -30,7 +30,7 @@ public class ClubSettingsDto {
     private boolean reservationsEnabled;
 
     public ClubSettingsDto(Club club, int year, boolean isYearSet){
-        if(!club.getOpeningHours().getRegularHours().isEmpty()){
+        if(club.isRegistered()){
             this.openingHours = new HashMap<>();
             club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
         }

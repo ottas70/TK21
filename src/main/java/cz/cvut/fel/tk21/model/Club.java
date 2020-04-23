@@ -331,7 +331,7 @@ public class Club extends AbstractEntity {
 
         DayOfWeek day = date.getDayOfWeek();
         Day myDay = Day.getDayFromCode(day.getValue());
-        return openingHours.getRegularHours().get(myDay);
+        return openingHours.getRegularHoursAtDay(myDay);
     }
 
     public List<TennisCourt> getAllAvailableCourts(LocalDate date){

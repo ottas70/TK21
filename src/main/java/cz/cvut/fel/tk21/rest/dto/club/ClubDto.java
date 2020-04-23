@@ -64,7 +64,7 @@ public class ClubDto {
         if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
         this.courts = club.getCourts().stream().map(CourtDto::new).collect(Collectors.toList());
         this.seasons = new SeasonDto(club.getSeasonByDate(LocalDate.now()));
-        if(!club.getOpeningHours().getRegularHours().isEmpty()){
+        if(club.isRegistered()){
             this.openingHours = new HashMap<>();
             club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
         }
