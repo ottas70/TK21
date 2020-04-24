@@ -133,7 +133,13 @@ public class PostController {
             if(!FileUtil.isImage(file)) throw new ValidationException("Tento formát není podporován");
         }
 
-        List<ImageDetail> details = postService.uploadPostImages(post.get(), files);
+        List<ImageDetail> details = null;
+        try{
+            details = postService.uploadPostImages(post.get(), files);
+        } catch (ArrayIndexOutOfBoundsException e){
+            throw new BadRequestException("Gif nelze uložit");
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(details);
     }
 
