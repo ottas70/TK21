@@ -21,49 +21,49 @@ public class OpeningHours extends AbstractEntity {
             @AttributeOverride( name = "from", column = @Column(name = "monday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "monday_to", columnDefinition = "TIME"))
     })
-    private FromToTime monday;
+    private FromToTime monday = new FromToTime();
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "from", column = @Column(name = "tuesday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "tuesday_to", columnDefinition = "TIME"))
     })
-    private FromToTime tuesday;
+    private FromToTime tuesday = new FromToTime();
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "from", column = @Column(name = "wednesday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "wednesday_to", columnDefinition = "TIME"))
     })
-    private FromToTime wednesday;
+    private FromToTime wednesday = new FromToTime();
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "from", column = @Column(name = "thursday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "thursday_to", columnDefinition = "TIME"))
     })
-    private FromToTime thursday;
+    private FromToTime thursday = new FromToTime();
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "from", column = @Column(name = "friday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "friday_to", columnDefinition = "TIME"))
     })
-    private FromToTime friday;
+    private FromToTime friday = new FromToTime();
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "from", column = @Column(name = "saturday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "saturday_to", columnDefinition = "TIME"))
     })
-    private FromToTime saturday;
+    private FromToTime saturday = new FromToTime();
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride( name = "from", column = @Column(name = "sunday_from", columnDefinition = "TIME")),
             @AttributeOverride( name = "to", column = @Column(name = "sunday_to", columnDefinition = "TIME"))
     })
-    private FromToTime sunday;
+    private FromToTime sunday = new FromToTime();
 
     @ElementCollection
     @CollectionTable(name = "SPECIAL_DAYS")

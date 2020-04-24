@@ -82,7 +82,7 @@ public class UserController {
 
     @RequestMapping(value = "/clubs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ClubRelationshipDto> getAllMyClubs(){
-        User user = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        User user = userService.getCurrentUser();
         if(user == null) throw new UnauthorizedException("Přístup odepřen");
 
         List<ClubRelation> relations = clubRelationService.findAllRelationsByUser(user);
