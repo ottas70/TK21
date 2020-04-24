@@ -41,7 +41,7 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        User user1 = new User();
+        /*User user1 = new User();
         user1.setName("Otto");
         user1.setSurname("Vodvářka");
         user1.setEmail("ottas70@gmail.com");
@@ -153,7 +153,7 @@ public class DataInitializer implements ApplicationRunner {
         //Users with no club
         for (int i = 7; i <= 9; i++) {
             addNumberedUserInClub(i, null);
-        }
+        }*/
 
         //Initial web scraping
         webScraper.scrapeCzTenis();
