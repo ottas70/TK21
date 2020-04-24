@@ -141,7 +141,10 @@ public class ClubController {
         club.orElseThrow(() -> new NotFoundException("Klub nebyl nalezen"));
         Map<Integer, FromToTime> result = new HashMap<>();
         if(!club.get().isRegistered()) return new HashMap<>();
-        club.get().getOpeningHours().getRegularHours().forEach((k, v) -> result.put(k.getCode(), v));
+        club.get().getOpeningHours().getRegularHours().forEach((k, v) -> {
+            if(v == null) v = new FromToTime();
+            result.put(k.getCode(), v);
+        });
         return result;
     }
 

@@ -32,7 +32,10 @@ public class ClubSettingsDto {
     public ClubSettingsDto(Club club, int year, boolean isYearSet){
         if(club.isRegistered()){
             this.openingHours = new HashMap<>();
-            club.getOpeningHours().getRegularHours().forEach((k, v) -> this.openingHours.put(k.getCode(), v));
+            club.getOpeningHours().getRegularHours().forEach((k, v) -> {
+                if(v == null) v = new FromToTime();
+                this.openingHours.put(k.getCode(), v);
+            });
         }
 
         this.specialDays = new ArrayList<>();
