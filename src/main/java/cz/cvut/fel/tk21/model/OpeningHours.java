@@ -1,11 +1,9 @@
 package cz.cvut.fel.tk21.model;
 
 import javax.persistence.*;
-import javax.persistence.criteria.From;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,50 +16,50 @@ public class OpeningHours extends AbstractEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "monday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "monday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "monday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "monday_to", columnDefinition = "TIME"))
     })
     private FromToTime monday;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "tuesday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "tuesday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "tuesday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "tuesday_to", columnDefinition = "TIME"))
     })
     private FromToTime tuesday;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "wednesday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "wednesday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "wednesday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "wednesday_to", columnDefinition = "TIME"))
     })
     private FromToTime wednesday;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "thursday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "thursday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "thursday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "thursday_to", columnDefinition = "TIME"))
     })
     private FromToTime thursday;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "friday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "friday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "friday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "friday_to", columnDefinition = "TIME"))
     })
     private FromToTime friday;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "saturday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "saturday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "saturday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "saturday_to", columnDefinition = "TIME"))
     })
     private FromToTime saturday;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "from", column = @Column(name = "sunday_from", columnDefinition = "TIME")),
-            @AttributeOverride( name = "to", column = @Column(name = "sunday_to", columnDefinition = "TIME"))
+            @AttributeOverride(name = "from", column = @Column(name = "sunday_from", columnDefinition = "TIME")),
+            @AttributeOverride(name = "to", column = @Column(name = "sunday_to", columnDefinition = "TIME"))
     })
     private FromToTime sunday;
 
@@ -136,13 +134,13 @@ public class OpeningHours extends AbstractEntity {
 
     public Map<Day, FromToTime> getRegularHours() {
         Map<Day, FromToTime> regularHours = new HashMap<>();
-        regularHours.put(Day.MONDAY, monday);
-        regularHours.put(Day.TUESDAY, tuesday);
-        regularHours.put(Day.WEDNESDAY, wednesday);
-        regularHours.put(Day.THURSDAY, thursday);
-        regularHours.put(Day.FRIDAY, friday);
-        regularHours.put(Day.SATURDAY, saturday);
-        regularHours.put(Day.SUNDAY, sunday);
+        regularHours.put(Day.MONDAY, getRegularHoursAtDay(Day.MONDAY));
+        regularHours.put(Day.TUESDAY, getRegularHoursAtDay(Day.TUESDAY));
+        regularHours.put(Day.WEDNESDAY, getRegularHoursAtDay(Day.WEDNESDAY));
+        regularHours.put(Day.THURSDAY, getRegularHoursAtDay(Day.THURSDAY));
+        regularHours.put(Day.FRIDAY, getRegularHoursAtDay(Day.FRIDAY));
+        regularHours.put(Day.SATURDAY, getRegularHoursAtDay(Day.SATURDAY));
+        regularHours.put(Day.SUNDAY, getRegularHoursAtDay(Day.SUNDAY));
         return regularHours;
     }
 
@@ -162,24 +160,25 @@ public class OpeningHours extends AbstractEntity {
         this.specialDays = specialDays;
     }
 
-    public void addSpecialDate(LocalDate date, FromToTime time){
+    public void addSpecialDate(LocalDate date, FromToTime time) {
         specialDays.put(date, time);
     }
 
-    public void removeSpecialDate(LocalDate date){
+    public void removeSpecialDate(LocalDate date) {
         specialDays.remove(date);
     }
 
-    public boolean containsSpecialDate(LocalDate date){
+    public boolean containsSpecialDate(LocalDate date) {
         return specialDays.containsKey(date);
     }
 
-    public void updateSpecialDate(LocalDate date, FromToTime fromToTime){
+    public void updateSpecialDate(LocalDate date, FromToTime fromToTime) {
         specialDays.put(date, fromToTime);
     }
 
-    public void updateRegularHours(Day day, FromToTime time){
-        switch (day){
+    public void updateRegularHours(Day day, FromToTime time) {
+        if (time == null) time = new FromToTime();
+        switch (day) {
             case MONDAY:
                 monday = time;
                 break;
@@ -204,34 +203,44 @@ public class OpeningHours extends AbstractEntity {
         }
     }
 
-    public FromToTime getRegularHoursAtDay(Day day){
-        switch (day){
+    public FromToTime getRegularHoursAtDay(Day day) {
+        FromToTime hours = null;
+        switch (day) {
             case MONDAY:
-                return monday;
+                hours = monday;
+                break;
             case TUESDAY:
-                return tuesday;
+                hours = tuesday;
+                break;
             case WEDNESDAY:
-                return wednesday;
+                hours = wednesday;
+                break;
             case THURSDAY:
-                return thursday;
+                hours = thursday;
+                break;
             case FRIDAY:
-                return friday;
+                hours = friday;
+                break;
             case SATURDAY:
-                return saturday;
+                hours = saturday;
+                break;
             case SUNDAY:
-                return sunday;
-            default:
-                return null;
+                hours = sunday;
+                break;
         }
+        if(hours == null){
+            hours = new FromToTime();
+        }
+        return hours;
     }
 
-    public Map<LocalDate, FromToTime> getSpecialDaysInYear(int year){
+    public Map<LocalDate, FromToTime> getSpecialDaysInYear(int year) {
         return specialDays.entrySet().stream()
                 .filter(x -> x.getKey().getYear() == year)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<LocalDate, FromToTime> getSpecialDaysInNextDays(int days){
+    public Map<LocalDate, FromToTime> getSpecialDaysInNextDays(int days) {
         LocalDate target = LocalDate.now().plusDays(days + 1);
         LocalDate now = LocalDate.now().minusDays(1);
         return specialDays.entrySet().stream()
@@ -241,8 +250,8 @@ public class OpeningHours extends AbstractEntity {
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 
-    public boolean isOpenedAtDate(LocalDate date){
-        if(containsSpecialDate(date)){
+    public boolean isOpenedAtDate(LocalDate date) {
+        if (containsSpecialDate(date)) {
             return specialDays.get(date).getFrom() != null;
         }
 
@@ -252,45 +261,45 @@ public class OpeningHours extends AbstractEntity {
         return hours.getFrom() != null;
     }
 
-    public boolean isOpenedAtDateAndTime(LocalDate date, FromToTime time){
+    public boolean isOpenedAtDateAndTime(LocalDate date, FromToTime time) {
         FromToTime hours = null;
-        if(!isOpenedAtDate(date)) return false;
-        if(containsSpecialDate(date)){
+        if (!isOpenedAtDate(date)) return false;
+        if (containsSpecialDate(date)) {
             hours = specialDays.get(date);
-        }else{
+        } else {
             Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
             hours = getRegularHoursAtDay(day);
         }
 
         //Start is before opening
-        if(time.getFrom().isBefore(hours.getFrom())) return false;
+        if (time.getFrom().isBefore(hours.getFrom())) return false;
 
         //Start after closing
-        if(time.getFrom().isAfter(hours.getTo())) return false;
+        if (time.getFrom().isAfter(hours.getTo())) return false;
 
         //End is before opening
-        if(time.getTo().isBefore(hours.getFrom())) return false;
+        if (time.getTo().isBefore(hours.getFrom())) return false;
 
         //End after closing
-        if(time.getTo().isAfter(hours.getTo())) return false;
+        if (time.getTo().isAfter(hours.getTo())) return false;
 
         return true;
     }
 
-    public boolean isAfterOpeningAtThisTimeAndDate(LocalDate date, LocalTime time){
+    public boolean isAfterOpeningAtThisTimeAndDate(LocalDate date, LocalTime time) {
         FromToTime hours = null;
-        if(!isOpenedAtDate(date)) return true;
-        if(containsSpecialDate(date)){
+        if (!isOpenedAtDate(date)) return true;
+        if (containsSpecialDate(date)) {
             hours = specialDays.get(date);
-        }else{
+        } else {
             Day day = Day.getDayFromCode(date.getDayOfWeek().getValue());
             hours = getRegularHoursAtDay(day);
         }
         return time.isAfter(hours.getTo());
     }
 
-    public FromToTime getOpeningTimesAtDate(LocalDate date){
-        if(!isOpenedAtDate(date)) return null;
+    public FromToTime getOpeningTimesAtDate(LocalDate date) {
+        if (!isOpenedAtDate(date)) return null;
         return getRegularHoursAtDay(Day.getDayFromCode(date.getDayOfWeek().getValue()));
     }
 }
