@@ -10,7 +10,7 @@
     </parent>
     <groupId>cz.cvut.fel</groupId>
     <artifactId>tk21</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>war</packaging>
     <name>tk21</name>
     <description>Backend for TK21 Web Application</description>
