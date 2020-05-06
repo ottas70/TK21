@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class ClubSettingsDto {
 
+    private AddressDto address;
+
     private Map<Integer, FromToTime> openingHours;
 
     private List<SpecialOpeningHoursDto> specialDays;
@@ -30,6 +32,8 @@ public class ClubSettingsDto {
     private boolean reservationsEnabled;
 
     public ClubSettingsDto(Club club, int year, boolean isYearSet){
+        if(club.getAddress() != null) this.address = new AddressDto(club.getAddress());
+
         if(club.isRegistered()){
             this.openingHours = new HashMap<>();
             club.getOpeningHours().getRegularHours().forEach((k, v) -> {
@@ -57,6 +61,15 @@ public class ClubSettingsDto {
         this.isScraped = club.isWebScraped();
         this.reservationsEnabled = club.isReservationsEnabled();
     }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
+    }
+
 
     public Map<Integer, FromToTime> getOpeningHours() {
         return openingHours;
