@@ -3,6 +3,7 @@ package cz.cvut.fel.tk21.service.security;
 import cz.cvut.fel.tk21.dao.UserDao;
 import cz.cvut.fel.tk21.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
