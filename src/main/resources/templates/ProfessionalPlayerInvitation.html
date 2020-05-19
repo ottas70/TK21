@@ -14,7 +14,7 @@
 			<p style="margin-top: 15px;">administrátor klubu <a th:href="@{${url} + '/#/klub/' + ${clubID}}" style="color: #CE6B27;">[[${name}]]</a> Vás označil jako závodního hráče se stránkou na <a th:href="${cztenisUserPage}" style="color: #CE6B27;">cztenis.cz</a>, kterou si můžete prohlédnout <a th:href="${cztenisUserPage}" style="color: #CE6B27;">zde</a>.</p>
 			<p style="margin-top: 15px;">Jste-li skutečně závodní hráč v [[${name}]], potvrďte tuto skutečnost kliknutím na tlačítko níže:</p>
 			<p style="margin-top: 15px;">
-				<a th:href="@{${url} + '/#/potvrzeni-zavodniho-hrace/' + ${token}" style="color: white; text-decoration: none; font-size: 1.2em; cursor: pointer; background-color: #CE6B27; padding: 15px 25px; border-radius: 50px; display: inline-block; text-transform: uppercase;">
+				<a th:href="@{${url} + '/#/potvrzeni-zavodniho-hrace/' + ${token}}" style="color: white; text-decoration: none; font-size: 1.2em; cursor: pointer; background-color: #CE6B27; padding: 15px 25px; border-radius: 50px; display: inline-block; text-transform: uppercase;">
 					JSEM ZÁVODNÍ HRÁČ v [[${name}]]
 				</a>
 			</p>
