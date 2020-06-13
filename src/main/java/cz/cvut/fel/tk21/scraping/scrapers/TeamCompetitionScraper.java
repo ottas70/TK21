@@ -125,6 +125,7 @@ public class TeamCompetitionScraper {
         Element teamTable = doc.select("table tbody").first();
         assertNonNullElement(teamTable, "Team Table");
         Elements rows = teamTable.select("tr");
+        if(rows.size() <= 1) return;
 
         List<Team> teams = new ArrayList<>();
         for (Element row : rows) {
